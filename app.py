@@ -244,13 +244,7 @@ Write the report using EXACTLY these eight sections with ## headers. Each sectio
 4 paragraphs. Interpret the North and South Node fully — signs, houses, and what the axis reveals about the soul's evolutionary direction. What familiar pattern must they move away from (South Node)? What new territory must they move toward (North Node)? Include aspects to the nodes and what they add. Make this feel like the deepest truth of why this person is alive.
 
 ## Your Career Path & Calling
-5 paragraphs — go deep into each:
-1. The 10th Whole Sign house: sign on the cusp, any planets inside, what the vocation looks and feels like
-2. The 6th house: how they work best day to day, what daily work environment suits them
-3. The 2nd house: their relationship with money, values, and what they need to feel secure
-4. The career ruler (ruler of the 10th house sign): where it sits, its aspects, what this reveals about where career energy flows
-5. The MC sign and house it falls in: what their public reputation and legacy will be built on
-Include at least 5-6 specific real-world career examples that genuinely fit this chart.
+4 paragraphs covering: (1) 10th house sign and planets — what the vocation is, (2) 6th house — daily work style, (3) 2nd house — money and values, (4) career ruler placement and aspects. Include 4-5 specific real career examples.
 
 ## Your Unique Gifts
 3 paragraphs. What does this person have that others don't? Draw on: benefic aspects to personal planets, Moon placement and aspects, 9th house, Chiron as wound-become-gift, Part of Fortune, Venus and Jupiter aspects, any stelliums. Be specific — name the gift and explain exactly where it comes from in the chart.
@@ -259,17 +253,12 @@ Include at least 5-6 specific real-world career examples that genuinely fit this
 2-3 paragraphs. Draw on difficult aspects (squares, oppositions under 5° orb), Saturn placement and aspects, South Node shadow patterns, 12th house planets. Frame every challenge as an invitation — what is this tension asking them to integrate? What becomes possible on the other side of it?
 
 ## Your Business & Personal Brand Blueprint
-This is the section on building a business, personal brand, and social media presence that is aligned with this person's chart. Be highly specific and practical. Cover all of these in rich paragraphs:
-
-1. Brand Identity & Positioning (2 paragraphs): What should their brand look and feel like? What energy, aesthetic, and message should they lead with? Draw on ASC sign, 10th house sign, Venus sign and house, and any planets in the 1st house.
-
-2. Content Style & Communication (2 paragraphs): How should they show up online? What content format suits them best — video, writing, speaking, visual, educational, storytelling, behind-the-scenes? What topics give them natural authority? Draw on Mercury sign and house, 3rd house sign and ruler, Moon sign and house.
-
-3. Audience & Community Growth (2 paragraphs): Who is their natural audience and how do they attract followers? How do they build a loyal community? What makes people come back? Draw on 11th house sign and ruler, Jupiter placement, North Node, and any planets in the 11th house.
-
-4. Monetisation & Income Streams (1-2 paragraphs): How does money flow most naturally to them? What income models fit their chart — products, services, courses, 1:1, content, affiliate? Draw on 2nd house ruler and placement, 8th house, Venus aspects.
-
-5. Social Media Platform Fit (1 paragraph): Based on their chart, which platforms suit them best and why? Consider: Instagram (Venus/visual), TikTok (Moon/viral/emotional), YouTube (Sun/long form/authority), Podcast/writing (Mercury/3rd house), LinkedIn (Saturn/10th house professional).
+Cover these in focused paragraphs:
+1. Brand Identity (1 paragraph): aesthetic, energy, positioning — draw on ASC, 10th house, Venus.
+2. Content & Communication (1 paragraph): best content formats and topics — draw on Mercury, 3rd house, Moon.
+3. Audience & Growth (1 paragraph): who follows them and why — draw on 11th house, Jupiter, North Node.
+4. Monetisation (1 paragraph): best income models — draw on 2nd house, 8th house, Venus aspects.
+5. Platform Fit (1 paragraph): which social platforms suit this chart best and why.
 
 ## A Message From Your Chart
 1 single powerful paragraph. End the entire report with a direct, personal, luminous message to this specific person. Reference the single most exact aspect in their entire chart (smallest orb). Write as if the chart itself is speaking to them. This should be the most memorable thing they read — the paragraph they screenshot and save.
@@ -293,6 +282,7 @@ CRITICAL RULES:
             ) as st:
                 for text in st.text_stream:
                     yield f"data: {json.dumps({'type':'text','content':text})}\n\n"
+                    yield f": keepalive\n\n"
             yield f"data: {json.dumps({'type':'done'})}\n\n"
 
         return Response(stream(), mimetype="text/event-stream",
