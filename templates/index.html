@@ -221,7 +221,7 @@ var CITIES = [
   {name:'Cairo',country:'Egypt',lat:30.0444,lng:31.2357,tz:'Africa/Cairo'},
   {name:'Cape Town',country:'South Africa',lat:-33.9249,lng:18.4241,tz:'Africa/Johannesburg'},
   {name:'Buenos Aires',country:'Argentina',lat:-34.6037,lng:-58.3816,tz:'America/Argentina/Buenos_Aires'},
-  {name:'São Paulo',country:'Brazil',lat:-23.5505,lng:-46.6333,tz:'America/Sao_Paulo'},
+  {name:'Sao Paulo',country:'Brazil',lat:-23.5505,lng:-46.6333,tz:'America/Sao_Paulo'},
 ];
 
 var selectedCity = null;
@@ -340,7 +340,7 @@ function generateReport(payload) {
 
 function buildReportHeader(chart, payload) {
   var p = chart.planets, a = chart.angles;
-  document.getElementById('reportName').innerHTML = chart.name + ''s <em>Blueprint</em>';
+  document.getElementById('reportName').innerHTML = chart.name + '&#39;s <em>Blueprint</em>';
   document.getElementById('reportMeta').textContent = payload.date + ' · ' + payload.time + ' · ' + payload.city + ', ' + payload.country + ' · Whole Sign Houses';
   var cells = [
     ['Rising',a.ASC.sign,'1st'],['Sun',p.Sun.sign,p.Sun.house],['Moon',p.Moon.sign,p.Moon.house],
