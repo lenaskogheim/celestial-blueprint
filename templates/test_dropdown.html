@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+  body { font-family: sans-serif; padding: 40px; }
+  input { width: 300px; padding: 10px; font-size: 16px; border: 1px solid #ccc; }
+  #dropdown { width: 300px; border: 1px solid #ccc; display: none; }
+  .option { padding: 10px; cursor: pointer; }
+  .option:hover { background: #f0f0f0; }
+</style>
+</head>
+<body>
+<h2>Dropdown Test</h2>
+<input type="text" id="cityInput" placeholder="Type a city...">
+<div id="dropdown"></div>
+
+<script>
+var cities = ['Oslo', 'Bergen', 'Voss', 'Trondheim', 'Stavanger', 'Malaga', 'Madrid', 'London', 'Paris', 'Berlin'];
+
+window.onload = function() {
+  console.log('Page loaded');
+  var input = document.getElementById('cityInput');
+  var dropdown = document.getElementById('dropdown');
+  
+  console.log('Input element:', input);
+  console.log('Dropdown element:', dropdown);
+  
+  input.addEventListener('input', function() {
+    console.log('Typing:', this.value);
+    var q = this.value.toLowerCase();
+    var matches = cities.filter(function(c) { return c.toLowerCase().indexOf(q) === 0; });
+    console.log('Matches:', matches);
+    
+    dropdown.innerHTML = '';
+    if (matches.length === 0 || q.length === 0) { dropdown.style.display = 'none'; return; }
+    
+    matches.forEach(function(city) {
+      var div = document.createElement('div');
+      div.className = 'option';
+      div.textContent = city;
+      div.onclick = function() { input.value = city; dropdown.style.display = 'none'; };
+      dropdown.appendChild(div);
+    });
+    dropdown.style.display = 'block';
+  });
+};
+</script>
+</body>
+</html>
