@@ -288,7 +288,7 @@ CRITICAL RULES:
             yield f"data: {json.dumps({'type':'chart','data':chart})}\n\n"
             with client.messages.stream(
                 model="claude-haiku-4-5-20251001",
-                max_tokens=8000,
+                max_tokens=16000,
                 messages=[{"role":"user","content":prompt}]
             ) as st:
                 for text in st.text_stream:
