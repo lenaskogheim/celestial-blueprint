@@ -123,40 +123,86 @@ Write ONLY this one section. 4-5 sentences. Capture the essence of who this pers
 
 {chart_data}
 
-Write the report using EXACTLY these seven sections with ## headers. Go deep. Minimum 3 paragraphs per major section.
+Write the report using EXACTLY these eight sections with ## headers. Go deep. Use ### sub-headings as specified below. Every sub-section must have at least 1 full paragraph. When interpreting any house, always cover BOTH the sign on the cusp (what colour of energy flows through it) AND the planets in it (what is being expressed there).
+
+## Your Soul's Signature
+4-5 sentences. A powerful, poetic portrait capturing the essence of who this person is at their core. Weave together Sun, Moon, ASC and the 2-3 tightest aspects.
 
 ## Your IC — Where You Come From
-3 paragraphs. IC sign and Whole Sign house, emotional foundation, early environment. The IC-to-MC axis as the defining arc of life. Include planets conjunct IC or MC.
+3 paragraphs. IC sign and Whole Sign house placement, emotional foundation, early environment. The IC-to-MC axis as the defining arc of life. Include planets conjunct IC or MC.
 
 ## Your Life Purpose
 4 paragraphs. North and South Node — signs, houses, what axis reveals about soul's direction. Include aspects to nodes. What to move toward, what pattern to release.
 
 ## Your Career Path & Calling
-5 paragraphs: (1) 10th house sign and planets, (2) 6th house daily work, (3) 2nd house money and values, (4) career ruler placement and aspects, (5) MC sign and Whole Sign house placement. Include 5-6 specific real career examples.
+Use these EXACT ### sub-headings, one paragraph each:
+
+### The 10th House: Your Vocation
+Sign on the 10th house cusp (the energy of their calling) AND any planets in the 10th house (what is being expressed publicly). Cover both fully.
+
+### The 6th House: Your Daily Work
+Sign on the 6th house cusp AND any planets there. What daily work environment and rhythm suits them.
+
+### The 2nd House: Money and Values
+Sign on the 2nd house cusp AND any planets there. Their relationship with money, values, and material security.
+
+### The Career Ruler: Where Your Career Energy Flows
+The ruler of the 10th house sign — where it sits, its sign and house placement, its aspects. What this reveals about where career energy actually plays out.
+
+### The MC: Your Public Reputation
+MC sign AND the Whole Sign house it falls into. What they will become publicly known for.
+
+### Careers That Fit Your Chart
+List 5-6 specific real-world career examples with 1-2 sentences explaining why each fits. Use this format for each: start with the career name in bold on its own line, then a short explanation paragraph below.
 
 ## Your Unique Gifts
-3 paragraphs. Benefic aspects to personal planets, Moon, 9th house, Chiron as gift, Part of Fortune, Venus/Jupiter aspects. Name each gift and explain where it comes from.
+3 paragraphs. Benefic aspects to personal planets, Moon, 9th house, Chiron as wound-become-gift, Part of Fortune, Venus/Jupiter aspects. Name each gift and explain where it comes from.
 
 ## Your Greatest Challenge
 2-3 paragraphs. Difficult aspects under 5° orb, Saturn placement, South Node shadow, 12th house. Frame as invitation.
 
 ## Your Business & Personal Brand Blueprint
-5 paragraphs:
-1. Brand identity and aesthetic (ASC, 10th house, Venus)
-2. Content style and authority topics (Mercury, 3rd house, Moon)
-3. Audience and community growth (11th house, Jupiter, North Node)
-4. Monetisation and income streams (2nd house, 8th house, Venus aspects)
-5. Platform fit (Instagram/TikTok/YouTube/Podcast/LinkedIn based on chart)
+Use these EXACT ### sub-headings, one paragraph each:
+
+### Brand Identity & Aesthetic
+Draw on ASC sign, 10th house sign and planets, Venus sign and house. What visual and energetic signature should their brand carry?
+
+### Content Style & Voice
+Draw on Mercury sign and house, 3rd house, Moon. What content formats and topics give them natural authority?
+
+### Audience & Community Growth
+Draw on 11th house sign and planets, Jupiter placement, North Node. Who is drawn to them and how do they grow a loyal following?
+
+### Monetisation & Income Streams
+Draw on 2nd house, 8th house, Venus aspects. Best income models that match their chart.
+
+### Platform Fit
+Which social platforms genuinely suit this chart and why (Instagram, TikTok, YouTube, Podcast, LinkedIn, Substack)?
 
 ## A Message From Your Chart
 1 powerful closing paragraph. Reference the most exact aspect. Direct, personal, luminous. Unforgettable.
 
+## Your First Three Steps
+A focused call-to-action section. Based on this specific chart, give them THREE concrete, practical actions they can take within the next 30 days to start living more aligned with their blueprint. Use this exact format:
+
+### Step One: [short action title, 3-5 words]
+2-3 sentences explaining what to do and why it matches their chart specifically (reference a placement or aspect).
+
+### Step Two: [short action title, 3-5 words]
+2-3 sentences explaining what to do and why it matches their chart specifically.
+
+### Step Three: [short action title, 3-5 words]
+2-3 sentences explaining what to do and why it matches their chart specifically.
+
+Make these actions specific and executable — not "reflect on your purpose" but "open a Google Doc and write for 15 minutes about X" or "post one piece of content this week about Y" or "have a conversation with Z about W". Tie each step to the signatures in their chart. Range across: something internal/reflective, something creative/expressive, something external/relational.
+
 FORMATTING RULES — FOLLOW STRICTLY:
-- Do NOT output any top-level title or heading like "# Life Purpose Report" or "For Lena". Start directly with the first ## section.
-- Do NOT use horizontal rules or separator lines (no ---, no ***, no ___).
-- Do NOT use **bold text** as a sub-heading. If you need a sub-heading within a section, use ### (three hash marks).
-- Only use ## for main section headings exactly as listed above.
-- Use regular prose paragraphs only. No bullet points, no numbered lists.
+- Start directly with "## Your Soul's Signature". No title like "# Report For [Name]".
+- Do NOT use horizontal rules (no ---, no ***, no ___).
+- Do NOT use **bold text** as a sub-heading. Use ### instead.
+- Use ## only for the eight main section headings. Use ### for sub-sections exactly as specified above.
+- Regular prose paragraphs only. No numbered lists in running prose ("(1) X, (2) Y") — use ### sub-headings instead.
+- For the career examples list, put each career name on its own line as bold (**Name**) followed by the explanation.
 
 Content rules: Whole Sign houses throughout. Tightest aspects = most weight. Every sentence tied to specific placements."""
 
@@ -216,12 +262,16 @@ def markdown_to_html(text):
             heading = re.sub(r'\*\*([^*]+)\*\*', r'\1', heading)
             is_message = "message" in heading.lower()
             is_business = "business" in heading.lower()
+            is_steps = "first three steps" in heading.lower() or "first 3 steps" in heading.lower()
             if is_message:
                 html_parts.append(f'<div class="message-callout"><h2>{heading}</h2>')
                 in_special = "msg"
             elif is_business:
                 html_parts.append(f'<div class="business-section"><h2>{heading}</h2>')
                 in_special = "biz"
+            elif is_steps:
+                html_parts.append(f'<div class="steps-section"><h2>{heading}</h2>')
+                in_special = "steps"
             else:
                 html_parts.append(f"<h2>{heading}</h2>")
             continue
@@ -326,12 +376,12 @@ def build_pdf_html(name, report_text, birth_info, chart):
     return f"""<!DOCTYPE html>
 <html><head><meta charset="UTF-8">
 <style>
-  @page {{ size: A4; margin: 0; }}
-  @import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Raleway:wght@300;400;500&display=swap');
+  @page {{ size: A4; margin: 24mm 20mm; background: #f5ece0; }}
+  @import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Raleway:wght@300;400;500&display=swap');
 
   * {{ box-sizing: border-box; }}
 
-  body {{
+  html, body {{
     margin: 0;
     padding: 0;
     background: #f5ece0;
@@ -341,14 +391,13 @@ def build_pdf_html(name, report_text, birth_info, chart):
 
   .page {{
     background: #f5ece0;
-    padding: 60px 55px;
-    min-height: 100vh;
   }}
 
   .cover {{
     text-align: center;
-    padding: 100px 0 80px;
+    padding: 40px 0 50px;
     border-bottom: 1px solid rgba(184,144,90,0.3);
+    page-break-after: avoid;
   }}
 
   .sigil {{
@@ -441,14 +490,22 @@ def build_pdf_html(name, report_text, birth_info, chart):
   }}
 
   .report h3 {{
-    font-family: 'Raleway', sans-serif;
-    font-size: 10px;
-    font-weight: 500;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: #b8905a;
-    margin: 20px 0 8px;
+    font-family: 'EB Garamond', serif;
+    font-size: 13px;
+    font-weight: 600;
+    font-style: italic;
+    color: #1c1713;
+    margin: 22px 0 8px;
+    padding-bottom: 4px;
+    letter-spacing: 0.02em;
     page-break-after: avoid;
+  }}
+
+  .report h3::before {{
+    content: '✦  ';
+    color: #b8905a;
+    font-style: normal;
+    font-weight: 400;
   }}
 
   .report p {{
@@ -497,6 +554,34 @@ def build_pdf_html(name, report_text, birth_info, chart):
 
   .business-section h2 {{
     margin-top: 0;
+  }}
+
+  .steps-section {{
+    margin: 40px 0 10px;
+    padding: 28px 30px;
+    background: rgba(184,144,90,0.08);
+    border: 1px solid rgba(184,144,90,0.4);
+    page-break-inside: avoid;
+  }}
+
+  .steps-section h2 {{
+    margin-top: 0;
+    border-bottom: 1px solid rgba(184,144,90,0.3);
+  }}
+
+  .steps-section h3 {{
+    font-family: 'Raleway', sans-serif;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: #b8905a;
+    font-style: normal;
+    margin: 18px 0 6px;
+  }}
+
+  .steps-section h3::before {{
+    content: none;
   }}
 
   .footer {{
