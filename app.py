@@ -615,6 +615,31 @@ def background_generate_and_send(email, chart, birth_info):
         print(f"Background generation failed: {e}")
 
 
+def log_customer(name, email, marketing_opt_in, date, city, country):
+    """Log customer details to a CSV file for later Kit import.
+    When Kit is integrated, this will also push to Kit API directly."""
+    import csv
+    from datetime import datetime
+
+    log_file = "customers.csv"
+    file_exists = os.path.exists(log_file)
+
+    try:
+        with open(log_file, "a", newline="", encoding="utf-8") as f:
+            writer = csv.writer(f)
+            if not file_exists:
+                writer.writerow(["timestamp", "name", "email", "marketing_opt_in",
+                               "birth_date", "birth_city", "birth_country"])
+            writer.writerow([
+                datetime.now().isoformat(),
+                name, email, "yes" if marketing_opt_in else "no",
+                date, city, country
+            ])
+        print(f"Logged customer: {email} (marketing: {marketing_opt_in})")
+    except Exception as e:
+        print(f"Failed to log customer: {e}")
+
+
 @app.route("/")
 def index():
     return render_template("index.html")
@@ -632,9 +657,14 @@ def generate():
     lat = data.get("lat")
     lng = data.get("lng")
     tz_str = data.get("tz")
+    marketing_opt_in = bool(data.get("marketingOptIn", False))
 
     if not email or "@" not in email:
         return jsonify({"error": "Please provide a valid email address."}), 400
+
+    # Log customer with marketing consent status (for future Kit integration)
+    log_customer(name=name, email=email, marketing_opt_in=marketing_opt_in,
+                 date=date_str, city=city, country=country)
 
     try:
         year, month, day = [int(x) for x in date_str.split("-")]
