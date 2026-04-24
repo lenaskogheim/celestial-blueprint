@@ -151,7 +151,14 @@ Write the report using EXACTLY these seven sections with ## headers. Go deep. Mi
 ## A Message From Your Chart
 1 powerful closing paragraph. Reference the most exact aspect. Direct, personal, luminous. Unforgettable.
 
-Rules: Whole Sign houses throughout. Tightest aspects = most weight. Every sentence tied to specific placements."""
+FORMATTING RULES — FOLLOW STRICTLY:
+- Do NOT output any top-level title or heading like "# Life Purpose Report" or "For Lena". Start directly with the first ## section.
+- Do NOT use horizontal rules or separator lines (no ---, no ***, no ___).
+- Do NOT use **bold text** as a sub-heading. If you need a sub-heading within a section, use ### (three hash marks).
+- Only use ## for main section headings exactly as listed above.
+- Use regular prose paragraphs only. No bullet points, no numbered lists.
+
+Content rules: Whole Sign houses throughout. Tightest aspects = most weight. Every sentence tied to specific placements."""
 
 
 def generate_full_report(prompt):
@@ -165,20 +172,48 @@ def generate_full_report(prompt):
 
 
 def markdown_to_html(text):
-    """Convert simple markdown (## headers, paragraphs) to HTML."""
+    """Convert simple markdown to HTML, stripping unwanted formatting."""
+    import re
+
+    # Strip any top-level single # headers (like "# Life Purpose Report For Lena")
+    text = re.sub(r'^#\s+[^\n]+\n', '', text, flags=re.MULTILINE)
+    # Strip horizontal rules (---)
+    text = re.sub(r'^---+\s*$', '', text, flags=re.MULTILINE)
+    # Strip "For [Name]" lines at the top
+    text = re.sub(r'^#+\s*For\s+\w+\s*$', '', text, flags=re.MULTILINE)
+
     html_parts = []
     current_para = []
     in_special = None
 
+    def flush_para():
+        nonlocal current_para
+        if current_para:
+            para_text = " ".join(current_para)
+            # Convert **bold** to <strong>bold</strong>
+            para_text = re.sub(r'\*\*([^*]+)\*\*', r'<strong>\1</strong>', para_text)
+            # Convert *italic* to <em>italic</em>
+            para_text = re.sub(r'(?<!\*)\*([^*]+)\*(?!\*)', r'<em>\1</em>', para_text)
+            html_parts.append("<p>" + para_text + "</p>")
+            current_para = []
+
     for line in text.split("\n"):
-        if line.startswith("## "):
-            if current_para:
-                html_parts.append("<p>" + " ".join(current_para) + "</p>")
-                current_para = []
+        stripped = line.strip()
+
+        # Skip empty lines (with flush)
+        if stripped == "":
+            flush_para()
+            continue
+
+        # Main ## headers
+        if stripped.startswith("## "):
+            flush_para()
             if in_special:
                 html_parts.append("</div>")
                 in_special = None
-            heading = line[3:].strip()
+            heading = stripped[3:].strip()
+            # Strip ** from heading too
+            heading = re.sub(r'\*\*([^*]+)\*\*', r'\1', heading)
             is_message = "message" in heading.lower()
             is_business = "business" in heading.lower()
             if is_message:
@@ -189,26 +224,73 @@ def markdown_to_html(text):
                 in_special = "biz"
             else:
                 html_parts.append(f"<h2>{heading}</h2>")
-        elif line.strip() == "":
-            if current_para:
-                html_parts.append("<p>" + " ".join(current_para) + "</p>")
-                current_para = []
-        else:
-            current_para.append(line.strip())
+            continue
 
-    if current_para:
-        html_parts.append("<p>" + " ".join(current_para) + "</p>")
+        # Sub ### headers or **Bold** lines used as subheadings
+        if stripped.startswith("### "):
+            flush_para()
+            sub_heading = stripped[4:].strip()
+            sub_heading = re.sub(r'\*\*([^*]+)\*\*', r'\1', sub_heading)
+            html_parts.append(f"<h3>{sub_heading}</h3>")
+            continue
+
+        # Lines that are only **bold** text act as sub-headings
+        bold_only = re.match(r'^\*\*([^*]+)\*\*:?\s*$', stripped)
+        if bold_only:
+            flush_para()
+            html_parts.append(f"<h3>{bold_only.group(1)}</h3>")
+            continue
+
+        current_para.append(stripped)
+
+    flush_para()
     if in_special:
         html_parts.append("</div>")
 
     return "\n".join(html_parts)
 
 
-def build_email_html(name, report_text, birth_info, chart):
-    """Build beautifully styled HTML email with the report."""
+def build_email_body_html(name):
+    """Simple warm personal email body with PDF attached separately."""
+    return f"""<!DOCTYPE html>
+<html><head><meta charset="UTF-8"></head>
+<body style="margin:0;padding:0;background:#f8f3ec;font-family:'EB Garamond',Georgia,serif;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#f8f3ec;padding:60px 20px;">
+<tr><td align="center">
+  <table width="560" cellpadding="0" cellspacing="0" style="max-width:560px;">
+
+    <tr><td style="text-align:center;padding-bottom:40px;">
+      <div style="color:#b8905a;letter-spacing:0.35em;font-size:14px;">✦</div>
+    </td></tr>
+
+    <tr><td style="font-family:Georgia,serif;font-size:18px;line-height:1.8;color:#1c1713;text-align:left;">
+      <p style="margin:0 0 24px;">Dear {name},</p>
+
+      <p style="margin:0 0 24px;">Thank you so much for ordering your Celestial Blueprint — your complete Life Purpose, Career & Business Blueprint report is attached as a PDF.</p>
+
+      <p style="margin:0 0 24px;">Take a moment to read it somewhere quiet where you can let it land. My hope is that it reflects something true about you, and perhaps puts words to things you have always sensed but never quite named.</p>
+
+      <p style="margin:0 0 24px;">I am so grateful for your trust and support. If the reading resonates, I would love to hear from you.</p>
+
+      <p style="margin:0 0 8px;">With warmth,</p>
+      <p style="margin:0 0 40px;font-style:italic;">Lena ✦</p>
+    </td></tr>
+
+    <tr><td style="text-align:center;padding-top:20px;border-top:1px solid rgba(184,144,90,0.25);">
+      <div style="color:#b8905a;font-size:11px;letter-spacing:0.3em;text-transform:uppercase;font-family:'Raleway',Arial,sans-serif;">Celestial Blueprint</div>
+      <div style="font-size:11px;color:#7a706a;margin-top:6px;font-family:'Raleway',Arial,sans-serif;">Whole Sign houses · Swiss Ephemeris</div>
+    </td></tr>
+
+  </table>
+</td></tr>
+</table>
+</body></html>"""
+
+
+def build_pdf_html(name, report_text, birth_info, chart):
+    """Build the styled HTML that becomes the PDF."""
     report_body = markdown_to_html(report_text)
 
-    # Chart summary strip
     p = chart["planets"]
     a = chart["angles"]
     cells = [
@@ -223,75 +305,268 @@ def build_email_html(name, report_text, birth_info, chart):
         ("MC", a["MC"]["sign"], f"H{a['MC']['ws_house']}"),
         ("IC", a["IC"]["sign"], f"H{a['IC']['ws_house']}"),
     ]
-    chart_rows = "".join([
-        f'<td style="padding:10px 6px;text-align:center;border:1px solid #e8d5b0;background:#ffffff;"><div style="font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:#b8905a;font-weight:500;margin-bottom:4px;">{label}</div><div style="font-family:Georgia,serif;font-size:14px;color:#1c1713;">{value}</div><div style="font-size:9px;color:#7a706a;margin-top:2px;">{house}</div></td>'
-        for label, value, house in cells
+
+    top_row = "".join([
+        f'<td>'
+        f'<div class="cell-label">{label}</div>'
+        f'<div class="cell-value">{value}</div>'
+        f'<div class="cell-house">{house}</div>'
+        f'</td>'
+        for label, value, house in cells[:5]
+    ])
+    bottom_row = "".join([
+        f'<td>'
+        f'<div class="cell-label">{label}</div>'
+        f'<div class="cell-value">{value}</div>'
+        f'<div class="cell-house">{house}</div>'
+        f'</td>'
+        for label, value, house in cells[5:]
     ])
 
     return f"""<!DOCTYPE html>
-<html><head><meta charset="UTF-8"></head>
-<body style="margin:0;padding:0;background:#f8f3ec;font-family:Georgia,serif;">
-<table width="100%" cellpadding="0" cellspacing="0" style="background:#f8f3ec;padding:40px 20px;">
-<tr><td align="center">
-  <table width="640" cellpadding="0" cellspacing="0" style="max-width:640px;background:#ffffff;border-radius:4px;box-shadow:0 4px 40px rgba(0,0,0,0.06);">
-
-    <tr><td style="padding:50px 50px 30px;text-align:center;border-bottom:1px solid #f5ece0;">
-      <div style="color:#b8905a;letter-spacing:0.3em;margin-bottom:20px;">✦</div>
-      <h1 style="font-family:Georgia,serif;font-size:34px;font-weight:normal;color:#1c1713;margin:0 0 10px;letter-spacing:0.05em;">Your <em style="color:#b8905a;">Celestial Blueprint</em></h1>
-      <div style="font-size:11px;letter-spacing:0.3em;text-transform:uppercase;color:#7a706a;margin-top:15px;">{name} · {birth_info['date']} · {birth_info['time']}</div>
-      <div style="font-size:11px;color:#7a706a;margin-top:4px;">{birth_info['city']}, {birth_info['country']}</div>
-    </td></tr>
-
-    <tr><td style="padding:30px 50px;">
-      <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
-        <tr>{chart_rows[:len(chart_rows)//2]}</tr>
-        <tr>{chart_rows[len(chart_rows)//2:]}</tr>
-      </table>
-    </td></tr>
-
-    <tr><td style="padding:20px 50px 50px;font-family:Georgia,serif;font-size:16px;line-height:1.8;color:#3d3530;">
-      {report_body}
-    </td></tr>
-
-    <tr><td style="padding:30px 50px;background:#faf5ee;text-align:center;border-top:1px solid #f5ece0;">
-      <div style="color:#b8905a;font-size:12px;letter-spacing:0.3em;text-transform:uppercase;">Celestial Blueprint</div>
-      <div style="font-size:11px;color:#7a706a;margin-top:8px;">Whole Sign houses · Swiss Ephemeris</div>
-    </td></tr>
-
-  </table>
-</td></tr>
-</table>
-
+<html><head><meta charset="UTF-8">
 <style>
-  .message-callout {{ margin-top:40px !important; padding:25px 30px !important; border-left:3px solid #b8905a !important; background:#faf5ee !important; }}
-  .message-callout h2 {{ font-family:Georgia,serif !important; font-size:20px !important; font-style:italic !important; color:#1c1713 !important; margin:0 0 15px !important; }}
-  .message-callout p {{ font-style:italic !important; color:#1c1713 !important; }}
-  .business-section {{ margin-top:40px !important; padding:25px 30px !important; border:1px solid #f5ece0 !important; background:#ffffff !important; }}
-  .business-section h2 {{ font-family:Georgia,serif !important; font-size:22px !important; font-style:italic !important; color:#1c1713 !important; margin:0 0 15px !important; border-bottom:1px solid #f5ece0 !important; padding-bottom:10px !important; }}
-  h2 {{ font-family:Georgia,serif !important; font-size:22px !important; font-style:italic !important; color:#1c1713 !important; margin:30px 0 12px !important; padding-bottom:8px !important; border-bottom:1px solid #f5ece0 !important; }}
-  p {{ margin-bottom:15px !important; }}
+  @page {{ size: A4; margin: 0; }}
+  @import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Raleway:wght@300;400;500&display=swap');
+
+  * {{ box-sizing: border-box; }}
+
+  body {{
+    margin: 0;
+    padding: 0;
+    background: #f5ece0;
+    font-family: 'EB Garamond', Georgia, serif;
+    color: #1c1713;
+  }}
+
+  .page {{
+    background: #f5ece0;
+    padding: 60px 55px;
+    min-height: 100vh;
+  }}
+
+  .cover {{
+    text-align: center;
+    padding: 100px 0 80px;
+    border-bottom: 1px solid rgba(184,144,90,0.3);
+  }}
+
+  .sigil {{
+    color: #b8905a;
+    font-size: 18px;
+    margin-bottom: 24px;
+  }}
+
+  .cover h1 {{
+    font-family: 'EB Garamond', Georgia, serif;
+    font-size: 48px;
+    font-weight: 400;
+    color: #1c1713;
+    margin: 0 0 18px;
+    letter-spacing: 0.02em;
+    line-height: 1.1;
+  }}
+
+  .cover h1 em {{
+    font-style: italic;
+    color: #b8905a;
+    font-weight: 400;
+  }}
+
+  .cover .name-date {{
+    font-family: 'Raleway', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: #7a706a;
+    margin-top: 28px;
+  }}
+
+  .cover .place {{
+    font-family: 'EB Garamond', serif;
+    font-style: italic;
+    font-size: 14px;
+    color: #7a706a;
+    margin-top: 4px;
+  }}
+
+  .chart-table {{
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 1px;
+    background: rgba(184,144,90,0.2);
+    margin: 40px 0 50px;
+  }}
+
+  .chart-table td {{
+    background: #faf5ee;
+    padding: 10px 6px;
+    text-align: center;
+    width: 20%;
+  }}
+
+  .cell-label {{
+    font-family: 'Raleway', sans-serif;
+    font-size: 8px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #b8905a;
+    font-weight: 500;
+    margin-bottom: 3px;
+  }}
+
+  .cell-value {{
+    font-family: 'EB Garamond', serif;
+    font-size: 13px;
+    color: #1c1713;
+  }}
+
+  .cell-house {{
+    font-family: 'Raleway', sans-serif;
+    font-size: 8px;
+    color: #7a706a;
+    margin-top: 2px;
+  }}
+
+  .report h2 {{
+    font-family: 'EB Garamond', serif;
+    font-size: 20px;
+    font-style: italic;
+    font-weight: 500;
+    color: #1c1713;
+    margin: 32px 0 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(184,144,90,0.3);
+    page-break-after: avoid;
+  }}
+
+  .report h3 {{
+    font-family: 'Raleway', sans-serif;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #b8905a;
+    margin: 20px 0 8px;
+    page-break-after: avoid;
+  }}
+
+  .report p {{
+    font-family: 'EB Garamond', Georgia, serif;
+    font-size: 12.5px;
+    line-height: 1.75;
+    color: #3d3530;
+    margin: 0 0 12px;
+    text-align: left;
+  }}
+
+  .report p strong {{
+    font-weight: 500;
+    color: #1c1713;
+  }}
+
+  .message-callout {{
+    margin: 36px 0 10px;
+    padding: 22px 26px;
+    border-left: 2px solid #b8905a;
+    background: rgba(255,255,255,0.5);
+    page-break-inside: avoid;
+  }}
+
+  .message-callout h2 {{
+    font-family: 'EB Garamond', serif;
+    font-size: 18px;
+    font-style: italic;
+    color: #1c1713;
+    margin: 0 0 12px;
+    padding: 0;
+    border: none;
+  }}
+
+  .message-callout p {{
+    font-style: italic;
+    color: #1c1713;
+  }}
+
+  .business-section {{
+    margin: 36px 0 10px;
+    padding: 22px 26px;
+    border: 1px solid rgba(184,144,90,0.3);
+    background: rgba(255,255,255,0.4);
+  }}
+
+  .business-section h2 {{
+    margin-top: 0;
+  }}
+
+  .footer {{
+    margin-top: 60px;
+    padding-top: 24px;
+    border-top: 1px solid rgba(184,144,90,0.3);
+    text-align: center;
+  }}
+
+  .footer-label {{
+    font-family: 'Raleway', sans-serif;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: #b8905a;
+  }}
+
+  .footer-note {{
+    font-family: 'Raleway', sans-serif;
+    font-size: 9px;
+    color: #7a706a;
+    margin-top: 6px;
+    letter-spacing: 0.1em;
+  }}
 </style>
+</head>
+<body>
+<div class="page">
+
+  <div class="cover">
+    <div class="sigil">✦</div>
+    <h1>Your <em>Celestial Blueprint</em></h1>
+    <div class="name-date">{name} · {birth_info['date']} · {birth_info['time']}</div>
+    <div class="place">{birth_info['city']}, {birth_info['country']}</div>
+  </div>
+
+  <table class="chart-table">
+    <tr>{top_row}</tr>
+    <tr>{bottom_row}</tr>
+  </table>
+
+  <div class="report">
+    {report_body}
+  </div>
+
+  <div class="footer">
+    <div class="footer-label">Celestial Blueprint</div>
+    <div class="footer-note">Whole Sign houses · Swiss Ephemeris</div>
+  </div>
+
+</div>
 </body></html>"""
 
 
-def send_report_email(to_email, to_name, html_content, pdf_bytes):
-    """Send email via Resend API."""
+def send_report_email(to_email, to_name, email_body_html, pdf_bytes):
+    """Send email via Resend API with short personal body + PDF attachment."""
     api_key = os.environ.get("RESEND_API_KEY", "")
     if not api_key:
         print("WARNING: No RESEND_API_KEY set")
         return False
 
-    # Encode PDF as base64
-    pdf_b64 = base64.b64encode(pdf_bytes).decode() if pdf_bytes else None
-
     payload = {
         "from": "Celestial Blueprint <onboarding@resend.dev>",
         "to": [to_email],
         "subject": f"Your Celestial Blueprint ✦ {to_name}",
-        "html": html_content,
+        "html": email_body_html,
     }
 
-    if pdf_b64:
+    if pdf_bytes:
+        pdf_b64 = base64.b64encode(pdf_bytes).decode()
         payload["attachments"] = [{
             "filename": f"{to_name}-celestial-blueprint.pdf",
             "content": pdf_b64,
@@ -326,13 +601,16 @@ def generate_pdf(html_content):
 
 
 def background_generate_and_send(email, chart, birth_info):
-    """Generate full report and send email. Runs in background thread."""
+    """Generate full report as PDF and send email with short personal note. Runs in background thread."""
     try:
         prompt = build_prompt(chart, birth_info, preview_only=False)
         report_text = generate_full_report(prompt)
-        html = build_email_html(chart["name"], report_text, birth_info, chart)
-        pdf_bytes = generate_pdf(html)
-        send_report_email(email, chart["name"], html, pdf_bytes)
+        # Build PDF from styled HTML
+        pdf_html = build_pdf_html(chart["name"], report_text, birth_info, chart)
+        pdf_bytes = generate_pdf(pdf_html)
+        # Build short personal email body
+        email_body = build_email_body_html(chart["name"])
+        send_report_email(email, chart["name"], email_body, pdf_bytes)
     except Exception as e:
         print(f"Background generation failed: {e}")
 
