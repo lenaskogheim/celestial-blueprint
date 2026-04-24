@@ -34,8 +34,8 @@ header h1 em{font-style:italic;color:var(--gold);}
 .ornament::after{background:linear-gradient(90deg,var(--border-strong),transparent);}
 .form-group{margin-bottom:1.6rem;position:relative;}
 label{display:block;font-size:0.67rem;letter-spacing:0.25em;text-transform:uppercase;color:var(--gold);margin-bottom:0.6rem;font-weight:500;}
-input[type=text],input[type=date],input[type=time]{width:100%;padding:0.9rem 1.1rem;border:1px solid var(--border);background:rgba(255,255,255,0.7);font-family:'Raleway',sans-serif;font-size:0.95rem;font-weight:300;color:var(--ink);border-radius:1px;transition:border-color 0.25s,box-shadow 0.25s;outline:none;-webkit-appearance:none;}
-input[type=text]:focus,input[type=date]:focus,input[type=time]:focus{border-color:var(--gold-bright);background:var(--white);box-shadow:0 0 0 3px rgba(184,144,90,0.08);}
+input[type=text],input[type=email],input[type=date],input[type=time]{width:100%;padding:0.9rem 1.1rem;border:1px solid var(--border);background:rgba(255,255,255,0.7);font-family:'Raleway',sans-serif;font-size:0.95rem;font-weight:300;color:var(--ink);border-radius:1px;transition:border-color 0.25s,box-shadow 0.25s;outline:none;-webkit-appearance:none;}
+input[type=text]:focus,input[type=email]:focus,input[type=date]:focus,input[type=time]:focus{border-color:var(--gold-bright);background:var(--white);box-shadow:0 0 0 3px rgba(184,144,90,0.08);}
 input::placeholder{color:var(--ink-muted);opacity:0.5;font-style:italic;}
 .form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
 .city-wrapper{position:relative;}
@@ -87,6 +87,15 @@ input::placeholder{color:var(--ink-muted);opacity:0.5;font-style:italic;}
 .btn-print:hover{background:#2a231d;}
 .btn-restart{background:transparent;color:var(--ink-muted);border:1px solid var(--border-strong);}
 .btn-restart:hover{border-color:var(--gold);color:var(--ink);}
+.email-confirm{margin-top:4rem;padding:3rem 2.5rem;text-align:center;background:linear-gradient(135deg,var(--gold-faint),var(--white));border:1px solid var(--border-strong);border-radius:2px;}
+.email-confirm .confirm-ornament{color:var(--gold-bright);font-size:1.5rem;margin-bottom:1.5rem;letter-spacing:0.3em;}
+.email-confirm h3{font-family:'Playfair Display',serif;font-style:italic;font-size:1.6rem;font-weight:400;color:var(--ink);margin-bottom:1rem;}
+.email-confirm .confirm-teaser{font-family:'Playfair Display',serif;font-size:1.05rem;color:var(--ink-soft);line-height:1.7;margin-bottom:2rem;max-width:500px;margin-left:auto;margin-right:auto;}
+.email-confirm .confirm-teaser strong{color:var(--gold);font-weight:400;}
+.confirm-sections{margin:2rem auto;max-width:400px;text-align:left;padding:1.5rem 2rem;background:rgba(255,255,255,0.6);border-radius:2px;border:1px solid var(--border);}
+.confirm-sections .section-label{font-size:0.65rem;letter-spacing:0.25em;text-transform:uppercase;color:var(--gold);margin-bottom:1rem;text-align:center;font-weight:500;}
+.confirm-sections .section-item{font-family:'Playfair Display',serif;font-size:0.95rem;color:var(--ink-soft);padding:0.35rem 0;}
+.email-confirm .confirm-note{font-size:0.8rem;color:var(--ink-muted);margin-top:1.5rem;font-style:italic;letter-spacing:0.03em;}
 @media print{header,.form-section,.loading-section,.report-actions{display:none !important;}.report-section{display:block !important;padding:0;}body{background:white;}.report-body p{font-size:11pt;line-height:1.7;}}
 @media(max-width:480px){.form-row{grid-template-columns:1fr;}.chart-strip{grid-template-columns:repeat(5,1fr);}}
 </style>
@@ -112,6 +121,10 @@ input::placeholder{color:var(--ink-muted);opacity:0.5;font-style:italic;}
   <div class="form-group">
     <label>Your Name</label>
     <input type="text" id="name" placeholder="First name">
+  </div>
+  <div class="form-group">
+    <label>Email Address</label>
+    <input type="email" id="email" placeholder="where to send your full report">
   </div>
   <div class="form-row">
     <div class="form-group">
@@ -150,7 +163,6 @@ input::placeholder{color:var(--ink-muted);opacity:0.5;font-style:italic;}
   <div class="chart-strip" id="chartStrip"></div>
   <div class="report-body" id="reportBody"></div>
   <div class="report-actions">
-    <button class="action-btn btn-print" onclick="window.print()">Save / Print Report</button>
     <button class="action-btn btn-restart" onclick="restart()">Generate Another</button>
   </div>
 </div>
@@ -260,12 +272,12 @@ window.onload = function() {
   };
 };
 
+var currentEmail = '';
 var loadingSteps = [
   ['Calculating your chart…','Mapping planetary positions at the moment of your birth'],
   ['Reading your houses…','Interpreting the Whole Sign house structure'],
   ['Weaving your aspects…','Analysing the relationships between your planets'],
-  ['Writing your purpose…','Composing your life purpose and career narrative'],
-  ['Building your blueprint…','Crafting your personal brand and business insights'],
+  ['Preparing your preview…','Your full report is being sent to your inbox'],
 ];
 var loadingStep = 0, loadingInterval, rawText = '', lastHeader = '', openSpecial = null;
 
@@ -285,13 +297,15 @@ function updateLoadingMsg() {
 
 function handleSubmit() {
   var name = document.getElementById('name').value.trim();
+  var email = document.getElementById('email').value.trim();
   var date = document.getElementById('date').value;
   var time = document.getElementById('time').value;
   document.getElementById('errorMsg').style.display = 'none';
-  if (!name || !date || !time) { showError('Please fill in your name, date, and time of birth.'); return; }
+  if (!name || !email || !date || !time) { showError('Please fill in all fields before continuing.'); return; }
+  if (email.indexOf('@') === -1) { showError('Please enter a valid email address.'); return; }
   if (!selectedCity) { showError('Please select a city from the dropdown list.'); return; }
   showLoading();
-  generateReport({ name:name, date:date, time:time, city:selectedCity.name, country:selectedCity.country, lat:selectedCity.lat, lng:selectedCity.lng, tz:selectedCity.tz });
+  generateReport({ name:name, email:email, date:date, time:time, city:selectedCity.name, country:selectedCity.country, lat:selectedCity.lat, lng:selectedCity.lng, tz:selectedCity.tz });
 }
 
 function generateReport(payload) {
@@ -340,6 +354,7 @@ function generateReport(payload) {
 
 function buildReportHeader(chart, payload) {
   var p = chart.planets, a = chart.angles;
+  currentEmail = payload.email;
   document.getElementById('reportName').innerHTML = chart.name + '&#39;s <em>Blueprint</em>';
   document.getElementById('reportMeta').textContent = payload.date + ' · ' + payload.time + ' · ' + payload.city + ', ' + payload.country + ' · Whole Sign Houses';
   var cells = [
@@ -386,7 +401,34 @@ function renderReport(text) {
   body.innerHTML = html;
 }
 
-function removeCursor() { var c = document.querySelector('.cursor'); if (c) c.remove(); renderReport(rawText); }
+function removeCursor() {
+  var c = document.querySelector('.cursor'); if (c) c.remove();
+  renderReport(rawText);
+  showEmailConfirmation();
+}
+
+function showEmailConfirmation() {
+  var existing = document.getElementById('emailConfirm');
+  if (existing) return;
+  var div = document.createElement('div');
+  div.id = 'emailConfirm';
+  div.className = 'email-confirm';
+  div.innerHTML = '<div class="confirm-ornament">✦</div>' +
+    '<h3>The rest of your blueprint is on its way</h3>' +
+    '<p class="confirm-teaser">Check your inbox at <strong>' + currentEmail + '</strong> within the next 5 minutes for your complete Celestial Blueprint.</p>' +
+    '<div class="confirm-sections">' +
+      '<div class="section-label">Your full report includes:</div>' +
+      '<div class="section-item">✦ Your IC — Where You Come From</div>' +
+      '<div class="section-item">✦ Your Life Purpose</div>' +
+      '<div class="section-item">✦ Your Career Path & Calling</div>' +
+      '<div class="section-item">✦ Your Unique Gifts</div>' +
+      '<div class="section-item">✦ Your Greatest Challenge</div>' +
+      '<div class="section-item">✦ Your Business & Personal Brand Blueprint</div>' +
+      '<div class="section-item">✦ A Message From Your Chart</div>' +
+    '</div>' +
+    '<p class="confirm-note">The full report will arrive as both an elegant email and a downloadable PDF.</p>';
+  document.getElementById('reportBody').appendChild(div);
+}
 
 function restart() {
   rawText = ''; lastHeader = ''; selectedCity = null; openSpecial = null;
@@ -394,6 +436,7 @@ function restart() {
   document.getElementById('reportBody').innerHTML = '';
   document.getElementById('chartStrip').innerHTML = '';
   document.getElementById('name').value = '';
+  document.getElementById('email').value = '';
   document.getElementById('date').value = '';
   document.getElementById('time').value = '';
   document.getElementById('cityInput').value = '';
