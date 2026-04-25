@@ -71,6 +71,34 @@ def calculate_chart(name, year, month, day, hour, minute, lat, lng, tz_str):
             })
     aspects.sort(key=lambda x:x["orb"])
 
+    # Calculate elemental balance with weighted planets
+    SIGN_ELEMENT = {
+        "Aries":"fire","Leo":"fire","Sagittarius":"fire",
+        "Taurus":"earth","Virgo":"earth","Capricorn":"earth",
+        "Gemini":"air","Libra":"air","Aquarius":"air",
+        "Cancer":"water","Scorpio":"water","Pisces":"water"
+    }
+    PLANET_WEIGHT = {
+        "Sun":3, "Moon":3, "Mercury":2, "Venus":2, "Mars":2,
+        "Jupiter":1.5, "Saturn":1.5, "Uranus":1, "Neptune":1, "Pluto":1
+    }
+    element_count = {"fire":0,"earth":0,"air":0,"water":0}
+    for pn, weight in PLANET_WEIGHT.items():
+        psign = pd[pn]["sign"]
+        elem = SIGN_ELEMENT.get(psign)
+        if elem:
+            element_count[elem] += weight
+    # ASC and MC also contribute (angles strongly shape expression)
+    asc_elem = SIGN_ELEMENT.get(angles["ASC"]["sign"])
+    mc_elem = SIGN_ELEMENT.get(angles["MC"]["sign"])
+    if asc_elem: element_count[asc_elem] += 2
+    if mc_elem: element_count[mc_elem] += 1
+
+    total = sum(element_count.values())
+    element_pct = {e: round(c/total*100) for e, c in element_count.items()}
+    dominant_element = max(element_count, key=element_count.get)
+    asc_element = SIGN_ELEMENT.get(angles["ASC"]["sign"], "earth")
+
     return {
         "name": name,
         "planets": pd,
@@ -78,8 +106,70 @@ def calculate_chart(name, year, month, day, hour, minute, lat, lng, tz_str):
         "house_rulers": hr,
         "ws_houses": [fs(s) for s in ws_houses],
         "part_of_fortune": {"sign":fs(pof_sign),"house":pof_house},
-        "aspects": aspects
+        "aspects": aspects,
+        "element_balance": element_pct,
+        "dominant_element": dominant_element,
+        "asc_element": asc_element
     }
+
+
+ELEMENT_LANGUAGE_GUIDE = {
+    "earth": """LANGUAGE REGISTER: GROUNDED & PRACTICAL
+- Use concrete, sensory language. Talk about what they can do, build, hold, see.
+- Lead with practical implications before any abstract or spiritual framing.
+- Use words like: build, structure, foundation, craft, refine, body, work, mastery, slow, patient, real, tangible, true.
+- AVOID heavily spiritual or mystical phrasing. Phrases like "your soul came here to remember", "cosmic flow", "energetic frequencies" should NOT appear.
+- Examples and metaphors should be material: gardening, architecture, craft, the body, ritual as practice rather than ritual as magic.
+- This person trusts what they can demonstrate in the world. Speak to that.""",
+
+    "fire": """LANGUAGE REGISTER: BOLD & DIRECT
+- Use vivid, energetic language. Speak with conviction.
+- Lead with vision, possibility, and what they're here to embody.
+- Use words like: spark, ignite, lead, blaze, courage, boldly, visible, alive, radiate, charge, momentum, becoming.
+- Pull no punches. Say things directly. Skip the soft preambles and qualifiers.
+- Metaphors should be active: lighting fires, climbing peaks, leading the way, going first.
+- Avoid being too philosophical or ruminative. Fire wants to MOVE.""",
+
+    "air": """LANGUAGE REGISTER: CLEAR & CONCEPTUAL
+- Use precise, intelligent language. Frame insights as ideas and patterns to consider.
+- Lead with frameworks, distinctions, and clear reasoning.
+- Use words like: pattern, framework, signal, see, articulate, weave, thread, nuance, perspective, conversation, lens.
+- Make the wisdom feel like an interesting idea worth turning over, not a prescription.
+- Use light wit and wordplay where it fits. Stay clean and lucid.
+- Metaphors should be conceptual: maps, mirrors, conversations, networks, signals.
+- Avoid heavy emotional or somatic language unless accurate to a placement.""",
+
+    "water": """LANGUAGE REGISTER: SOULFUL & POETIC
+- Use evocative, emotionally attuned language. Speak to the felt sense.
+- Lead with what something means at the soul level, then translate to the practical.
+- Use words like: remember, feel, sense, soul, flow, deep, current, ancestral, sacred, knowing, intimate, tender, quiet.
+- Embrace mystical and spiritual phrasing where it fits — this person resonates with it.
+- Metaphors should be elemental and somatic: water, dreams, womb, weather, tides, threads of memory.
+- Be willing to sit in mystery. Not everything needs to be resolved or made practical."""
+}
+
+
+def build_language_guidance(dominant_element, asc_element, element_balance):
+    """Create adaptive language guidance based on chart's elemental signature."""
+    parts = []
+    parts.append(f"ELEMENT BALANCE: Fire {element_balance['fire']}%, Earth {element_balance['earth']}%, Air {element_balance['air']}%, Water {element_balance['water']}%")
+    parts.append(f"DOMINANT ELEMENT: {dominant_element.upper()} (use as primary tone for the report)")
+    parts.append(f"RISING SIGN ELEMENT: {asc_element.upper()} (this shapes how the person receives information — match this in your DELIVERY)")
+    parts.append("")
+    parts.append(ELEMENT_LANGUAGE_GUIDE[dominant_element])
+
+    # If ASC element differs significantly from dominant, blend
+    if asc_element != dominant_element:
+        parts.append("")
+        parts.append(f"BUT — their RISING is {asc_element.upper()}, which means they prefer information delivered in a {asc_element} register even if their overall energy is {dominant_element}. Lean into the {dominant_element} substance, but shape the DELIVERY/PROSE to match {asc_element} sensibilities.")
+
+    # If element balance is very mixed (no element above 40%), advise more neutral language
+    max_pct = max(element_balance.values())
+    if max_pct < 35:
+        parts.append("")
+        parts.append("This chart is ELEMENTALLY BALANCED — no single element dominates strongly. Keep the language register more neutral and adaptive. Avoid going too far in any one direction.")
+
+    return "\n".join(parts)
 
 
 def build_prompt(chart, birth_info, preview_only=False):
@@ -88,6 +178,11 @@ def build_prompt(chart, birth_info, preview_only=False):
     hr = chart["house_rulers"]
     aspects = chart["aspects"]
     pof = chart["part_of_fortune"]
+    language_guidance = build_language_guidance(
+        chart.get("dominant_element", "earth"),
+        chart.get("asc_element", "earth"),
+        chart.get("element_balance", {"fire":25,"earth":25,"air":25,"water":25})
+    )
 
     planet_lines = [f"  - {n}: {d['sign']}, {d['house']} house, {d['position']}°" for n,d in pd.items()]
     aspect_lines = [f"  - {x['p1']} {x['aspect']} {x['p2']} (orb: {x['orb']}°)" for x in aspects[:20]]
@@ -113,13 +208,20 @@ KEY ASPECTS (tightest first):
 {chr(10).join(aspect_lines)}"""
 
     if preview_only:
-        return f"""You are a professional astrologer writing a single opening paragraph called "Soul's Signature" for a premium birth chart report. Warm, wise, direct, poetic but grounded. Second person.
+        return f"""You are a professional astrologer writing a single opening paragraph called "Soul's Signature" for a premium birth chart report. Second person. Match the language register precisely to this person's elemental signature.
+
+{language_guidance}
 
 {chart_data}
 
-Write ONLY this one section. 4-5 sentences. Capture the essence of who this person is at their core — their most fundamental energy, the quality they carry into every room. Weave together Sun, Moon, ASC and the 2-3 tightest aspects. Make it feel like the most accurate thing anyone has ever said about them. Output only the paragraph content — no heading, no preamble."""
+Write ONLY this one section. EXACTLY 4-5 sentences. Capture the essence of who this person is at their core — the quality they carry into every room. Weave together Sun, Moon, ASC and the 2-3 tightest aspects. Make it feel like the most accurate thing anyone has ever said about them. Output only the paragraph content — no heading, no preamble. Honour the language register above without naming it explicitly."""
 
-    return f"""You are a professional astrologer writing a premium, deeply personal Life Purpose, Career & Business Blueprint Report. Warm, wise, direct tone. Second person. No jargon — only meaning. Every sentence must feel specific to this person. Be rich and detailed — this is a paid premium report.
+    return f"""You are a professional astrologer writing a premium, deeply personal Life Purpose, Career & Business Blueprint Report. Second person. No jargon — only meaning. Every sentence must feel specific to this person. Be rich and detailed — this is a paid premium report.
+
+CRITICAL — ADAPT LANGUAGE TO THIS CHART:
+{language_guidance}
+
+The above language register applies throughout the ENTIRE report. Even when discussing practical career advice, frame it in language that matches this person's elemental signature. Two charts with the same placements should receive the same astrological insights but in noticeably different prose registers.
 
 {chart_data}
 
@@ -204,7 +306,17 @@ FORMATTING RULES — FOLLOW STRICTLY:
 - Regular prose paragraphs only. No numbered lists in running prose ("(1) X, (2) Y") — use ### sub-headings instead.
 - For the career examples list, put each career name on its own line as bold (**Name**) followed by the explanation.
 
-Content rules: Whole Sign houses throughout. Tightest aspects = most weight. Every sentence tied to specific placements."""
+CONSISTENCY RULES — non-negotiable substance that must be covered the same way every time, regardless of which run this is:
+- ALWAYS use Whole Sign houses. Never Placidus, Equal, or Koch.
+- The tightest aspects (smallest orb) ALWAYS carry the most interpretive weight.
+- ALWAYS state explicitly which Whole Sign house the MC and IC fall in.
+- For every house section, ALWAYS cover both: (a) the sign on the cusp AND (b) any planets occupying that house. If no planets, say so explicitly and read the house from its ruler.
+- ALWAYS state the ruler of the Ascendant sign and where it sits — this person's overall life direction follows it.
+- If a person has a stellium (3+ planets in one sign or one Whole Sign house), ALWAYS name it as a stellium and treat it as a defining chart signature.
+- ALWAYS reference at least one specific aspect by name with its exact orb (e.g. "Sun sextile Pluto, 0.28°").
+- The "Your First Three Steps" section must always have one internal/reflective action, one creative/expressive action, and one external/relational action.
+
+Content rules: Every sentence tied to specific placements. No generic statements that could apply to anyone."""
 
 
 def generate_full_report(prompt):
