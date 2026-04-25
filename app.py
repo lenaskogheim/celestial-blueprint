@@ -644,7 +644,7 @@ def send_report_email(to_email, to_name, email_body_html, pdf_bytes):
         return False
 
     payload = {
-        "from": "Celestial Blueprint <onboarding@resend.dev>",
+        "from": "Celestial Blueprint <hello@lunabylena.com>",
         "to": [to_email],
         "subject": f"Your Celestial Blueprint ✦ {to_name}",
         "html": email_body_html,
