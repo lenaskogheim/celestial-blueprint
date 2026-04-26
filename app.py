@@ -185,26 +185,102 @@ def build_prompt(chart, birth_info, preview_only=False):
     )
 
     planet_lines = [f"  - {n}: {d['sign']}, {d['house']} house, {d['position']}°" for n,d in pd.items()]
-    aspect_lines = [f"  - {x['p1']} {x['aspect']} {x['p2']} (orb: {x['orb']}°)" for x in aspects[:20]]
-    ruler_lines = [f"  - {h}th house ({hr[h]['sign']}) ruler: {hr[h]['ruler']} — in {pd.get(hr[h]['ruler'],{}).get('sign','?')} {pd.get(hr[h]['ruler'],{}).get('house','?')} house" for h in [1,2,6,10,11]]
+
+    # Build "planets in each house" map - which planets ACTUALLY occupy each house
+    house_occupants = {h: [] for h in range(1, 13)}
+    house_num_map = {"1st":1, "2nd":2, "3rd":3, "4th":4, "5th":5, "6th":6, "7th":7, "8th":8, "9th":9, "10th":10, "11th":11, "12th":12}
+    for pname, pdata in pd.items():
+        h_num = house_num_map.get(pdata["house"])
+        if h_num:
+            house_occupants[h_num].append(f"{pname} ({pdata['sign']} {pdata['position']}°)")
+
+    def _ord(n):
+        return {1:"1st",2:"2nd",3:"3rd",4:"4th",5:"5th",6:"6th",7:"7th",8:"8th",9:"9th",10:"10th",11:"11th",12:"12th"}.get(n, f"{n}th")
+
+    occupants_lines = []
+    asc_idx_h = ["Aries","Taurus","Gemini","Cancer","Leo","Virgo","Libra","Scorpio","Sagittarius","Capricorn","Aquarius","Pisces"].index(a["ASC"]["sign"])
+    ws_signs = ["Aries","Taurus","Gemini","Cancer","Leo","Virgo","Libra","Scorpio","Sagittarius","Capricorn","Aquarius","Pisces"]
+    for h in range(1, 13):
+        sign_on_cusp = ws_signs[(asc_idx_h + h - 1) % 12]
+        occupants = house_occupants[h]
+        h_ord = _ord(h)
+        if occupants:
+            occupants_lines.append(f"  - {h_ord} house ({sign_on_cusp} on cusp): {', '.join(occupants)}")
+        else:
+            occupants_lines.append(f"  - {h_ord} house ({sign_on_cusp} on cusp): EMPTY (no planets)")
+
+    # Build ruler lines with explicit "DOES NOT live in this house" warning where relevant
+    def ordinal(n):
+        return {1:"1st",2:"2nd",3:"3rd",4:"4th",5:"5th",6:"6th",7:"7th",8:"8th",9:"9th",10:"10th",11:"11th",12:"12th"}.get(n, f"{n}th")
+
+    ruler_lines = []
+    for h in [1, 2, 3, 6, 10, 11]:
+        ruler = hr[h]["ruler"]
+        ruler_data = pd.get(ruler, {})
+        ruler_sign = ruler_data.get("sign", "?")
+        ruler_house = ruler_data.get("house", "?")
+        ruler_pos = ruler_data.get("position", "?")
+        ruler_house_num = house_num_map.get(ruler_house, 0)
+        h_ord = ordinal(h)
+
+        if ruler_house_num == h:
+            note = f"(ruler IS in its own house here)"
+        else:
+            note = f"(ruler is NOT in the {h_ord} house, it is in the {ruler_house})"
+        ruler_lines.append(f"  - {h_ord} house ({hr[h]['sign']} on cusp) ruled by {ruler}: {ruler} sits in {ruler_sign} at {ruler_pos}° in the {ruler_house} house {note}")
+
+    # Build categorized aspects for key chart points (rulers, ASC, MC, Sun, Moon)
+    # so the AI knows which aspects belong to which interpretive layer
+    key_points = ["Sun", "Moon", "Ascendant", "Medium Coeli", "Imum Coeli"]
+    for h in [1, 2, 6, 10, 11]:
+        ruler = hr[h]["ruler"]
+        if ruler not in key_points:
+            key_points.append(ruler)
+
+    relevant_aspects = []
+    for asp in aspects[:30]:
+        if asp["p1"] in key_points or asp["p2"] in key_points or asp["p1"] in pd or asp["p2"] in pd:
+            relevant_aspects.append(asp)
+
+    aspect_lines = [f"  - {x['p1']} {x['aspect']} {x['p2']} (orb: {x['orb']}°)" for x in relevant_aspects[:20]]
+
+    # Build a per-planet aspect summary - what each KEY planet aspects
+    key_planet_aspects = {}
+    for asp in aspects:
+        for side in [asp["p1"], asp["p2"]]:
+            if side in key_points:
+                other = asp["p2"] if side == asp["p1"] else asp["p1"]
+                key_planet_aspects.setdefault(side, []).append(f"{asp['aspect']} {other} ({asp['orb']}°)")
+
+    key_aspects_summary_lines = []
+    for kp in key_points:
+        if kp in key_planet_aspects:
+            top_aspects = key_planet_aspects[kp][:5]
+            key_aspects_summary_lines.append(f"  - {kp}: {'; '.join(top_aspects)}")
 
     chart_data = f"""BIRTH DETAILS: {chart['name']}, {birth_info['date']}, {birth_info['time']}, {birth_info['city']}, {birth_info['country']}
 House System: Whole Sign
 
-PLANETS:
+PLANETS BY POSITION:
 {chr(10).join(planet_lines)}
+
+PLANETS IN EACH HOUSE (this is the AUTHORITATIVE list of which planets occupy each house, use ONLY this for "planets in the X house" statements):
+{chr(10).join(occupants_lines)}
 
 ANGLES:
   - ASC: {a['ASC']['sign']} {a['ASC']['position']}°
-  - MC: {a['MC']['sign']} {a['MC']['position']}° (Whole Sign house {a['MC']['ws_house']})
-  - IC: {a['IC']['sign']} {a['IC']['position']}° (Whole Sign house {a['IC']['ws_house']})
+  - MC: {a['MC']['sign']} {a['MC']['position']}° (sits in Whole Sign house {a['MC']['ws_house']})
+  - IC: {a['IC']['sign']} {a['IC']['position']}° (sits in Whole Sign house {a['IC']['ws_house']})
 
-HOUSE RULERS:
+HOUSE RULERS (the ruler is the planet that GOVERNS the house's sign, not the planet INSIDE the house):
 {chr(10).join(ruler_lines)}
 
 PART OF FORTUNE: {pof['sign']} in house {pof['house']}
 
-KEY ASPECTS (tightest first):
+KEY ASPECTS BY PLANET (the most important aspects for each key point in this chart):
+{chr(10).join(key_aspects_summary_lines)}
+
+KEY ASPECTS (tightest first, all major aspects):
 {chr(10).join(aspect_lines)}"""
 
     if preview_only:
@@ -477,31 +553,34 @@ def markdown_to_html(text):
 def build_email_body_html(name):
     """Simple warm personal email body with PDF attached separately."""
     return f"""<!DOCTYPE html>
-<html><head><meta charset="UTF-8"></head>
+<html><head>
+<meta charset="UTF-8">
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Raleway:wght@300;400;500&display=swap" rel="stylesheet">
+</head>
 <body style="margin:0;padding:0;background:#f8f3ec;font-family:'EB Garamond',Georgia,serif;">
 <table width="100%" cellpadding="0" cellspacing="0" style="background:#f8f3ec;padding:60px 20px;">
 <tr><td align="center">
   <table width="560" cellpadding="0" cellspacing="0" style="max-width:560px;">
 
     <tr><td style="text-align:center;padding-bottom:40px;">
-      <div style="color:#b8905a;letter-spacing:0.35em;font-size:14px;">✦</div>
+      <div style="color:#b8905a;letter-spacing:0.35em;font-size:14px;font-family:'EB Garamond',Georgia,serif;">✦</div>
     </td></tr>
 
-    <tr><td style="font-family:Georgia,serif;font-size:18px;line-height:1.8;color:#1c1713;text-align:left;">
-      <p style="margin:0 0 24px;">Dear {name},</p>
+    <tr><td style="font-family:'EB Garamond',Georgia,serif;font-size:18px;line-height:1.8;color:#1c1713;text-align:left;">
+      <p style="margin:0 0 24px;font-family:'EB Garamond',Georgia,serif;">Dear {name},</p>
 
-      <p style="margin:0 0 24px;">Thank you so much for ordering your Celestial Blueprint — your complete Life Purpose, Career & Business Blueprint report is attached as a PDF.</p>
+      <p style="margin:0 0 24px;font-family:'EB Garamond',Georgia,serif;">Thank you so much for ordering your Celestial Blueprint. Your complete Life Purpose, Career & Business Blueprint report is attached as a PDF.</p>
 
-      <p style="margin:0 0 24px;">Take a moment to read it somewhere quiet where you can let it land. My hope is that it reflects something true about you, and perhaps puts words to things you have always sensed but never quite named.</p>
+      <p style="margin:0 0 24px;font-family:'EB Garamond',Georgia,serif;">Take a moment to read it somewhere quiet where you can let it land. My hope is that it reflects something true about you, and perhaps puts words to things you have always sensed but never quite named.</p>
 
-      <p style="margin:0 0 24px;">I am so grateful for your trust and support. If the reading resonates, I would love to hear from you.</p>
+      <p style="margin:0 0 24px;font-family:'EB Garamond',Georgia,serif;">I am so grateful for your trust and support. If the reading resonates, I would love to hear from you.</p>
 
-      <p style="margin:0 0 8px;">With warmth,</p>
-      <p style="margin:0 0 40px;font-style:italic;">Lena ✦</p>
+      <p style="margin:0 0 8px;font-family:'EB Garamond',Georgia,serif;">With warmth,</p>
+      <p style="margin:0 0 40px;font-style:italic;font-family:'EB Garamond',Georgia,serif;">Lena ✦</p>
     </td></tr>
 
     <tr><td style="text-align:center;padding-top:20px;border-top:1px solid rgba(184,144,90,0.25);">
-      <div style="color:#b8905a;font-size:11px;letter-spacing:0.3em;text-transform:uppercase;font-family:'Raleway',Arial,sans-serif;">Celestial Blueprint</div>
+      <div style="color:#b8905a;font-size:11px;letter-spacing:0.3em;text-transform:uppercase;font-family:'Raleway',Arial,sans-serif;font-weight:500;">Celestial Blueprint</div>
       <div style="font-size:11px;color:#7a706a;margin-top:6px;font-family:'Raleway',Arial,sans-serif;">Whole Sign houses · Swiss Ephemeris</div>
     </td></tr>
 
@@ -510,10 +589,13 @@ def build_email_body_html(name):
 </table>
 </body></html>"""
 
-
 def build_pdf_html(name, report_text, birth_info, chart):
     """Build the styled HTML that becomes the PDF."""
     report_body = markdown_to_html(report_text)
+    # Possessive form: "Lena's" or "Cecilie's" (avoid double-s for names ending in s)
+    name_possessive = "&#39;" if name.endswith("s") else "&#39;s"
+    city_upper = birth_info["city"].upper()
+    country_upper = birth_info["country"].upper()
 
     p = chart["planets"]
     a = chart["angles"]
@@ -569,48 +651,100 @@ def build_pdf_html(name, report_text, birth_info, chart):
 
   .cover {{
     text-align: center;
-    padding: 40px 0 50px;
-    border-bottom: 1px solid rgba(184,144,90,0.3);
+    padding: 30px 0 40px;
     page-break-after: avoid;
   }}
 
-  .sigil {{
+  .cover .constellation {{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 28px;
     color: #b8905a;
-    font-size: 18px;
-    margin-bottom: 24px;
   }}
 
-  .cover h1 {{
+  .cover .star {{
+    font-size: 9px;
+    opacity: 0.7;
+  }}
+
+  .cover .star-lg {{
+    color: #d4aa78;
+    font-size: 14px;
+  }}
+
+  .cover .brand {{
     font-family: 'EB Garamond', Georgia, serif;
-    font-size: 48px;
+    font-size: 54px;
     font-weight: 400;
     color: #1c1713;
-    margin: 0 0 18px;
+    margin: 0 0 14px;
+    letter-spacing: 0.04em;
+    line-height: 1.1;
+  }}
+
+  .cover .brand em {{
+    font-style: italic;
+    color: #b8905a;
+    font-weight: 400;
+  }}
+
+  .cover .tagline {{
+    font-family: 'Raleway', sans-serif;
+    font-size: 11px;
+    font-weight: 400;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: #7a706a;
+    margin: 0;
+  }}
+
+  .cover-divider-top, .cover-divider-bottom {{
+    width: 100px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #d4aa78, transparent);
+    margin: 60px auto 60px;
+  }}
+
+  .cover-divider-bottom {{
+    margin: 50px auto 0;
+  }}
+
+  .eyebrow {{
+    font-family: 'Raleway', sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: #b8905a;
+    display: block;
+    margin-bottom: 22px;
+  }}
+
+  .report-name {{
+    font-family: 'EB Garamond', Georgia, serif;
+    font-size: 42px;
+    font-weight: 400;
+    color: #1c1713;
+    margin: 0 0 22px;
     letter-spacing: 0.02em;
     line-height: 1.1;
   }}
 
-  .cover h1 em {{
+  .report-name em {{
     font-style: italic;
     color: #b8905a;
     font-weight: 400;
   }}
 
-  .cover .name-date {{
+  .meta {{
     font-family: 'Raleway', sans-serif;
-    font-size: 11px;
-    letter-spacing: 0.3em;
+    font-size: 10px;
+    letter-spacing: 0.25em;
     text-transform: uppercase;
     color: #7a706a;
-    margin-top: 28px;
-  }}
-
-  .cover .place {{
-    font-family: 'EB Garamond', serif;
-    font-style: italic;
-    font-size: 14px;
-    color: #7a706a;
-    margin-top: 4px;
+    margin: 0;
   }}
 
   .chart-table {{
@@ -618,7 +752,20 @@ def build_pdf_html(name, report_text, birth_info, chart):
     border-collapse: separate;
     border-spacing: 1px;
     background: rgba(184,144,90,0.2);
-    margin: 40px 0 50px;
+    margin: 0 0 40px;
+  }}
+
+  .chart-table-heading {{
+    font-family: 'Raleway', sans-serif;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: #b8905a;
+    text-align: center;
+    margin: 0 0 18px;
+    page-break-before: always;
+    padding-top: 0;
   }}
 
   .chart-table td {{
@@ -794,12 +941,26 @@ def build_pdf_html(name, report_text, birth_info, chart):
 <div class="page">
 
   <div class="cover">
-    <div class="sigil">✦</div>
-    <h1>Your <em>Celestial Blueprint</em></h1>
-    <div class="name-date">{name} · {birth_info['date']} · {birth_info['time']}</div>
-    <div class="place">{birth_info['city']}, {birth_info['country']}</div>
+    <div class="constellation">
+      <span class="star">★</span>
+      <span class="star">·</span>
+      <span class="star-lg">✦</span>
+      <span class="star">·</span>
+      <span class="star">★</span>
+    </div>
+    <h1 class="brand">Celestial <em>Blueprint</em></h1>
+    <p class="tagline">Life Purpose · Career · Personal Brand</p>
+
+    <div class="cover-divider-top"></div>
+
+    <span class="eyebrow">Your Celestial Blueprint</span>
+    <h2 class="report-name">{name}{name_possessive} <em>Blueprint</em></h2>
+    <p class="meta">{birth_info['date']} · {birth_info['time']} · {city_upper}, {country_upper} · Whole Sign Houses</p>
+
+    <div class="cover-divider-bottom"></div>
   </div>
 
+  <p class="chart-table-heading">Your Chart at a Glance</p>
   <table class="chart-table">
     <tr>{top_row}</tr>
     <tr>{bottom_row}</tr>
