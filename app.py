@@ -298,13 +298,20 @@ A focused call-to-action section. Based on this specific chart, give them THREE 
 
 Make these actions specific and executable — not "reflect on your purpose" but "open a Google Doc and write for 15 minutes about X" or "post one piece of content this week about Y" or "have a conversation with Z about W". Tie each step to the signatures in their chart. Range across: something internal/reflective, something creative/expressive, something external/relational.
 
-FORMATTING RULES — FOLLOW STRICTLY:
+FORMATTING RULES, FOLLOW STRICTLY:
 - Start directly with "## Your Soul's Signature". No title like "# Report For [Name]".
 - Do NOT use horizontal rules (no ---, no ***, no ___).
 - Do NOT use **bold text** as a sub-heading. Use ### instead.
 - Use ## only for the eight main section headings. Use ### for sub-sections exactly as specified above.
-- Regular prose paragraphs only. No numbered lists in running prose ("(1) X, (2) Y") — use ### sub-headings instead.
+- Regular prose paragraphs only. No numbered lists in running prose ("(1) X, (2) Y"), use ### sub-headings instead.
 - For the career examples list, put each career name on its own line as bold (**Name**) followed by the explanation.
+
+PUNCTUATION RULES, FOLLOW STRICTLY:
+- DO NOT use em-dashes (—) anywhere in the report. They make prose feel AI-generated.
+- DO NOT use en-dashes (–) for parentheticals.
+- Instead, use commas, full stops, semicolons, colons, or parentheses depending on what the sentence needs.
+- For a strong pause that would normally use an em-dash, use a comma or full stop. For a parenthetical aside, use commas or parentheses.
+- The only place a hyphen is acceptable is between compound words (e.g. "ten-year-old", "well-meaning").
 
 CONSISTENCY RULES — non-negotiable substance that must be covered the same way every time, regardless of which run this is:
 - ALWAYS use Whole Sign houses. Never Placidus, Equal, or Koch.
@@ -339,6 +346,15 @@ def markdown_to_html(text):
     text = re.sub(r'^---+\s*$', '', text, flags=re.MULTILINE)
     # Strip "For [Name]" lines at the top
     text = re.sub(r'^#+\s*For\s+\w+\s*$', '', text, flags=re.MULTILINE)
+
+    # SAFETY NET: replace any em-dashes or en-dashes the AI slipped in
+    # Em-dash with spaces -> comma + space (most common case)
+    text = re.sub(r'\s*—\s*', ', ', text)
+    text = re.sub(r'\s*–\s*', ', ', text)
+    # Clean any double commas from the substitution
+    text = re.sub(r',\s*,', ',', text)
+    # Clean comma right before a full stop or other punctuation
+    text = re.sub(r',\s*([.!?:;])', r'\1', text)
 
     html_parts = []
     current_para = []
