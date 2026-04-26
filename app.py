@@ -261,7 +261,15 @@ List 5-6 specific real-world career examples with 1-2 sentences explaining why e
 3 paragraphs. Benefic aspects to personal planets, Moon, 9th house, Chiron as wound-become-gift, Part of Fortune, Venus/Jupiter aspects. Name each gift and explain where it comes from.
 
 ## Your Greatest Challenge
-2-3 paragraphs. Difficult aspects under 5° orb, Saturn placement, South Node shadow, 12th house. Frame as invitation.
+3 paragraphs. Identify the central tension in this chart from difficult aspects under 5° orb, Saturn placement, South Node shadow, or 12th house planets. CRITICAL FRAMING RULES for this section:
+
+The first paragraph names the challenge with compassion and specificity. NEVER say there is "something wrong" with this person. NEVER frame the challenge as a fixed limitation, deficit, or thing they are stuck with. Frame it as a recurring pattern, dynamic, or growth-edge.
+
+The second paragraph reveals the gift hidden inside the challenge. Every difficult placement contains a strength being forged. Show how this exact tension, once met consciously, becomes one of their most valuable qualities. Reference the chart specifically.
+
+The third paragraph offers concrete ways to work WITH this energy, not against it. Give them at least 2-3 practical perspectives, practices, or reframes. Empower them as the creator of their own experience. End with a sentence that affirms their capacity to transform this. The reader should close this section feeling more powerful, not less.
+
+Tone: warm, honest, never pitying. Never doom-laden. The challenge is real, AND they are bigger than it.
 
 ## Your Business & Personal Brand Blueprint
 Use these EXACT ### sub-headings, one paragraph each:
@@ -336,6 +344,20 @@ def generate_full_report(prompt):
     return msg.content[0].text
 
 
+def clean_dashes(text):
+    """Strip em-dashes and en-dashes that make text feel AI-generated.
+    Used everywhere text flows to user - PDF, email, on-screen preview."""
+    import re
+    # Em-dash with spaces -> comma + space
+    text = re.sub(r'\s*—\s*', ', ', text)
+    text = re.sub(r'\s*–\s*', ', ', text)
+    # Clean any double commas from substitution
+    text = re.sub(r',\s*,', ',', text)
+    # Clean comma right before terminal punctuation
+    text = re.sub(r',\s*([.!?:;])', r'\1', text)
+    return text
+
+
 def markdown_to_html(text):
     """Convert simple markdown to HTML, stripping unwanted formatting."""
     import re
@@ -347,14 +369,8 @@ def markdown_to_html(text):
     # Strip "For [Name]" lines at the top
     text = re.sub(r'^#+\s*For\s+\w+\s*$', '', text, flags=re.MULTILINE)
 
-    # SAFETY NET: replace any em-dashes or en-dashes the AI slipped in
-    # Em-dash with spaces -> comma + space (most common case)
-    text = re.sub(r'\s*—\s*', ', ', text)
-    text = re.sub(r'\s*–\s*', ', ', text)
-    # Clean any double commas from the substitution
-    text = re.sub(r',\s*,', ',', text)
-    # Clean comma right before a full stop or other punctuation
-    text = re.sub(r',\s*([.!?:;])', r'\1', text)
+    # Clean em-dashes and en-dashes
+    text = clean_dashes(text)
 
     html_parts = []
     current_para = []
@@ -643,6 +659,8 @@ def build_pdf_html(name, report_text, birth_info, chart):
     color: #3d3530;
     margin: 0 0 12px;
     text-align: left;
+    orphans: 3;
+    widows: 3;
   }}
 
   .report p strong {{
@@ -656,6 +674,8 @@ def build_pdf_html(name, report_text, birth_info, chart):
     border-left: 2px solid #b8905a;
     background: rgba(255,255,255,0.5);
     page-break-inside: avoid;
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
   }}
 
   .message-callout h2 {{
@@ -678,6 +698,9 @@ def build_pdf_html(name, report_text, birth_info, chart):
     padding: 22px 26px;
     border: 1px solid rgba(184,144,90,0.3);
     background: rgba(255,255,255,0.4);
+    /* Allow breaking but maintain breathing room when split across pages */
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
   }}
 
   .business-section h2 {{
@@ -689,7 +712,8 @@ def build_pdf_html(name, report_text, birth_info, chart):
     padding: 28px 30px;
     background: rgba(184,144,90,0.08);
     border: 1px solid rgba(184,144,90,0.4);
-    page-break-inside: avoid;
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
   }}
 
   .steps-section h2 {{
@@ -907,13 +931,26 @@ def generate():
 
     def stream():
         yield f"data: {json.dumps({'type':'chart','data':chart})}\n\n"
+        # Buffer text so we can clean dashes that span chunk boundaries
+        buffer = ""
         with client.messages.stream(
             model="claude-haiku-4-5-20251001",
             max_tokens=600,
             messages=[{"role":"user","content":preview_prompt}]
         ) as st:
             for text in st.text_stream:
-                yield f"data: {json.dumps({'type':'text','content':text})}\n\n"
+                buffer += text
+                # Hold back the last few characters in case a dash is forming
+                # Flush everything except the last 3 chars
+                if len(buffer) > 3:
+                    flush = buffer[:-3]
+                    buffer = buffer[-3:]
+                    cleaned = clean_dashes(flush)
+                    yield f"data: {json.dumps({'type':'text','content':cleaned})}\n\n"
+        # Flush any remaining buffer
+        if buffer:
+            cleaned = clean_dashes(buffer)
+            yield f"data: {json.dumps({'type':'text','content':cleaned})}\n\n"
         yield f"data: {json.dumps({'type':'done','email':email})}\n\n"
 
     return Response(stream(), mimetype="text/event-stream",
