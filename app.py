@@ -230,7 +230,7 @@ Write the report using EXACTLY these eight sections with ## headers. Go deep. Us
 ## Your Soul's Signature
 4-5 sentences. A powerful, poetic portrait capturing the essence of who this person is at their core. Weave together Sun, Moon, ASC and the 2-3 tightest aspects.
 
-## Your IC — Where You Come From
+## Your IC, Where You Come From
 3 paragraphs. IC sign and Whole Sign house placement, emotional foundation, early environment. The IC-to-MC axis as the defining arc of life. Include planets conjunct IC or MC.
 
 ## Your Life Purpose
@@ -254,22 +254,52 @@ The ruler of the 10th house sign — where it sits, its sign and house placement
 ### The MC: Your Public Reputation
 MC sign AND the Whole Sign house it falls into. What they will become publicly known for.
 
-### Careers That Fit Your Chart
-List 5-6 specific real-world career examples with 1-2 sentences explaining why each fits. Use this format for each: start with the career name in bold on its own line, then a short explanation paragraph below.
+## Careers That Fit Your Chart
+List 5-6 specific real-world career examples with 2-3 sentences explaining why each fits this chart. Use this EXACT format for each: start the career name as a ### sub-heading on its own line, then a 2-3 sentence explanation paragraph below referencing specific placements that make it a fit.
+
+### [Career name 1]
+2-3 sentence explanation referencing chart placements.
+
+### [Career name 2]
+2-3 sentence explanation referencing chart placements.
+
+(Continue for 5-6 careers total. Make them genuinely different, not variations on the same theme.)
 
 ## Your Unique Gifts
-3 paragraphs. Benefic aspects to personal planets, Moon, 9th house, Chiron as wound-become-gift, Part of Fortune, Venus/Jupiter aspects. Name each gift and explain where it comes from.
+Identify THREE distinct gifts from the chart, drawing on different sources: benefic aspects to personal planets (Sun, Moon, Mercury, Venus, Mars), the 9th house, Chiron as wound-become-gift, the Part of Fortune, Jupiter placement and aspects, or trines/sextiles in the chart. Each gift must be a different theme, not three angles on the same thing.
 
-## Your Greatest Challenge
-3 paragraphs. Identify the central tension in this chart from difficult aspects under 5° orb, Saturn placement, South Node shadow, or 12th house planets. CRITICAL FRAMING RULES for this section:
+Use this EXACT format for each:
 
-The first paragraph names the challenge with compassion and specificity. NEVER say there is "something wrong" with this person. NEVER frame the challenge as a fixed limitation, deficit, or thing they are stuck with. Frame it as a recurring pattern, dynamic, or growth-edge.
+### Gift One: [short title naming the gift, 3-6 words]
+2 paragraphs. The first paragraph names the gift specifically and ties it to the chart placement(s) it comes from, including at least one aspect with its exact orb. The second paragraph describes how this gift shows up in their life and how it serves them and others.
 
-The second paragraph reveals the gift hidden inside the challenge. Every difficult placement contains a strength being forged. Show how this exact tension, once met consciously, becomes one of their most valuable qualities. Reference the chart specifically.
+### Gift Two: [short title naming the gift, 3-6 words]
+Same two-paragraph structure: name the gift with chart-specific grounding, then describe how it shows up.
 
-The third paragraph offers concrete ways to work WITH this energy, not against it. Give them at least 2-3 practical perspectives, practices, or reframes. Empower them as the creator of their own experience. End with a sentence that affirms their capacity to transform this. The reader should close this section feeling more powerful, not less.
+### Gift Three: [short title naming the gift, 3-6 words]
+Same two-paragraph structure: name the gift with chart-specific grounding, then describe how it shows up.
 
-Tone: warm, honest, never pitying. Never doom-laden. The challenge is real, AND they are bigger than it.
+## Your Greatest Challenges
+Identify THREE distinct challenges from the chart, drawing on different sources: tight difficult aspects under 5° orb, Saturn placement and aspects, South Node patterns, 12th house planets, or hard aspects to the Sun/Moon/ASC. Each challenge must be a different theme, not three angles on the same thing.
+
+Use this EXACT format for each:
+
+### Challenge One: [short title naming the pattern, 3-6 words]
+First paragraph: Name the challenge with compassion and specificity, tied to a placement. NEVER say there is "something wrong" with this person. NEVER frame as a fixed limitation. Frame as a recurring pattern or growth-edge.
+Second paragraph: Reveal the gift inside it, every difficult placement contains a strength being forged. Show how this tension, once met consciously, becomes one of their most valuable qualities. End with 1-2 concrete reframes or practices that help them work WITH this energy.
+
+### Challenge Two: [short title naming the pattern, 3-6 words]
+Same two-paragraph structure: name the pattern with compassion, then reveal the gift and offer concrete reframes.
+
+### Challenge Three: [short title naming the pattern, 3-6 words]
+Same two-paragraph structure: name the pattern with compassion, then reveal the gift and offer concrete reframes.
+
+CRITICAL TONE RULES for this section:
+- Warm, honest, never pitying. Never doom-laden.
+- The challenges are real AND they are bigger than them.
+- Empower them as the creator of their own experience.
+- The reader should close this section feeling more powerful, not less.
+- Each challenge must reference a specific placement or aspect with its orb.
 
 ## Your Business & Personal Brand Blueprint
 Use these EXACT ### sub-headings, one paragraph each:
@@ -312,7 +342,7 @@ FORMATTING RULES, FOLLOW STRICTLY:
 - Do NOT use **bold text** as a sub-heading. Use ### instead.
 - Use ## only for the eight main section headings. Use ### for sub-sections exactly as specified above.
 - Regular prose paragraphs only. No numbered lists in running prose ("(1) X, (2) Y"), use ### sub-headings instead.
-- For the career examples list, put each career name on its own line as bold (**Name**) followed by the explanation.
+- For career examples, use ### sub-headings with the career name (not bold text in running prose).
 
 PUNCTUATION RULES, FOLLOW STRICTLY:
 - DO NOT use em-dashes (—) anywhere in the report. They make prose feel AI-generated.
