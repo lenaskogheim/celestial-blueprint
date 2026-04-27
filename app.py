@@ -10,7 +10,10 @@ app = Flask(__name__)
 
 ALL_SIGNS = ["Ari","Tau","Gem","Can","Leo","Vir","Lib","Sco","Sag","Cap","Aqu","Pis"]
 SIGN_NAMES = {"Ari":"Aries","Tau":"Taurus","Gem":"Gemini","Can":"Cancer","Leo":"Leo","Vir":"Virgo","Lib":"Libra","Sco":"Scorpio","Sag":"Sagittarius","Cap":"Capricorn","Aqu":"Aquarius","Pis":"Pisces"}
-RULERS = {"Ari":"Mars","Tau":"Venus","Gem":"Mercury","Can":"Moon","Leo":"Sun","Vir":"Mercury","Lib":"Venus","Sco":"Mars","Sag":"Jupiter","Cap":"Saturn","Aqu":"Uranus","Pis":"Neptune"}
+TRAD_RULERS = {"Ari":"Mars","Tau":"Venus","Gem":"Mercury","Can":"Moon","Leo":"Sun","Vir":"Mercury","Lib":"Venus","Sco":"Mars","Sag":"Jupiter","Cap":"Saturn","Aqu":"Saturn","Pis":"Jupiter"}
+MODERN_RULERS = {"Aqu":"Uranus","Pis":"Neptune","Sco":"Pluto"}
+# Backward compat alias
+RULERS = TRAD_RULERS
 HOUSE_NAMES = {"First_House":"1st","Second_House":"2nd","Third_House":"3rd","Fourth_House":"4th","Fifth_House":"5th","Sixth_House":"6th","Seventh_House":"7th","Eighth_House":"8th","Ninth_House":"9th","Tenth_House":"10th","Eleventh_House":"11th","Twelfth_House":"12th"}
 
 
@@ -51,7 +54,26 @@ def calculate_chart(name, year, month, day, hour, minute, lat, lng, tz_str):
         "IC":{"sign":fs(ic.sign),"position":round(ic.position,2),"ws_house":ic_ws_house},
     }
 
-    hr = {h:{"sign":fs(ws_houses[h-1]),"ruler":RULERS[ws_houses[h-1]]} for h in [1,2,3,6,10,11]}
+    # Build house rulers with TRADITIONAL as primary, MODERN as secondary co-ruler.
+    # Houses 1, 2, 3, 6, 10, 11 are the most relevant for purpose/career/values/brand.
+    hr = {}
+    for h in [1, 2, 3, 6, 10, 11]:
+        sign_abbr = ws_houses[h-1]
+        hr[h] = {
+            "sign": fs(sign_abbr),
+            "ruler": TRAD_RULERS[sign_abbr],
+            "modern_ruler": MODERN_RULERS.get(sign_abbr),
+        }
+    # Track MC sign rulers separately (the MC sign may differ from any house cusp's sign in odd cases,
+    # but typically equals the 10th house's sign in Whole Sign. We always log the MC sign rulers explicitly
+    # so the prompt can guarantee MC ruler coverage with aspects.)
+    mc_sign_full = fs(mc.sign)
+    mc_sign_abbr = mc.sign  # 3-letter form like "Vir"
+    mc_rulers = {
+        "sign": mc_sign_full,
+        "ruler": TRAD_RULERS.get(mc_sign_abbr),
+        "modern_ruler": MODERN_RULERS.get(mc_sign_abbr),
+    }
 
     result = AspectsFactory.single_chart_aspects(s)
     career = {"Sun","Moon","Mercury","Venus","Mars","Jupiter","Saturn","True_North_Lunar_Node","True_South_Lunar_Node","Ascendant","Medium_Coeli","Imum_Coeli","Chiron"}
@@ -104,6 +126,7 @@ def calculate_chart(name, year, month, day, hour, minute, lat, lng, tz_str):
         "planets": pd,
         "angles": angles,
         "house_rulers": hr,
+        "mc_rulers": mc_rulers,
         "ws_houses": [fs(s) for s in ws_houses],
         "part_of_fortune": {"sign":fs(pof_sign),"house":pof_house},
         "aspects": aspects,
@@ -213,29 +236,58 @@ def build_prompt(chart, birth_info, preview_only=False):
     def ordinal(n):
         return {1:"1st",2:"2nd",3:"3rd",4:"4th",5:"5th",6:"6th",7:"7th",8:"8th",9:"9th",10:"10th",11:"11th",12:"12th"}.get(n, f"{n}th")
 
-    ruler_lines = []
-    for h in [1, 2, 3, 6, 10, 11]:
-        ruler = hr[h]["ruler"]
-        ruler_data = pd.get(ruler, {})
+    def describe_ruler(ruler_name, h_ord_label):
+        """Return a string describing where this ruler sits and whether it's in its own house."""
+        ruler_data = pd.get(ruler_name, {})
         ruler_sign = ruler_data.get("sign", "?")
         ruler_house = ruler_data.get("house", "?")
         ruler_pos = ruler_data.get("position", "?")
         ruler_house_num = house_num_map.get(ruler_house, 0)
-        h_ord = ordinal(h)
-
-        if ruler_house_num == h:
-            note = f"(ruler IS in its own house here)"
+        if h_ord_label and ruler_house == h_ord_label:
+            return f"{ruler_name} sits in {ruler_sign} at {ruler_pos}° in the {ruler_house} house (ruler IS in its own house here)"
+        elif h_ord_label:
+            return f"{ruler_name} sits in {ruler_sign} at {ruler_pos}° in the {ruler_house} house (ruler is NOT in the {h_ord_label} house, it is in the {ruler_house})"
         else:
-            note = f"(ruler is NOT in the {h_ord} house, it is in the {ruler_house})"
-        ruler_lines.append(f"  - {h_ord} house ({hr[h]['sign']} on cusp) ruled by {ruler}: {ruler} sits in {ruler_sign} at {ruler_pos}° in the {ruler_house} house {note}")
+            return f"{ruler_name} sits in {ruler_sign} at {ruler_pos}° in the {ruler_house} house"
+
+    ruler_lines = []
+    for h in [1, 2, 3, 6, 10, 11]:
+        h_ord = ordinal(h)
+        trad_ruler = hr[h]["ruler"]
+        modern_ruler = hr[h].get("modern_ruler")
+        trad_desc = describe_ruler(trad_ruler, h_ord)
+        line = f"  - {h_ord} house ({hr[h]['sign']} on cusp): TRADITIONAL ruler is {trad_ruler}. {trad_desc}"
+        if modern_ruler:
+            modern_desc = describe_ruler(modern_ruler, h_ord)
+            line += f"\n      Modern co-ruler is {modern_ruler}. {modern_desc}"
+        ruler_lines.append(line)
+
+    # Build MC ruler block separately - always included, with both trad and modern
+    mc_r = chart.get("mc_rulers", {})
+    mc_trad = mc_r.get("ruler")
+    mc_modern = mc_r.get("modern_ruler")
+    mc_ruler_lines = []
+    if mc_trad:
+        mc_ruler_lines.append(f"  - MC sign is {mc_r['sign']}. TRADITIONAL ruler of the MC is {mc_trad}. {describe_ruler(mc_trad, None)}")
+    if mc_modern:
+        mc_ruler_lines.append(f"      Modern co-ruler of the MC is {mc_modern}. {describe_ruler(mc_modern, None)}")
 
     # Build categorized aspects for key chart points (rulers, ASC, MC, Sun, Moon)
-    # so the AI knows which aspects belong to which interpretive layer
+    # so the AI knows which aspects belong to which interpretive layer.
+    # Include traditional rulers PRIMARILY, then modern rulers, then MC rulers.
     key_points = ["Sun", "Moon", "Ascendant", "Medium Coeli", "Imum Coeli"]
     for h in [1, 2, 6, 10, 11]:
-        ruler = hr[h]["ruler"]
-        if ruler not in key_points:
-            key_points.append(ruler)
+        trad = hr[h]["ruler"]
+        if trad and trad not in key_points:
+            key_points.append(trad)
+        mod = hr[h].get("modern_ruler")
+        if mod and mod not in key_points:
+            key_points.append(mod)
+    # Also add MC rulers (the MC ruler is critical for vocational identity)
+    if mc_trad and mc_trad not in key_points:
+        key_points.append(mc_trad)
+    if mc_modern and mc_modern not in key_points:
+        key_points.append(mc_modern)
 
     relevant_aspects = []
     for asp in aspects[:30]:
@@ -272,8 +324,11 @@ ANGLES:
   - MC: {a['MC']['sign']} {a['MC']['position']}° (sits in Whole Sign house {a['MC']['ws_house']})
   - IC: {a['IC']['sign']} {a['IC']['position']}° (sits in Whole Sign house {a['IC']['ws_house']})
 
-HOUSE RULERS (the ruler is the planet that GOVERNS the house's sign, not the planet INSIDE the house):
+HOUSE RULERS (the ruler is the planet that GOVERNS the house's sign, not the planet INSIDE the house. Use TRADITIONAL rulers as the PRIMARY interpretive layer; modern co-rulers add nuance but never override the traditional reading):
 {chr(10).join(ruler_lines)}
+
+MC RULERS (the MC sign rulers are critical for vocational identity. Reference the MC ruler placement and aspects when discussing career):
+{chr(10).join(mc_ruler_lines) if mc_ruler_lines else "  - (no MC rulers identified)"}
 
 PART OF FORTUNE: {pof['sign']} in house {pof['house']}
 
@@ -427,15 +482,33 @@ PUNCTUATION RULES, FOLLOW STRICTLY:
 - For a strong pause that would normally use an em-dash, use a comma or full stop. For a parenthetical aside, use commas or parentheses.
 - The only place a hyphen is acceptable is between compound words (e.g. "ten-year-old", "well-meaning").
 
-CONSISTENCY RULES — non-negotiable substance that must be covered the same way every time, regardless of which run this is:
+CONSISTENCY RULES — non-negotiable substance that must be covered the same way every time:
 - ALWAYS use Whole Sign houses. Never Placidus, Equal, or Koch.
 - The tightest aspects (smallest orb) ALWAYS carry the most interpretive weight.
 - ALWAYS state explicitly which Whole Sign house the MC and IC fall in.
-- For every house section, ALWAYS cover both: (a) the sign on the cusp AND (b) any planets occupying that house. If no planets, say so explicitly and read the house from its ruler.
-- ALWAYS state the ruler of the Ascendant sign and where it sits — this person's overall life direction follows it.
-- If a person has a stellium (3+ planets in one sign or one Whole Sign house), ALWAYS name it as a stellium and treat it as a defining chart signature.
-- ALWAYS reference at least one specific aspect by name with its exact orb (e.g. "Sun sextile Pluto, 0.28°").
-- The "Your First Three Steps" section must always have one internal/reflective action, one creative/expressive action, and one external/relational action.
+
+CRITICAL: PLANETS-IN-HOUSE vs HOUSE RULER (do not confuse these):
+- A planet IS IN a house only when it is listed as occupying that house in the "PLANETS IN EACH HOUSE" section above. This is the ONLY authoritative source.
+- The house RULER is a different concept: it is the planet that governs the sign on the house cusp. The ruler may or may not be physically located in that house.
+- NEVER say a planet is "in" a house unless the data above confirms it. Saying "Saturn in your 2nd house" when Saturn is actually in the 3rd is a serious factual error.
+- When discussing a house, use this pattern: "Your [Nth] house in [sign] contains [planets in house]. The ruler, [ruler], sits in [ruler's actual sign and house], which means..." Always distinguish between what is IN the house vs what RULES the house.
+- If a house is EMPTY, say so and read the house from its ruler's placement and aspects.
+
+CRITICAL: TRADITIONAL VS MODERN RULERSHIP (Lunabylena house style):
+- Use TRADITIONAL rulers as the PRIMARY interpretive layer for every house. The traditional ruler carries the main interpretation.
+- The traditional rulers are: Aries → Mars, Taurus → Venus, Gemini → Mercury, Cancer → Moon, Leo → Sun, Virgo → Mercury, Libra → Venus, Scorpio → Mars, Sagittarius → Jupiter, Capricorn → Saturn, Aquarius → Saturn, Pisces → Jupiter.
+- Modern rulers (Aquarius → Uranus, Pisces → Neptune, Scorpio → Pluto) are ALSO meaningful and add nuance, but they NEVER replace the traditional reading. Mention the modern co-ruler as a secondary layer where it adds genuine insight (especially for outer-planet themes like awakening, dissolution, or transformation).
+- For an Aquarius-ruled house: lead with Saturn's placement and aspects, then add what Uranus brings as a co-ruler. Same logic for Pisces (Jupiter primary, Neptune secondary) and Scorpio (Mars primary, Pluto secondary).
+
+ASPECT COVERAGE (must be present throughout):
+- Every house discussed in the Career Path section MUST reference at least one major aspect to either the planets IN that house OR to its TRADITIONAL ruler. Use the "KEY ASPECTS BY PLANET" data to find them.
+- The MC RULER must always be discussed with at least one aspect by exact orb. The MC ruler is the planet that governs the MC sign — its placement and aspects describe how this person's vocational identity actually expresses. Reference the traditional MC ruler primarily; bring in the modern MC ruler if the chart has tight or notable aspects involving it.
+- Every gift and challenge MUST cite at least one specific aspect by name with its exact orb (e.g. "Venus square Neptune, 0.44°").
+- The Soul's Signature MUST reference the 2-3 tightest aspects in the chart.
+- The Message From Your Chart MUST reference the single most exact aspect.
+- ALWAYS state the TRADITIONAL ruler of the Ascendant sign, where it sits, and at least one aspect to it. If the ASC is in Aquarius, Pisces, or Scorpio, also discuss the modern co-ruler briefly.
+- If a person has a stellium (3+ planets in one sign or one Whole Sign house), ALWAYS name it.
+- The "Your First Three Steps" section must have one internal/reflective action, one creative/expressive action, and one external/relational action.
 
 Content rules: Every sentence tied to specific placements. No generic statements that could apply to anyone."""
 
@@ -551,37 +624,55 @@ def markdown_to_html(text):
 
 
 def build_email_body_html(name):
-    """Simple warm personal email body with PDF attached separately."""
+    """v2 design - bold, editorial, on-brand."""
     return f"""<!DOCTYPE html>
 <html><head>
 <meta charset="UTF-8">
-<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Raleway:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400;1,500;1,700&family=Caveat:wght@400;500;600&display=swap" rel="stylesheet">
 </head>
-<body style="margin:0;padding:0;background:#f8f3ec;font-family:'EB Garamond',Georgia,serif;">
-<table width="100%" cellpadding="0" cellspacing="0" style="background:#f8f3ec;padding:60px 20px;">
+<body style="margin:0;padding:0;background:#EFEBEA;font-family:'Playfair Display',Georgia,serif;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#EFEBEA;padding:50px 20px;">
 <tr><td align="center">
-  <table width="560" cellpadding="0" cellspacing="0" style="max-width:560px;">
+  <table width="580" cellpadding="0" cellspacing="0" style="max-width:580px;">
 
-    <tr><td style="text-align:center;padding-bottom:40px;">
-      <div style="color:#b8905a;letter-spacing:0.35em;font-size:14px;font-family:'EB Garamond',Georgia,serif;">✦</div>
+    <tr><td style="text-align:center;padding-bottom:30px;">
+      <span style="color:#AA3157;font-size:18px;letter-spacing:0.4em;">✦ ✦ ✦</span>
     </td></tr>
 
-    <tr><td style="font-family:'EB Garamond',Georgia,serif;font-size:18px;line-height:1.8;color:#1c1713;text-align:left;">
-      <p style="margin:0 0 24px;font-family:'EB Garamond',Georgia,serif;">Dear {name},</p>
-
-      <p style="margin:0 0 24px;font-family:'EB Garamond',Georgia,serif;">Thank you so much for ordering your Celestial Blueprint. Your complete Life Purpose, Career & Business Blueprint report is attached as a PDF.</p>
-
-      <p style="margin:0 0 24px;font-family:'EB Garamond',Georgia,serif;">Take a moment to read it somewhere quiet where you can let it land. My hope is that it reflects something true about you, and perhaps puts words to things you have always sensed but never quite named.</p>
-
-      <p style="margin:0 0 24px;font-family:'EB Garamond',Georgia,serif;">I am so grateful for your trust and support. If the reading resonates, I would love to hear from you.</p>
-
-      <p style="margin:0 0 8px;font-family:'EB Garamond',Georgia,serif;">With warmth,</p>
-      <p style="margin:0 0 40px;font-style:italic;font-family:'EB Garamond',Georgia,serif;">Lena ✦</p>
+    <tr><td style="text-align:center;padding-bottom:36px;">
+      <div style="font-family:Impact,'Arial Narrow Bold',sans-serif;font-size:42px;letter-spacing:0.02em;line-height:0.95;color:#AA3157;text-transform:uppercase;">
+        CELESTIAL
+      </div>
+      <div style="font-family:Impact,'Arial Narrow Bold',sans-serif;font-size:42px;letter-spacing:0.02em;line-height:0.95;color:#C04C2D;text-transform:uppercase;">
+        BLUEPRINT
+      </div>
     </td></tr>
 
-    <tr><td style="text-align:center;padding-top:20px;border-top:1px solid rgba(184,144,90,0.25);">
-      <div style="color:#b8905a;font-size:11px;letter-spacing:0.3em;text-transform:uppercase;font-family:'Raleway',Arial,sans-serif;font-weight:500;">Celestial Blueprint</div>
-      <div style="font-size:11px;color:#7a706a;margin-top:6px;font-family:'Raleway',Arial,sans-serif;">Whole Sign houses · Swiss Ephemeris</div>
+    <tr><td style="text-align:center;padding-bottom:36px;">
+      <div style="display:inline-block;width:80px;height:1px;background:#AA3157;"></div>
+    </td></tr>
+
+    <tr><td style="font-family:'Playfair Display',Georgia,serif;font-size:18px;line-height:1.85;color:#1E1E1E;text-align:left;padding:0 20px;">
+      <p style="margin:0 0 22px;font-family:'Playfair Display',Georgia,serif;">Dear {name},</p>
+
+      <p style="margin:0 0 22px;font-family:'Playfair Display',Georgia,serif;">Thank you so much for ordering your Celestial Blueprint. Your complete Life Purpose, Career & Business Blueprint report is attached as a PDF.</p>
+
+      <p style="margin:0 0 22px;font-family:'Playfair Display',Georgia,serif;">Take a moment to read it somewhere quiet where you can let it land. My hope is that it reflects something true about you, and perhaps puts words to things you have always sensed but never quite named.</p>
+
+      <p style="margin:0 0 22px;font-family:'Playfair Display',Georgia,serif;">I am so grateful for your trust and support. If the reading resonates, I would love to hear from you.</p>
+
+      <p style="margin:0 0 4px;font-family:'Playfair Display',Georgia,serif;">With warmth,</p>
+      <p style="margin:0 0 0;font-family:'Caveat',cursive;font-size:32px;color:#AA3157;line-height:1;">Lena</p>
+    </td></tr>
+
+    <tr><td style="padding-top:50px;text-align:center;">
+      <div style="display:inline-block;width:60px;height:1px;background:#AA3157;margin-bottom:18px;"></div>
+      <div style="color:#AA3157;font-family:Impact,'Arial Narrow Bold',sans-serif;font-size:13px;letter-spacing:0.3em;text-transform:uppercase;">
+        ✦ Lunabylena.com ✦
+      </div>
+      <div style="font-family:'Playfair Display',Georgia,serif;font-style:italic;font-size:12px;color:#8A7575;margin-top:8px;">
+        Whole Sign houses · Swiss Ephemeris
+      </div>
     </td></tr>
 
   </table>
@@ -590,9 +681,8 @@ def build_email_body_html(name):
 </body></html>"""
 
 def build_pdf_html(name, report_text, birth_info, chart):
-    """Build the styled HTML that becomes the PDF."""
+    """v2 design - bold editorial PDF, matches website."""
     report_body = markdown_to_html(report_text)
-    # Possessive form: "Lena's" or "Cecilie's" (avoid double-s for names ending in s)
     name_possessive = "&#39;" if name.endswith("s") else "&#39;s"
     city_upper = birth_info["city"].upper()
     country_upper = birth_info["country"].upper()
@@ -612,228 +702,194 @@ def build_pdf_html(name, report_text, birth_info, chart):
         ("IC", a["IC"]["sign"], f"H{a['IC']['ws_house']}"),
     ]
 
-    top_row = "".join([
-        f'<td>'
-        f'<div class="cell-label">{label}</div>'
-        f'<div class="cell-value">{value}</div>'
-        f'<div class="cell-house">{house}</div>'
-        f'</td>'
-        for label, value, house in cells[:5]
-    ])
-    bottom_row = "".join([
-        f'<td>'
-        f'<div class="cell-label">{label}</div>'
-        f'<div class="cell-value">{value}</div>'
-        f'<div class="cell-house">{house}</div>'
-        f'</td>'
-        for label, value, house in cells[5:]
+    cells_html = "".join([
+        f'<td><div class="cell-label">{label}</div><div class="cell-value">{value}</div><div class="cell-house">{house}</div></td>'
+        for label, value, house in cells
     ])
 
     return f"""<!DOCTYPE html>
 <html><head><meta charset="UTF-8">
 <style>
-  @page {{ size: A4; margin: 24mm 20mm; background: #f5ece0; }}
-  @import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Raleway:wght@300;400;500&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400;1,500;1,700&family=Caveat:wght@400;500;600&display=swap');
+  @page {{ size: A4; margin: 18mm 18mm; background: #EFEBEA; }}
 
   * {{ box-sizing: border-box; }}
 
   html, body {{
     margin: 0;
     padding: 0;
-    background: #f5ece0;
-    font-family: 'EB Garamond', Georgia, serif;
-    color: #1c1713;
+    background: #EFEBEA;
+    font-family: 'Playfair Display', Georgia, serif;
+    color: #1E1E1E;
   }}
 
-  .page {{
-    background: #f5ece0;
-  }}
+  .page {{ background: #EFEBEA; }}
 
+  /* ========== COVER PAGE ========== */
   .cover {{
     text-align: center;
-    padding: 30px 0 40px;
-    page-break-after: avoid;
+    padding: 50px 0 30px;
+    page-break-after: always;
   }}
 
-  .cover .constellation {{
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    margin-bottom: 28px;
-    color: #b8905a;
-  }}
-
-  .cover .star {{
-    font-size: 9px;
-    opacity: 0.7;
-  }}
-
-  .cover .star-lg {{
-    color: #d4aa78;
-    font-size: 14px;
+  .cover .stars-row {{
+    margin-bottom: 32px;
+    color: #AA3157;
+    font-size: 16px;
+    letter-spacing: 0.4em;
   }}
 
   .cover .brand {{
-    font-family: 'EB Garamond', Georgia, serif;
-    font-size: 54px;
-    font-weight: 400;
-    color: #1c1713;
-    margin: 0 0 14px;
-    letter-spacing: 0.04em;
-    line-height: 1.1;
+    font-family: Impact, 'Arial Narrow Bold', sans-serif;
+    font-size: 76px;
+    line-height: 0.92;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    margin: 0;
   }}
 
-  .cover .brand em {{
-    font-style: italic;
-    color: #b8905a;
-    font-weight: 400;
-  }}
+  .cover .brand .line1 {{ color: #AA3157; display: block; }}
+  .cover .brand .line2 {{ color: #C04C2D; display: block; }}
 
   .cover .tagline {{
-    font-family: 'Raleway', sans-serif;
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 14px;
+    color: #3A3030;
+    margin: 22px 0 0;
+    letter-spacing: 0.02em;
+  }}
+
+  .cover-divider {{
+    width: 80px;
+    height: 1px;
+    background: #AA3157;
+    margin: 50px auto;
+  }}
+
+  .cover .eyebrow {{
+    display: inline-block;
+    font-family: Impact, 'Arial Narrow Bold', sans-serif;
     font-size: 11px;
-    font-weight: 400;
     letter-spacing: 0.3em;
     text-transform: uppercase;
-    color: #7a706a;
-    margin: 0;
+    color: #EFEBEA;
+    background: #AA3157;
+    padding: 6px 18px;
+    margin-bottom: 28px;
   }}
 
-  .cover-divider-top, .cover-divider-bottom {{
-    width: 100px;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, #d4aa78, transparent);
-    margin: 60px auto 60px;
+  .cover .report-name {{
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    font-size: 52px;
+    color: #1E1E1E;
+    margin: 0 0 16px;
+    line-height: 1.05;
   }}
 
-  .cover-divider-bottom {{
-    margin: 50px auto 0;
-  }}
-
-  .eyebrow {{
-    font-family: 'Raleway', sans-serif;
-    font-size: 11px;
-    font-weight: 500;
-    letter-spacing: 0.35em;
-    text-transform: uppercase;
-    color: #b8905a;
-    display: block;
-    margin-bottom: 22px;
-  }}
-
-  .report-name {{
-    font-family: 'EB Garamond', Georgia, serif;
-    font-size: 42px;
-    font-weight: 400;
-    color: #1c1713;
-    margin: 0 0 22px;
-    letter-spacing: 0.02em;
-    line-height: 1.1;
-  }}
-
-  .report-name em {{
+  .cover .report-name .italic {{
     font-style: italic;
-    color: #b8905a;
-    font-weight: 400;
+    color: #AA3157;
+    font-weight: 700;
   }}
 
-  .meta {{
-    font-family: 'Raleway', sans-serif;
+  .cover .meta {{
+    font-family: Impact, 'Arial Narrow Bold', sans-serif;
     font-size: 10px;
-    letter-spacing: 0.25em;
+    letter-spacing: 0.22em;
     text-transform: uppercase;
-    color: #7a706a;
-    margin: 0;
+    color: #7E4A92;
+    margin: 18px 0 0;
+  }}
+
+  /* ========== CHART STRIP ========== */
+  .chart-strip-heading {{
+    font-family: Impact, 'Arial Narrow Bold', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: #AA3157;
+    text-align: center;
+    margin: 0 0 18px;
   }}
 
   .chart-table {{
     width: 100%;
-    border-collapse: separate;
-    border-spacing: 1px;
-    background: rgba(184,144,90,0.2);
+    border-collapse: collapse;
+    border: 2px solid #1E1E1E;
     margin: 0 0 40px;
   }}
 
-  .chart-table-heading {{
-    font-family: 'Raleway', sans-serif;
-    font-size: 10px;
-    font-weight: 500;
-    letter-spacing: 0.3em;
-    text-transform: uppercase;
-    color: #b8905a;
-    text-align: center;
-    margin: 0 0 18px;
-    page-break-before: always;
-    padding-top: 0;
-  }}
-
   .chart-table td {{
-    background: #faf5ee;
-    padding: 10px 6px;
+    background: #EFEBEA;
+    padding: 10px 4px;
     text-align: center;
+    border: 1px solid #1E1E1E;
     width: 20%;
   }}
 
   .cell-label {{
-    font-family: 'Raleway', sans-serif;
+    font-family: Impact, 'Arial Narrow Bold', sans-serif;
     font-size: 8px;
-    letter-spacing: 0.2em;
+    letter-spacing: 0.18em;
     text-transform: uppercase;
-    color: #b8905a;
-    font-weight: 500;
+    color: #7E4A92;
     margin-bottom: 3px;
   }}
 
   .cell-value {{
-    font-family: 'EB Garamond', serif;
+    font-family: 'Playfair Display', serif;
+    font-weight: 500;
     font-size: 13px;
-    color: #1c1713;
+    color: #1E1E1E;
   }}
 
   .cell-house {{
-    font-family: 'Raleway', sans-serif;
+    font-family: Impact, 'Arial Narrow Bold', sans-serif;
     font-size: 8px;
-    color: #7a706a;
+    color: #8A7575;
     margin-top: 2px;
+    letter-spacing: 0.1em;
   }}
 
+  /* ========== REPORT BODY ========== */
   .report h2 {{
-    font-family: 'EB Garamond', serif;
-    font-size: 20px;
-    font-style: italic;
-    font-weight: 500;
-    color: #1c1713;
-    margin: 32px 0 12px;
+    font-family: Impact, 'Arial Narrow Bold', sans-serif;
+    font-size: 24px;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: #AA3157;
+    margin: 32px 0 14px;
     padding-bottom: 8px;
-    border-bottom: 1px solid rgba(184,144,90,0.3);
+    border-bottom: 2px solid #1E1E1E;
+    line-height: 1.05;
     page-break-after: avoid;
   }}
 
   .report h3 {{
-    font-family: 'EB Garamond', serif;
-    font-size: 13px;
-    font-weight: 600;
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
     font-style: italic;
-    color: #1c1713;
-    margin: 22px 0 8px;
-    padding-bottom: 4px;
-    letter-spacing: 0.02em;
+    font-size: 14px;
+    color: #1E1E1E;
+    margin: 20px 0 8px;
     page-break-after: avoid;
   }}
 
   .report h3::before {{
     content: '✦  ';
-    color: #b8905a;
+    color: #AA3157;
     font-style: normal;
     font-weight: 400;
+    font-size: 11px;
   }}
 
   .report p {{
-    font-family: 'EB Garamond', Georgia, serif;
-    font-size: 12.5px;
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 12px;
     line-height: 1.75;
-    color: #3d3530;
+    color: #3A3030;
     margin: 0 0 12px;
     text-align: left;
     orphans: 3;
@@ -841,99 +897,108 @@ def build_pdf_html(name, report_text, birth_info, chart):
   }}
 
   .report p strong {{
-    font-weight: 500;
-    color: #1c1713;
+    font-weight: 700;
+    color: #1E1E1E;
   }}
 
+  /* ========== SPECIAL SECTIONS ========== */
   .message-callout {{
-    margin: 36px 0 10px;
+    margin: 36px 0 14px;
     padding: 22px 26px;
-    border-left: 2px solid #b8905a;
-    background: rgba(255,255,255,0.5);
+    background: #FFE3EC;
+    border: 2px solid #1E1E1E;
+    position: relative;
     page-break-inside: avoid;
     box-decoration-break: clone;
     -webkit-box-decoration-break: clone;
   }}
 
   .message-callout h2 {{
-    font-family: 'EB Garamond', serif;
-    font-size: 18px;
-    font-style: italic;
-    color: #1c1713;
     margin: 0 0 12px;
     padding: 0;
     border: none;
+    color: #AA3157;
+    font-size: 20px;
   }}
 
   .message-callout p {{
     font-style: italic;
-    color: #1c1713;
+    color: #1E1E1E;
+    font-size: 12.5px;
+    line-height: 1.85;
   }}
 
   .business-section {{
-    margin: 36px 0 10px;
+    margin: 36px 0 14px;
     padding: 22px 26px;
-    border: 1px solid rgba(184,144,90,0.3);
-    background: rgba(255,255,255,0.4);
-    /* Allow breaking but maintain breathing room when split across pages */
+    background: #FFFFFF;
+    border: 2px solid #1E1E1E;
     box-decoration-break: clone;
     -webkit-box-decoration-break: clone;
   }}
 
   .business-section h2 {{
     margin-top: 0;
+    color: #C04C2D;
   }}
 
   .steps-section {{
-    margin: 40px 0 10px;
-    padding: 28px 30px;
-    background: rgba(184,144,90,0.08);
-    border: 1px solid rgba(184,144,90,0.4);
+    margin: 36px 0 14px;
+    padding: 24px 28px;
+    background: #AA3157;
+    color: #EFEBEA;
+    border: 2px solid #1E1E1E;
     box-decoration-break: clone;
     -webkit-box-decoration-break: clone;
   }}
 
   .steps-section h2 {{
     margin-top: 0;
-    border-bottom: 1px solid rgba(184,144,90,0.3);
+    color: #EFEBEA;
+    border-bottom: 2px solid #EFEBEA;
   }}
 
   .steps-section h3 {{
-    font-family: 'Raleway', sans-serif;
-    font-size: 10px;
-    font-weight: 500;
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
-    color: #b8905a;
+    color: #EFEBEA;
     font-style: normal;
-    margin: 18px 0 6px;
+    font-family: Impact, 'Arial Narrow Bold', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-top: 18px;
   }}
 
   .steps-section h3::before {{
-    content: none;
+    color: #EFEBEA;
   }}
 
+  .steps-section p {{
+    color: #EFEBEA;
+    font-style: italic;
+  }}
+
+  /* ========== FOOTER ========== */
   .footer {{
-    margin-top: 60px;
-    padding-top: 24px;
-    border-top: 1px solid rgba(184,144,90,0.3);
+    margin-top: 50px;
+    padding-top: 20px;
+    border-top: 1px solid #AA3157;
     text-align: center;
   }}
 
   .footer-label {{
-    font-family: 'Raleway', sans-serif;
+    font-family: Impact, 'Arial Narrow Bold', sans-serif;
     font-size: 10px;
     letter-spacing: 0.3em;
     text-transform: uppercase;
-    color: #b8905a;
+    color: #AA3157;
   }}
 
   .footer-note {{
-    font-family: 'Raleway', sans-serif;
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
     font-size: 9px;
-    color: #7a706a;
-    margin-top: 6px;
-    letter-spacing: 0.1em;
+    color: #8A7575;
+    margin-top: 4px;
   }}
 </style>
 </head>
@@ -941,29 +1006,23 @@ def build_pdf_html(name, report_text, birth_info, chart):
 <div class="page">
 
   <div class="cover">
-    <div class="constellation">
-      <span class="star">★</span>
-      <span class="star">·</span>
-      <span class="star-lg">✦</span>
-      <span class="star">·</span>
-      <span class="star">★</span>
-    </div>
-    <h1 class="brand">Celestial <em>Blueprint</em></h1>
+    <div class="stars-row">✦ ✦ ✦</div>
+    <h1 class="brand">
+      <span class="line1">CELESTIAL</span>
+      <span class="line2">BLUEPRINT</span>
+    </h1>
     <p class="tagline">Life Purpose · Career · Personal Brand</p>
 
-    <div class="cover-divider-top"></div>
+    <div class="cover-divider"></div>
 
     <span class="eyebrow">Your Celestial Blueprint</span>
-    <h2 class="report-name">{name}{name_possessive} <em>Blueprint</em></h2>
-    <p class="meta">{birth_info['date']} · {birth_info['time']} · {city_upper}, {country_upper} · Whole Sign Houses</p>
-
-    <div class="cover-divider-bottom"></div>
+    <h2 class="report-name">{name}{name_possessive} <span class="italic">Blueprint</span></h2>
+    <p class="meta">{birth_info['date']} · {birth_info['time']} · {city_upper}, {country_upper}</p>
   </div>
 
-  <p class="chart-table-heading">Your Chart at a Glance</p>
+  <p class="chart-strip-heading">Your Chart at a Glance</p>
   <table class="chart-table">
-    <tr>{top_row}</tr>
-    <tr>{bottom_row}</tr>
+    <tr>{cells_html}</tr>
   </table>
 
   <div class="report">
@@ -971,7 +1030,7 @@ def build_pdf_html(name, report_text, birth_info, chart):
   </div>
 
   <div class="footer">
-    <div class="footer-label">Celestial Blueprint</div>
+    <div class="footer-label">✦ Lunabylena.com ✦</div>
     <div class="footer-note">Whole Sign houses · Swiss Ephemeris</div>
   </div>
 
