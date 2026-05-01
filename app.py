@@ -166,7 +166,7 @@ ELEMENT_LANGUAGE_GUIDE = {
 - Use evocative, emotionally attuned language. Speak to the felt sense.
 - Lead with what something means at the soul level, then translate to the practical.
 - Use words like: remember, feel, sense, soul, flow, deep, current, ancestral, sacred, knowing, intimate, tender, quiet.
-- Embrace mystical and spiritual phrasing where it fits — this person resonates with it.
+- Embrace mystical and spiritual phrasing where it fits, this person resonates with it.
 - Metaphors should be elemental and somatic: water, dreams, womb, weather, tides, threads of memory.
 - Be willing to sit in mystery. Not everything needs to be resolved or made practical."""
 }
@@ -177,20 +177,20 @@ def build_language_guidance(dominant_element, asc_element, element_balance):
     parts = []
     parts.append(f"ELEMENT BALANCE: Fire {element_balance['fire']}%, Earth {element_balance['earth']}%, Air {element_balance['air']}%, Water {element_balance['water']}%")
     parts.append(f"DOMINANT ELEMENT: {dominant_element.upper()} (use as primary tone for the report)")
-    parts.append(f"RISING SIGN ELEMENT: {asc_element.upper()} (this shapes how the person receives information — match this in your DELIVERY)")
+    parts.append(f"RISING SIGN ELEMENT: {asc_element.upper()} (this shapes how the person receives information, match this in your DELIVERY)")
     parts.append("")
     parts.append(ELEMENT_LANGUAGE_GUIDE[dominant_element])
 
     # If ASC element differs significantly from dominant, blend
     if asc_element != dominant_element:
         parts.append("")
-        parts.append(f"BUT — their RISING is {asc_element.upper()}, which means they prefer information delivered in a {asc_element} register even if their overall energy is {dominant_element}. Lean into the {dominant_element} substance, but shape the DELIVERY/PROSE to match {asc_element} sensibilities.")
+        parts.append(f"BUT, their RISING is {asc_element.upper()}, which means they prefer information delivered in a {asc_element} register even if their overall energy is {dominant_element}. Lean into the {dominant_element} substance, but shape the DELIVERY/PROSE to match {asc_element} sensibilities.")
 
     # If element balance is very mixed (no element above 40%), advise more neutral language
     max_pct = max(element_balance.values())
     if max_pct < 35:
         parts.append("")
-        parts.append("This chart is ELEMENTALLY BALANCED — no single element dominates strongly. Keep the language register more neutral and adaptive. Avoid going too far in any one direction.")
+        parts.append("This chart is ELEMENTALLY BALANCED, no single element dominates strongly. Keep the language register more neutral and adaptive. Avoid going too far in any one direction.")
 
     return "\n".join(parts)
 
@@ -345,11 +345,11 @@ KEY ASPECTS (tightest first, all major aspects):
 
 {chart_data}
 
-Write ONLY this one section. EXACTLY 4-5 sentences. Capture the essence of who this person is at their core — the quality they carry into every room. Weave together Sun, Moon, ASC and the 2-3 tightest aspects. Make it feel like the most accurate thing anyone has ever said about them. Output only the paragraph content — no heading, no preamble. Honour the language register above without naming it explicitly."""
+Write ONLY this one section. EXACTLY 4-5 sentences. Capture the essence of who this person is at their core, the quality they carry into every room. Weave together Sun, Moon, ASC and the 2-3 tightest aspects. Make it feel like the most accurate thing anyone has ever said about them. Output only the paragraph content, no heading, no preamble. Honour the language register above without naming it explicitly."""
 
-    return f"""You are a professional astrologer writing a premium, deeply personal Life Purpose, Career & Business Blueprint Report. Second person. No jargon — only meaning. Every sentence must feel specific to this person. Be rich and detailed — this is a paid premium report.
+    return f"""You are a professional astrologer writing a premium, deeply personal Life Purpose, Career & Business Blueprint Report. Second person. No jargon, only meaning. Every sentence must feel specific to this person. Be rich and detailed, this is a paid premium report.
 
-CRITICAL — ADAPT LANGUAGE TO THIS CHART:
+CRITICAL, ADAPT LANGUAGE TO THIS CHART:
 {language_guidance}
 
 The above language register applies throughout the ENTIRE report. Even when discussing practical career advice, frame it in language that matches this person's elemental signature. Two charts with the same placements should receive the same astrological insights but in noticeably different prose registers.
@@ -365,7 +365,7 @@ Write the report using EXACTLY these eight sections with ## headers. Go deep. Us
 3 paragraphs. IC sign and Whole Sign house placement, emotional foundation, early environment. The IC-to-MC axis as the defining arc of life. Include planets conjunct IC or MC.
 
 ## Your Life Purpose
-4 paragraphs. North and South Node — signs, houses, what axis reveals about soul's direction. Include aspects to nodes. What to move toward, what pattern to release.
+4 paragraphs. North and South Node, signs, houses, what axis reveals about soul's direction. Include aspects to nodes. What to move toward, what pattern to release.
 
 ## Your Career Path & Calling
 Use these EXACT ### sub-headings, one paragraph each:
@@ -380,7 +380,7 @@ Sign on the 6th house cusp AND any planets there. What daily work environment an
 Sign on the 2nd house cusp AND any planets there. Their relationship with money, values, and material security.
 
 ### The Career Ruler: Where Your Career Energy Flows
-The ruler of the 10th house sign — where it sits, its sign and house placement, its aspects. What this reveals about where career energy actually plays out.
+The ruler of the 10th house sign, where it sits, its sign and house placement, its aspects. What this reveals about where career energy actually plays out.
 
 ### The MC: Your Public Reputation
 MC sign AND the Whole Sign house it falls into. What they will become publicly known for.
@@ -465,7 +465,7 @@ A focused call-to-action section. Based on this specific chart, give them THREE 
 ### Step Three: [short action title, 3-5 words]
 2-3 sentences explaining what to do and why it matches their chart specifically.
 
-Make these actions specific and executable — not "reflect on your purpose" but "open a Google Doc and write for 15 minutes about X" or "post one piece of content this week about Y" or "have a conversation with Z about W". Tie each step to the signatures in their chart. Range across: something internal/reflective, something creative/expressive, something external/relational.
+Make these actions specific and executable, not "reflect on your purpose" but "open a Google Doc and write for 15 minutes about X" or "post one piece of content this week about Y" or "have a conversation with Z about W". Tie each step to the signatures in their chart. Range across: something internal/reflective, something creative/expressive, something external/relational.
 
 FORMATTING RULES, FOLLOW STRICTLY:
 - Start directly with "## Your Soul's Signature". No title like "# Report For [Name]".
@@ -476,13 +476,13 @@ FORMATTING RULES, FOLLOW STRICTLY:
 - For career examples, use ### sub-headings with the career name (not bold text in running prose).
 
 PUNCTUATION RULES, FOLLOW STRICTLY:
-- DO NOT use em-dashes (—) anywhere in the report. They make prose feel AI-generated.
+- DO NOT use em-dashes (,) anywhere in the report. They make prose feel AI-generated.
 - DO NOT use en-dashes (–) for parentheticals.
 - Instead, use commas, full stops, semicolons, colons, or parentheses depending on what the sentence needs.
 - For a strong pause that would normally use an em-dash, use a comma or full stop. For a parenthetical aside, use commas or parentheses.
 - The only place a hyphen is acceptable is between compound words (e.g. "ten-year-old", "well-meaning").
 
-CONSISTENCY RULES — non-negotiable substance that must be covered the same way every time:
+CONSISTENCY RULES, non-negotiable substance that must be covered the same way every time:
 - ALWAYS use Whole Sign houses. Never Placidus, Equal, or Koch.
 - The tightest aspects (smallest orb) ALWAYS carry the most interpretive weight.
 - ALWAYS state explicitly which Whole Sign house the MC and IC fall in.
@@ -502,7 +502,7 @@ CRITICAL: TRADITIONAL VS MODERN RULERSHIP (Lunabylena house style):
 
 ASPECT COVERAGE (must be present throughout):
 - Every house discussed in the Career Path section MUST reference at least one major aspect to either the planets IN that house OR to its TRADITIONAL ruler. Use the "KEY ASPECTS BY PLANET" data to find them.
-- The MC RULER must always be discussed with at least one aspect by exact orb. The MC ruler is the planet that governs the MC sign — its placement and aspects describe how this person's vocational identity actually expresses. Reference the traditional MC ruler primarily; bring in the modern MC ruler if the chart has tight or notable aspects involving it.
+- The MC RULER must always be discussed with at least one aspect by exact orb. The MC ruler is the planet that governs the MC sign, its placement and aspects describe how this person's vocational identity actually expresses. Reference the traditional MC ruler primarily; bring in the modern MC ruler if the chart has tight or notable aspects involving it.
 - Every gift and challenge MUST cite at least one specific aspect by name with its exact orb (e.g. "Venus square Neptune, 0.44°").
 - The Soul's Signature MUST reference the 2-3 tightest aspects in the chart.
 - The Message From Your Chart MUST reference the single most exact aspect.
@@ -528,7 +528,7 @@ def clean_dashes(text):
     Used everywhere text flows to user - PDF, email, on-screen preview."""
     import re
     # Em-dash with spaces -> comma + space
-    text = re.sub(r'\s*—\s*', ', ', text)
+    text = re.sub(r'\s*,\s*', ', ', text)
     text = re.sub(r'\s*–\s*', ', ', text)
     # Clean any double commas from substitution
     text = re.sub(r',\s*,', ',', text)
@@ -1015,8 +1015,8 @@ def build_pdf_html(name, report_text, birth_info, chart):
 
     <div class="cover-divider"></div>
 
-    <span class="eyebrow">Your Celestial Blueprint</span>
-    <h2 class="report-name">{name}{name_possessive} <span class="italic">Blueprint</span></h2>
+    <span class="eyebrow">The Purpose Blueprint</span>
+    <h2 class="report-name">{name}{name_possessive} <span class="italic">Purpose Blueprint</span></h2>
     <p class="meta">{birth_info['date']} · {birth_info['time']} · {city_upper}, {country_upper}</p>
   </div>
 
