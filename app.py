@@ -1174,14 +1174,15 @@ def add_to_kit(name, email):
             return True
 
         # Step 3: Tag the subscriber
+        # V4 endpoint: POST /v4/tags/{tag_id}/subscribers/{subscriber_id}
         tag_resp = req.post(
-            f"{base}/subscribers/{subscriber_id}/tags/{tag_id}",
+            f"{base}/tags/{tag_id}/subscribers/{subscriber_id}",
             headers=headers,
             timeout=10
         )
 
         if tag_resp.status_code in (200, 201):
-            print(f"Kit: added {email} with tag purpose-blueprint (id {subscriber_id})")
+            print(f"Kit: added {email} with tag purpose-blueprint (subscriber {subscriber_id})")
         else:
             print(f"Kit: subscriber added but tagging failed: {tag_resp.status_code} {tag_resp.text[:200]}")
         return True
