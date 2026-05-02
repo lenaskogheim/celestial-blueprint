@@ -1103,7 +1103,7 @@ def background_generate_and_send(email, chart, birth_info):
 
 
 def add_to_kit(name, email):
-    """Add a subscriber to Kit using V4 API with Bearer token auth."""
+    """Add a subscriber to Kit using V4 API with X-Kit-Api-Key header."""
     import requests as req
 
     api_key = os.environ.get("KIT_API_KEY")
@@ -1115,7 +1115,7 @@ def add_to_kit(name, email):
     headers = {
         "Content-Type": "application/json",
         "Accept": "application/json",
-        "Authorization": f"Bearer {api_key}",
+        "X-Kit-Api-Key": api_key,
     }
     base = "https://api.kit.com/v4"
 
@@ -1169,7 +1169,7 @@ def add_to_kit(name, email):
         if tag_resp.status_code in (200, 201):
             print(f"Kit: added {email} with tag purpose-blueprint (id {subscriber_id})")
         else:
-            print(f"Kit: subscriber added but tag apply failed: {tag_resp.status_code} {tag_resp.text[:200]}")
+            print(f"Kit: subscriber added but tagging failed: {tag_resp.status_code} {tag_resp.text[:200]}")
         return True
 
     except Exception as e:
