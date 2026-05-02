@@ -1141,7 +1141,7 @@ def add_to_kit(name, email):
         # Step 2: Apply the celestial-blueprint tag
         tag_resp = req.post(
             f"https://api.kit.com/v4/subscribers/{subscriber_id}/tags",
-            json={"tag": "celestial-blueprint"},
+            json={"tag": "purpose-blueprint"},
             headers=headers,
             timeout=10
         )
