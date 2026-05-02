@@ -1102,15 +1102,69 @@ def background_generate_and_send(email, chart, birth_info):
         print(f"Background generation failed: {e}")
 
 
+def add_to_kit(name, email):
+    """Add a subscriber to Kit with the celestial-blueprint tag.
+    Uses the Kit v4 API. Requires KIT_API_KEY environment variable."""
+    import requests as req
+
+    api_key = os.environ.get("KIT_API_KEY")
+    if not api_key:
+        print("Kit: KIT_API_KEY not set, skipping")
+        return False
+
+    first_name = name.split()[0] if name else ""
+
+    try:
+        headers = {
+            "Content-Type": "application/json",
+            "X-Kit-Api-Key": api_key,
+        }
+
+        # Step 1: Create or update the subscriber
+        sub_resp = req.post(
+            "https://api.kit.com/v4/subscribers",
+            json={"email_address": email, "first_name": first_name, "state": "active"},
+            headers=headers,
+            timeout=10
+        )
+        sub_data = sub_resp.json()
+
+        if sub_resp.status_code not in (200, 201):
+            print(f"Kit: failed to create subscriber: {sub_resp.status_code} {sub_data}")
+            return False
+
+        subscriber_id = sub_data.get("subscriber", {}).get("id")
+        if not subscriber_id:
+            print(f"Kit: no subscriber id returned: {sub_data}")
+            return False
+
+        # Step 2: Apply the celestial-blueprint tag
+        tag_resp = req.post(
+            f"https://api.kit.com/v4/subscribers/{subscriber_id}/tags",
+            json={"tag": "celestial-blueprint"},
+            headers=headers,
+            timeout=10
+        )
+
+        if tag_resp.status_code in (200, 201):
+            print(f"Kit: added {email} with tag celestial-blueprint")
+        else:
+            print(f"Kit: subscriber added but tag failed: {tag_resp.status_code}")
+        return True
+
+    except Exception as e:
+        print(f"Kit: error adding subscriber: {e}")
+        return False
+
+
 def log_customer(name, email, marketing_opt_in, date, city, country):
-    """Log customer details to a CSV file for later Kit import.
-    When Kit is integrated, this will also push to Kit API directly."""
+    """Log customer to CSV (always) and push to Kit if they opted in."""
     import csv
     from datetime import datetime
 
+    # Always log to CSV as a backup record
     log_file = "customers.csv"
     file_exists = os.path.exists(log_file)
-
     try:
         with open(log_file, "a", newline="", encoding="utf-8") as f:
             writer = csv.writer(f)
@@ -1125,6 +1179,10 @@ def log_customer(name, email, marketing_opt_in, date, city, country):
         print(f"Logged customer: {email} (marketing: {marketing_opt_in})")
     except Exception as e:
         print(f"Failed to log customer: {e}")
+
+    # Push to Kit only if they opted in
+    if marketing_opt_in:
+        add_to_kit(name=name, email=email)
 
 
 @app.route("/")
