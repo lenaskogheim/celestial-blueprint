@@ -2071,7 +2071,7 @@ function tryRestoreReport() {
       currentEmail = savedEmail || payload.email || '';
       rawText = savedRaw;
       buildReportHeader(chart, payload);
-      document.getElementById('formSection').style.display = 'none';
+      document.getElementById('landingPage').style.display = 'none';
       document.getElementById('loadingSection').style.display = 'none';
       document.getElementById('reportSection').style.display = 'block';
       renderReport(rawText);

@@ -702,10 +702,12 @@ def build_pdf_html(name, report_text, birth_info, chart):
         ("IC", a["IC"]["sign"], f"H{a['IC']['ws_house']}"),
     ]
 
-    cells_html = "".join([
-        f'<td><div class="cell-label">{label}</div><div class="cell-value">{value}</div><div class="cell-house">{house}</div></td>'
-        for label, value, house in cells
-    ])
+    def make_cell(label, value, house):
+        return f'<td><div class="cell-label">{label}</div><div class="cell-value">{value}</div><div class="cell-house">{house}</div></td>'
+
+    row1 = "".join(make_cell(*c) for c in cells[:5])
+    row2 = "".join(make_cell(*c) for c in cells[5:])
+    cells_html = f"<tr>{row1}</tr><tr>{row2}</tr>"
 
     return f"""<!DOCTYPE html>
 <html><head><meta charset="UTF-8">
@@ -814,19 +816,29 @@ def build_pdf_html(name, report_text, birth_info, chart):
     margin: 0 0 18px;
   }}
 
+  .chart-on-cover {{
+    margin-top: 32px;
+  }}
+
   .chart-table {{
     width: 100%;
     border-collapse: collapse;
     border: 2px solid #1E1E1E;
-    margin: 0 0 40px;
+    margin: 0;
+    table-layout: fixed;
+  }}
+
+  .chart-table tr {{
+    height: 56px;
   }}
 
   .chart-table td {{
     background: #EFEBEA;
-    padding: 10px 4px;
+    padding: 6px 4px;
     text-align: center;
     border: 1px solid #1E1E1E;
     width: 20%;
+    vertical-align: middle;
   }}
 
   .cell-label {{
@@ -1018,12 +1030,14 @@ def build_pdf_html(name, report_text, birth_info, chart):
     <span class="eyebrow">The Purpose Blueprint</span>
     <h2 class="report-name">{name}{name_possessive} <span class="italic">Purpose Blueprint</span></h2>
     <p class="meta">{birth_info['date']} · {birth_info['time']} · {city_upper}, {country_upper}</p>
-  </div>
 
-  <p class="chart-strip-heading">Your Chart at a Glance</p>
-  <table class="chart-table">
-    <tr>{cells_html}</tr>
-  </table>
+    <div class="chart-on-cover">
+      <p class="chart-strip-heading">Your Chart at a Glance</p>
+      <table class="chart-table">
+        {cells_html}
+      </table>
+    </div>
+  </div>
 
   <div class="report">
     {report_body}
