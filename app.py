@@ -1103,8 +1103,7 @@ def background_generate_and_send(email, chart, birth_info):
 
 
 def add_to_kit(name, email):
-    """Add a subscriber to Kit with the celestial-blueprint tag.
-    Uses the Kit v4 API. Requires KIT_API_KEY environment variable."""
+    """Add a subscriber to Kit using V4 API with Bearer token auth."""
     import requests as req
 
     api_key = os.environ.get("KIT_API_KEY")
@@ -1113,17 +1112,18 @@ def add_to_kit(name, email):
         return False
 
     first_name = name.split()[0] if name else ""
+    headers = {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "Authorization": f"Bearer {api_key}",
+    }
+    base = "https://api.kit.com/v4"
 
     try:
-        headers = {
-            "Content-Type": "application/json",
-            "X-Kit-Api-Key": api_key,
-        }
-
-        # Step 1: Create or update the subscriber
+        # Step 1: Create or update subscriber
         sub_resp = req.post(
-            "https://api.kit.com/v4/subscribers",
-            json={"email_address": email, "first_name": first_name, "state": "active"},
+            f"{base}/subscribers",
+            json={"email_address": email, "first_name": first_name},
             headers=headers,
             timeout=10
         )
@@ -1135,27 +1135,46 @@ def add_to_kit(name, email):
 
         subscriber_id = sub_data.get("subscriber", {}).get("id")
         if not subscriber_id:
-            print(f"Kit: no subscriber id returned: {sub_data}")
+            print(f"Kit: no subscriber id in response: {sub_data}")
             return False
 
-        # Step 2: Apply the celestial-blueprint tag
+        # Step 2: Get or create the purpose-blueprint tag
+        tags_resp = req.get(f"{base}/tags", headers=headers, timeout=10)
+        tag_id = None
+        for tag in tags_resp.json().get("tags", []):
+            if tag.get("name") == "purpose-blueprint":
+                tag_id = tag["id"]
+                break
+
+        if not tag_id:
+            create_resp = req.post(
+                f"{base}/tags",
+                json={"name": "purpose-blueprint"},
+                headers=headers,
+                timeout=10
+            )
+            tag_id = create_resp.json().get("tag", {}).get("id")
+
+        if not tag_id:
+            print("Kit: subscriber added but could not get/create tag")
+            return True
+
+        # Step 3: Tag the subscriber
         tag_resp = req.post(
-            f"https://api.kit.com/v4/subscribers/{subscriber_id}/tags",
-            json={"tag": "purpose-blueprint"},
+            f"{base}/subscribers/{subscriber_id}/tags/{tag_id}",
             headers=headers,
             timeout=10
         )
 
         if tag_resp.status_code in (200, 201):
-            print(f"Kit: added {email} with tag celestial-blueprint")
+            print(f"Kit: added {email} with tag purpose-blueprint (id {subscriber_id})")
         else:
-            print(f"Kit: subscriber added but tag failed: {tag_resp.status_code}")
+            print(f"Kit: subscriber added but tag apply failed: {tag_resp.status_code} {tag_resp.text[:200]}")
         return True
 
     except Exception as e:
         print(f"Kit: error adding subscriber: {e}")
         return False
-
 
 def log_customer(name, email, marketing_opt_in, date, city, country):
     """Log customer to CSV (always) and push to Kit if they opted in."""
