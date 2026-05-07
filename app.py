@@ -1376,13 +1376,17 @@ def payment_success():
             auto_generate=False, chart_data="null", meta_data="null")
 
     try:
+        print(f"[payment-success] Retrieving session: {session_id[:20]}...")
         session = stripe_lib.checkout.Session.retrieve(session_id)
+        print(f"[payment-success] Payment status: {session.payment_status}")
         if session.payment_status != "paid":
-            print(f"Payment not complete for session {session_id}: {session.payment_status}")
+            print(f"[payment-success] Payment not complete: {session.payment_status}")
             return render_template("index.html",
                 auto_generate=False, chart_data="null", meta_data="null")
 
-        meta = session.metadata
+        # Convert Stripe metadata object to plain Python dict
+        meta = dict(session.metadata)
+        print(f"[payment-success] Metadata: email={meta.get('email')}, name={meta.get('name')}")
         # Store verified session data server-side
         _paid_sessions[session_id] = {
             "name": meta.get("name", ""),
@@ -1396,7 +1400,8 @@ def payment_success():
             "tz": meta.get("tz", "UTC"),
             "marketingOptIn": meta.get("marketingOptIn") == "true",
         }
-        print(f"Payment verified for {meta.get('email')} — session {session_id}")
+        print(f"[payment-success] Verified for {meta.get('email')} — session stored OK")
+        print(f"[payment-success] Rendering template with auto_generate=True, session_id={session_id[:20]}...")
 
         # Pass only the session_id to the frontend — no chart serialization needed
         return render_template("index.html",
@@ -1418,10 +1423,14 @@ def generate_after_payment():
     data = request.json
     session_id = data.get("session_id", "")
 
+    print(f"[generate-after-payment] Called with session_id={session_id[:20] if session_id else 'NONE'}")
+    print(f"[generate-after-payment] Known sessions: {list(_paid_sessions.keys())[:3]}")
     if session_id not in _paid_sessions:
+        print(f"[generate-after-payment] Session NOT found in store!")
         return jsonify({"error": "Session not found or already used."}), 400
 
     payload = _paid_sessions.pop(session_id)  # consume it
+    print(f"[generate-after-payment] Session found, email={payload.get('email')}")
     name = payload["name"] or "the person"
     email = payload["email"]
     date_str = payload["date"]
