@@ -2088,17 +2088,52 @@ function tryRestoreReport() {
 window.onload = function() {
   // Check if we're returning from a successful Stripe payment
   // Flask injects auto_generate, chart_data and meta_data as template variables
-  if (typeof AUTO_GENERATE !== 'undefined' && AUTO_GENERATE) {
-    var chart = JSON.parse(CHART_DATA);
-    var payload = JSON.parse(META_DATA);
-    currentEmail = payload.email;
-    rawText = '';
-    buildReportHeader(chart, payload);
-    document.getElementById('landingPage').style.display = 'none';
-    document.getElementById('loadingSection').style.display = 'none';
-    document.getElementById('reportSection').style.display = 'block';
-    // Stream the preview
-    generateReport(payload);
+  if (typeof AUTO_GENERATE !== 'undefined' && AUTO_GENERATE && CHART_DATA && CHART_DATA !== 'null') {
+    // Returning from Stripe payment — CHART_DATA contains the session_id
+    var sessionId = JSON.parse(CHART_DATA);
+    showLoading();
+    // Call the dedicated post-payment streaming endpoint
+    fetch('/generate-after-payment', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({session_id: sessionId})
+    }).then(function(res) {
+      if (!res.ok) { return res.json().then(function(e) { throw new Error(e.error || 'Generation failed'); }); }
+      clearInterval(loadingInterval);
+      var reader = res.body.getReader();
+      var decoder = new TextDecoder();
+      var buffer = '', reportStarted = false;
+      function read() {
+        reader.read().then(function(result) {
+          if (result.done) return;
+          buffer += decoder.decode(result.value, {stream: true});
+          var lines = buffer.split('\n'); buffer = lines.pop();
+          for (var i = 0; i < lines.length; i++) {
+            var line = lines[i];
+            if (!line.startsWith('data: ')) continue;
+            var jsonStr = line.slice(6).trim(); if (!jsonStr) continue;
+            var event = JSON.parse(jsonStr);
+            if (event.type === 'chart') { var pld = event.payload || {}; buildReportHeader(event.data, pld); currentEmail = pld.email || ''; }
+            else if (event.type === 'text') {
+              if (!reportStarted) {
+                reportStarted = true;
+                document.getElementById('loadingSection').style.display = 'none';
+                document.getElementById('reportSection').style.display = 'block';
+              }
+              rawText += event.content; renderReport(rawText);
+            }
+            else if (event.type === 'done') { currentEmail = event.email; removeCursor(); }
+          }
+          read();
+        });
+      }
+      read();
+    }).catch(function(err) {
+      clearInterval(loadingInterval);
+      document.getElementById('loadingSection').style.display = 'none';
+      document.getElementById('landingPage').style.display = 'block';
+      alert('Something went wrong after payment. Please email hello@lunabylena.com and we will sort it out. Your payment was received.');
+    });
     return;
   }
 

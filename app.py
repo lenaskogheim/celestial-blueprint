@@ -1360,65 +1360,129 @@ def create_checkout_session():
         return jsonify({"error": str(e)}), 500
 
 
+# In-memory store for verified payment sessions
+# Maps session_id -> metadata dict for up to 1 hour
+_paid_sessions = {}
+
 @app.route("/payment-success")
 def payment_success():
-    """Handle successful payment — retrieve session data and trigger report generation."""
+    """After Stripe payment, verify and store session, then show the page.
+    The frontend will call /generate-after-payment to stream the report."""
     import stripe as stripe_lib
     stripe_lib.api_key = os.environ.get("STRIPE_SECRET_KEY", "")
     session_id = request.args.get("session_id")
     if not session_id:
-        return render_template("index.html")
+        return render_template("index.html",
+            auto_generate=False, chart_data="null", meta_data="null")
 
     try:
         session = stripe_lib.checkout.Session.retrieve(session_id)
         if session.payment_status != "paid":
-            return render_template("index.html")
+            print(f"Payment not complete for session {session_id}: {session.payment_status}")
+            return render_template("index.html",
+                auto_generate=False, chart_data="null", meta_data="null")
 
         meta = session.metadata
-        name = meta.get("name", "")
-        email = meta.get("email", "")
-        date_str = meta.get("date", "")
-        time_str = meta.get("time", "")
-        city = meta.get("city", "")
-        country = meta.get("country", "")
-        lat = float(meta.get("lat", 0))
-        lng = float(meta.get("lng", 0))
-        tz_str = meta.get("tz", "UTC")
-        marketing_opt_in = meta.get("marketingOptIn") == "true"
+        # Store verified session data server-side
+        _paid_sessions[session_id] = {
+            "name": meta.get("name", ""),
+            "email": meta.get("email", ""),
+            "date": meta.get("date", ""),
+            "time": meta.get("time", ""),
+            "city": meta.get("city", ""),
+            "country": meta.get("country", ""),
+            "lat": meta.get("lat", "0"),
+            "lng": meta.get("lng", "0"),
+            "tz": meta.get("tz", "UTC"),
+            "marketingOptIn": meta.get("marketingOptIn") == "true",
+        }
+        print(f"Payment verified for {meta.get('email')} — session {session_id}")
 
-        year, month, day = [int(x) for x in date_str.split("-")]
-        hour, minute = [int(x) for x in time_str.split(":")]
-
-        chart = calculate_chart(name, year, month, day, hour, minute, lat, lng, tz_str)
-        birth_info = {"date": date_str, "time": time_str, "city": city, "country": country}
-
-        log_customer(name=name, email=email, marketing_opt_in=marketing_opt_in,
-                    date=date_str, city=city, country=country)
-
-        # Start background full report generation
-        thread = threading.Thread(
-            target=background_generate_and_send,
-            args=(email, chart, birth_info),
-            daemon=True
-        )
-        thread.start()
-
-        # Return the page with session data embedded so JS can stream the preview
-        chart_json = json.dumps(chart)
-        meta_json = json.dumps({
-            "name": name, "email": email, "date": date_str,
-            "time": time_str, "city": city, "country": country,
-            "lat": lat, "lng": lng, "tz": tz_str,
-            "marketingOptIn": marketing_opt_in
-        })
+        # Pass only the session_id to the frontend — no chart serialization needed
         return render_template("index.html",
-                             auto_generate=True,
-                             chart_data=chart_json,
-                             meta_data=meta_json)
+            auto_generate=True,
+            chart_data=json.dumps(session_id),
+            meta_data="null")
 
     except Exception as e:
         print(f"Payment success error: {e}")
-        return render_template("index.html")
+        import traceback; traceback.print_exc()
+        return render_template("index.html",
+            auto_generate=False, chart_data="null", meta_data="null")
+
+
+@app.route("/generate-after-payment", methods=["POST"])
+def generate_after_payment():
+    """Stream report for a verified paid session. Same as /generate but
+    data comes from server-side _paid_sessions store, not user input."""
+    data = request.json
+    session_id = data.get("session_id", "")
+
+    if session_id not in _paid_sessions:
+        return jsonify({"error": "Session not found or already used."}), 400
+
+    payload = _paid_sessions.pop(session_id)  # consume it
+    name = payload["name"] or "the person"
+    email = payload["email"]
+    date_str = payload["date"]
+    time_str = payload["time"]
+    city = payload["city"]
+    country = payload["country"]
+    tz_str = payload["tz"]
+    marketing_opt_in = payload["marketingOptIn"]
+
+    try:
+        lat = float(payload["lat"])
+        lng = float(payload["lng"])
+        year, month, day = [int(x) for x in date_str.split("-")]
+        hour, minute = [int(x) for x in time_str.split(":")]
+    except Exception as e:
+        return jsonify({"error": f"Invalid birth data: {e}"}), 400
+
+    try:
+        chart = calculate_chart(name, year, month, day, hour, minute, lat, lng, tz_str)
+    except Exception as e:
+        return jsonify({"error": f"Chart calculation failed: {e}"}), 500
+
+    birth_info = {"date": date_str, "time": time_str, "city": city, "country": country}
+
+    log_customer(name=name, email=email, marketing_opt_in=marketing_opt_in,
+                date=date_str, city=city, country=country)
+
+    # Start background full report + email
+    thread = threading.Thread(
+        target=background_generate_and_send,
+        args=(email, chart, birth_info),
+        daemon=True
+    )
+    thread.start()
+
+    # Stream the preview exactly like /generate
+    preview_prompt = build_prompt(chart, birth_info, preview_only=True)
+    client = anthropic.Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY", ""))
+
+    def stream():
+        # Emit chart + payload so frontend can build the report header correctly
+        chart_event = dict(chart)
+        yield f"data: {json.dumps({'type': 'chart', 'data': chart_event, 'payload': {'name': name, 'email': email, 'date': date_str, 'time': time_str, 'city': city, 'country': country, 'lat': lat, 'lng': lng, 'tz': tz_str}})}\n\n"
+        buffer = ""
+        with client.messages.stream(
+            model="claude-haiku-4-5-20251001",
+            max_tokens=600,
+            messages=[{"role": "user", "content": preview_prompt}]
+        ) as st:
+            for text in st.text_stream:
+                buffer += text
+                if len(buffer) > 3:
+                    flush = buffer[:-3]
+                    buffer = buffer[-3:]
+                    yield f"data: {json.dumps({'type': 'text', 'content': clean_dashes(flush)})}\n\n"
+        if buffer:
+            yield f"data: {json.dumps({'type': 'text', 'content': clean_dashes(buffer)})}\n\n"
+        yield f"data: {json.dumps({'type': 'done', 'email': email})}\n\n"
+
+    return Response(stream(), mimetype="text/event-stream",
+                   headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"})
 
 
 @app.route("/stripe-key")
