@@ -1384,8 +1384,8 @@ def payment_success():
             return render_template("index.html",
                 auto_generate=False, chart_data="null", meta_data="null")
 
-        # Convert Stripe metadata object to plain Python dict
-        meta = dict(session.metadata)
+        # Access metadata - Stripe metadata is already a dict-like object, use direct key access
+        meta = session.metadata if isinstance(session.metadata, dict) else {k: v for k, v in session.metadata.items()}
         print(f"[payment-success] Metadata: email={meta.get('email')}, name={meta.get('name')}")
         # Store verified session data server-side
         _paid_sessions[session_id] = {
