@@ -1,4 +1,4 @@
-import os, json, warnings, threading, io, base64
+import os, json, warnings, threading, io, base64, stripe
 warnings.filterwarnings("ignore")
 from flask import Flask, request, jsonify, Response, render_template
 from kerykeion.astrological_subject_factory import AstrologicalSubjectFactory
@@ -7,6 +7,11 @@ import anthropic
 import requests
 
 app = Flask(__name__)
+
+# Stripe configuration
+stripe.api_key = os.environ.get("STRIPE_SECRET_KEY", "")
+STRIPE_PUBLISHABLE_KEY = os.environ.get("STRIPE_PUBLISHABLE_KEY", "")
+PRICE_EUR = 2700  # €27.00 in cents
 
 ALL_SIGNS = ["Ari","Tau","Gem","Can","Leo","Vir","Lib","Sco","Sag","Cap","Aqu","Pis"]
 SIGN_NAMES = {"Ari":"Aries","Tau":"Taurus","Gem":"Gemini","Can":"Cancer","Leo":"Leo","Vir":"Virgo","Lib":"Libra","Sco":"Scorpio","Sag":"Sagittarius","Cap":"Capricorn","Aqu":"Aquarius","Pis":"Pisces"}
@@ -1297,6 +1302,123 @@ def generate():
 
     return Response(stream(), mimetype="text/event-stream",
                    headers={"Cache-Control":"no-cache","X-Accel-Buffering":"no"})
+
+
+@app.route("/create-checkout-session", methods=["POST"])
+def create_checkout_session():
+    """Create a Stripe checkout session and return the URL."""
+    data = request.json
+
+    # Validate required fields before charging
+    name = data.get("name", "").strip()
+    email = data.get("email", "").strip()
+    if not name or not email or "@" not in email:
+        return jsonify({"error": "Please provide your name and a valid email address."}), 400
+    if not data.get("date") or not data.get("time"):
+        return jsonify({"error": "Please provide your birth date and time."}), 400
+    if not data.get("lat") or not data.get("lng"):
+        return jsonify({"error": "Please select a city from the dropdown."}), 400
+
+    try:
+        # Store birth data in Stripe metadata so we can use it after payment
+        session = stripe.checkout.Session.create(
+            payment_method_types=["card"],
+            line_items=[{
+                "price_data": {
+                    "currency": "eur",
+                    "unit_amount": PRICE_EUR,
+                    "product_data": {
+                        "name": "The Purpose Blueprint",
+                        "description": "Your personalised astrology report — Life Purpose, Career & Personal Brand",
+                    },
+                },
+                "quantity": 1,
+            }],
+            mode="payment",
+            customer_email=email,
+            success_url=f"{request.host_url}payment-success?session_id={{CHECKOUT_SESSION_ID}}",
+            cancel_url=f"{request.host_url}?cancelled=true",
+            metadata={
+                "name": name,
+                "email": email,
+                "date": data.get("date", ""),
+                "time": data.get("time", ""),
+                "city": data.get("city", ""),
+                "country": data.get("country", ""),
+                "lat": str(data.get("lat", "")),
+                "lng": str(data.get("lng", "")),
+                "tz": data.get("tz", "UTC"),
+                "marketingOptIn": "true" if data.get("marketingOptIn") else "false",
+            }
+        )
+        return jsonify({"url": session.url})
+    except stripe.error.StripeError as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/payment-success")
+def payment_success():
+    """Handle successful payment — retrieve session data and trigger report generation."""
+    session_id = request.args.get("session_id")
+    if not session_id:
+        return render_template("index.html")
+
+    try:
+        session = stripe.checkout.Session.retrieve(session_id)
+        if session.payment_status != "paid":
+            return render_template("index.html")
+
+        meta = session.metadata
+        name = meta.get("name", "")
+        email = meta.get("email", "")
+        date_str = meta.get("date", "")
+        time_str = meta.get("time", "")
+        city = meta.get("city", "")
+        country = meta.get("country", "")
+        lat = float(meta.get("lat", 0))
+        lng = float(meta.get("lng", 0))
+        tz_str = meta.get("tz", "UTC")
+        marketing_opt_in = meta.get("marketingOptIn") == "true"
+
+        year, month, day = [int(x) for x in date_str.split("-")]
+        hour, minute = [int(x) for x in time_str.split(":")]
+
+        chart = calculate_chart(name, year, month, day, hour, minute, lat, lng, tz_str)
+        birth_info = {"date": date_str, "time": time_str, "city": city, "country": country}
+
+        log_customer(name=name, email=email, marketing_opt_in=marketing_opt_in,
+                    date=date_str, city=city, country=country)
+
+        # Start background full report generation
+        thread = threading.Thread(
+            target=background_generate_and_send,
+            args=(email, chart, birth_info),
+            daemon=True
+        )
+        thread.start()
+
+        # Return the page with session data embedded so JS can stream the preview
+        chart_json = json.dumps(chart)
+        meta_json = json.dumps({
+            "name": name, "email": email, "date": date_str,
+            "time": time_str, "city": city, "country": country,
+            "lat": lat, "lng": lng, "tz": tz_str,
+            "marketingOptIn": marketing_opt_in
+        })
+        return render_template("index.html",
+                             auto_generate=True,
+                             chart_data=chart_json,
+                             meta_data=meta_json)
+
+    except Exception as e:
+        print(f"Payment success error: {e}")
+        return render_template("index.html")
+
+
+@app.route("/stripe-key")
+def stripe_key():
+    """Return the publishable key for the frontend."""
+    return jsonify({"publishable_key": STRIPE_PUBLISHABLE_KEY})
 
 
 if __name__ == "__main__":

@@ -1075,8 +1075,8 @@ input::placeholder { color: var(--ink-muted); font-style: italic; opacity: 0.7; 
         </label>
       </div>
       <div class="error-msg" id="errorMsg"></div>
-      <button class="submit-btn" onclick="handleSubmit()">Reveal My Blueprint</button>
-      <p class="form-note">The Purpose Blueprint · Whole Sign Houses</p>
+      <button class="submit-btn" onclick="handleSubmit()">Reveal My Blueprint &mdash; €27</button>
+      <p class="form-note">Secure payment via Stripe · The Purpose Blueprint</p>
     </div>
   </section>
 
@@ -2086,6 +2086,22 @@ function tryRestoreReport() {
 }
 
 window.onload = function() {
+  // Check if we're returning from a successful Stripe payment
+  // Flask injects auto_generate, chart_data and meta_data as template variables
+  if (typeof AUTO_GENERATE !== 'undefined' && AUTO_GENERATE) {
+    var chart = JSON.parse(CHART_DATA);
+    var payload = JSON.parse(META_DATA);
+    currentEmail = payload.email;
+    rawText = '';
+    buildReportHeader(chart, payload);
+    document.getElementById('landingPage').style.display = 'none';
+    document.getElementById('loadingSection').style.display = 'none';
+    document.getElementById('reportSection').style.display = 'block';
+    // Stream the preview
+    generateReport(payload);
+    return;
+  }
+
   tryRestoreReport();
 
   var input = document.getElementById('cityInput');
@@ -2253,8 +2269,41 @@ function handleSubmit() {
   if (!name || !email || !date || !time) { showError('Please fill in all fields before continuing.'); return; }
   if (email.indexOf('@') === -1) { showError('Please enter a valid email address.'); return; }
   if (!selectedCity) { showError('Please select a city from the dropdown list.'); return; }
-  showLoading();
-  generateReport({ name:name, email:email, date:date, time:time, city:selectedCity.name, country:selectedCity.country, lat:selectedCity.lat, lng:selectedCity.lng, tz:selectedCity.tz, marketingOptIn:marketingOptIn });
+
+  // Show loading while we create the Stripe session
+  var btn = document.querySelector('.submit-btn');
+  btn.textContent = 'Preparing checkout...';
+  btn.disabled = true;
+  document.getElementById('errorMsg').style.display = 'none';
+
+  var payload = {
+    name: name, email: email, date: date, time: time,
+    city: selectedCity.name, country: selectedCity.country,
+    lat: selectedCity.lat, lng: selectedCity.lng,
+    tz: selectedCity.tz, marketingOptIn: marketingOptIn
+  };
+
+  fetch('/create-checkout-session', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify(payload)
+  })
+  .then(function(res) { return res.json(); })
+  .then(function(data) {
+    if (data.error) {
+      showError(data.error);
+      btn.textContent = 'Reveal My Blueprint';
+      btn.disabled = false;
+    } else {
+      // Redirect to Stripe checkout
+      window.location.href = data.url;
+    }
+  })
+  .catch(function() {
+    showError('Something went wrong. Please try again.');
+    btn.textContent = 'Reveal My Blueprint';
+    btn.disabled = false;
+  });
 }
 
 function generateReport(payload) {
@@ -2422,6 +2471,12 @@ function restart() {
   window.scrollTo(0,0);
 }
 
+</script>
+<script>
+// Injected by Flask after successful payment
+var AUTO_GENERATE = {{ auto_generate | tojson | default('false') }};
+var CHART_DATA = {{ chart_data | tojson | default('null') }};
+var META_DATA = {{ meta_data | tojson | default('null') }};
 </script>
 </body>
 </html>

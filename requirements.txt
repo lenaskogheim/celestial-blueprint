@@ -6,3 +6,4 @@ timezonefinder>=6.0.0
 gunicorn
 requests>=2.31.0
 weasyprint>=60.0
+stripe>=8.0.0
