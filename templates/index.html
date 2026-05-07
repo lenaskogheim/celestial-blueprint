@@ -2474,9 +2474,9 @@ function restart() {
 </script>
 <script>
 // Injected by Flask after successful payment
-var AUTO_GENERATE = {{ auto_generate | tojson | default('false') }};
-var CHART_DATA = {{ chart_data | tojson | default('null') }};
-var META_DATA = {{ meta_data | tojson | default('null') }};
+var AUTO_GENERATE = {{ auto_generate | default(false) | tojson }};
+var CHART_DATA = {{ chart_data | default('null') | tojson }};
+var META_DATA = {{ meta_data | default('null') | tojson }};
 </script>
 </body>
 </html>

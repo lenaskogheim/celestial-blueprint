@@ -1,4 +1,4 @@
-import os, json, warnings, threading, io, base64, stripe
+import os, json, warnings, threading, io, base64
 warnings.filterwarnings("ignore")
 from flask import Flask, request, jsonify, Response, render_template
 from kerykeion.astrological_subject_factory import AstrologicalSubjectFactory
@@ -9,7 +9,6 @@ import requests
 app = Flask(__name__)
 
 # Stripe configuration
-stripe.api_key = os.environ.get("STRIPE_SECRET_KEY", "")
 STRIPE_PUBLISHABLE_KEY = os.environ.get("STRIPE_PUBLISHABLE_KEY", "")
 PRICE_EUR = 2700  # €27.00 in cents
 
@@ -1226,7 +1225,10 @@ def log_customer(name, email, marketing_opt_in, date, city, country):
 
 @app.route("/")
 def index():
-    return render_template("index.html")
+    return render_template("index.html",
+        auto_generate=False,
+        chart_data="null",
+        meta_data="null")
 
 
 @app.route("/generate", methods=["POST"])
@@ -1307,6 +1309,8 @@ def generate():
 @app.route("/create-checkout-session", methods=["POST"])
 def create_checkout_session():
     """Create a Stripe checkout session and return the URL."""
+    import stripe as stripe_lib
+    stripe_lib.api_key = os.environ.get("STRIPE_SECRET_KEY", "")
     data = request.json
 
     # Validate required fields before charging
@@ -1321,7 +1325,7 @@ def create_checkout_session():
 
     try:
         # Store birth data in Stripe metadata so we can use it after payment
-        session = stripe.checkout.Session.create(
+        session = stripe_lib.checkout.Session.create(
             payment_method_types=["card"],
             line_items=[{
                 "price_data": {
@@ -1352,19 +1356,21 @@ def create_checkout_session():
             }
         )
         return jsonify({"url": session.url})
-    except stripe.error.StripeError as e:
+    except Exception as e:
         return jsonify({"error": str(e)}), 500
 
 
 @app.route("/payment-success")
 def payment_success():
     """Handle successful payment — retrieve session data and trigger report generation."""
+    import stripe as stripe_lib
+    stripe_lib.api_key = os.environ.get("STRIPE_SECRET_KEY", "")
     session_id = request.args.get("session_id")
     if not session_id:
         return render_template("index.html")
 
     try:
-        session = stripe.checkout.Session.retrieve(session_id)
+        session = stripe_lib.checkout.Session.retrieve(session_id)
         if session.payment_status != "paid":
             return render_template("index.html")
 
