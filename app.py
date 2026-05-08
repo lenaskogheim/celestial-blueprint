@@ -1406,8 +1406,8 @@ def generate_after_payment():
     try:
         session = stripe_lib.checkout.Session.retrieve(session_id)
     except Exception as e:
-        print(f"[generate-after-payment] Stripe retrieve failed: {e}")
-        return jsonify({"error": "Could not verify payment session."}), 400
+        print(f"[generate-after-payment] Stripe retrieve failed: {type(e).__name__}: {e}")
+        return jsonify({"error": f"Could not verify payment session: {type(e).__name__}: {e}"}), 400
 
     if session.payment_status != "paid":
         print(f"[generate-after-payment] Payment not complete: {session.payment_status}")
