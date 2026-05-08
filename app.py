@@ -1382,7 +1382,7 @@ def payment_success():
         print(f"[payment-success] Verified — passing session_id to frontend")
         return render_template("index.html",
             auto_generate=True,
-            chart_data=json.dumps(session_id),
+            chart_data=session_id,
             meta_data="null")
 
     except Exception as e:
