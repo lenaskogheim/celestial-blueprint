@@ -2132,7 +2132,7 @@ window.onload = function() {
       clearInterval(loadingInterval);
       document.getElementById('loadingSection').style.display = 'none';
       document.getElementById('landingPage').style.display = 'block';
-      alert('Something went wrong after payment. Please email hello@lunabylena.com and we will sort it out. Your payment was received.');
+      alert('Something went wrong after payment. Please email hello@lunabylena.com and we will sort it out. Your payment was received.\n\nError detail: ' + (err && err.message ? err.message : String(err)));
     });
     return;
   }

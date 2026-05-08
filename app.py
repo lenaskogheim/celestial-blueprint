@@ -1360,52 +1360,26 @@ def create_checkout_session():
         return jsonify({"error": str(e)}), 500
 
 
-# In-memory store for verified payment sessions
-# Maps session_id -> metadata dict for up to 1 hour
-_paid_sessions = {}
-
 @app.route("/payment-success")
 def payment_success():
-    """After Stripe payment, verify and store session, then show the page.
-    The frontend will call /generate-after-payment to stream the report."""
-    import stripe as stripe_lib
-    stripe_lib.api_key = os.environ.get("STRIPE_SECRET_KEY", "")
+    """After Stripe payment, verify session then render the page.
+    The frontend calls /generate-after-payment to stream the report."""
     session_id = request.args.get("session_id")
     if not session_id:
         return render_template("index.html",
             auto_generate=False, chart_data="null", meta_data="null")
 
     try:
+        import stripe as stripe_lib
+        stripe_lib.api_key = os.environ.get("STRIPE_SECRET_KEY", "")
         print(f"[payment-success] Retrieving session: {session_id[:20]}...")
         session = stripe_lib.checkout.Session.retrieve(session_id)
         print(f"[payment-success] Payment status: {session.payment_status}")
         if session.payment_status != "paid":
-            print(f"[payment-success] Payment not complete: {session.payment_status}")
             return render_template("index.html",
                 auto_generate=False, chart_data="null", meta_data="null")
 
-        # Convert Stripe metadata StripeObject to plain dict using to_dict()
-        # (Stripe SDK v8+ removed dict inheritance, to_dict() is the correct method)
-        meta = session.metadata.to_dict()
-        print(f"[payment-success] Meta keys found: {list(meta.keys())}")
-        print(f"[payment-success] Metadata: email={meta.get('email')}, name={meta.get('name')}")
-        # Store verified session data server-side
-        _paid_sessions[session_id] = {
-            "name": meta.get("name", ""),
-            "email": meta.get("email", ""),
-            "date": meta.get("date", ""),
-            "time": meta.get("time", ""),
-            "city": meta.get("city", ""),
-            "country": meta.get("country", ""),
-            "lat": meta.get("lat", "0"),
-            "lng": meta.get("lng", "0"),
-            "tz": meta.get("tz", "UTC"),
-            "marketingOptIn": meta.get("marketingOptIn") == "true",
-        }
-        print(f"[payment-success] Verified for {meta.get('email')} — session stored OK")
-        print(f"[payment-success] Rendering template with auto_generate=True, session_id={session_id[:20]}...")
-
-        # Pass only the session_id to the frontend — no chart serialization needed
+        print(f"[payment-success] Verified — passing session_id to frontend")
         return render_template("index.html",
             auto_generate=True,
             chart_data=json.dumps(session_id),
@@ -1420,18 +1394,40 @@ def payment_success():
 
 @app.route("/generate-after-payment", methods=["POST"])
 def generate_after_payment():
-    """Stream report for a verified paid session. Same as /generate but
-    data comes from server-side _paid_sessions store, not user input."""
+    """Stream report for a verified paid session. Fetches birth data
+    directly from Stripe metadata so no in-memory state is needed."""
+    import stripe as stripe_lib
+    stripe_lib.api_key = os.environ.get("STRIPE_SECRET_KEY", "")
     data = request.json
     session_id = data.get("session_id", "")
 
     print(f"[generate-after-payment] Called with session_id={session_id[:20] if session_id else 'NONE'}")
-    print(f"[generate-after-payment] Known sessions: {list(_paid_sessions.keys())[:3]}")
-    if session_id not in _paid_sessions:
-        print(f"[generate-after-payment] Session NOT found in store!")
-        return jsonify({"error": "Session not found or already used."}), 400
 
-    payload = _paid_sessions.pop(session_id)  # consume it
+    try:
+        session = stripe_lib.checkout.Session.retrieve(session_id)
+    except Exception as e:
+        print(f"[generate-after-payment] Stripe retrieve failed: {e}")
+        return jsonify({"error": "Could not verify payment session."}), 400
+
+    if session.payment_status != "paid":
+        print(f"[generate-after-payment] Payment not complete: {session.payment_status}")
+        return jsonify({"error": "Payment not complete."}), 400
+
+    meta = session.metadata.to_dict()
+    print(f"[generate-after-payment] Meta keys: {list(meta.keys())}")
+
+    payload = {
+        "name": meta.get("name", ""),
+        "email": meta.get("email", ""),
+        "date": meta.get("date", ""),
+        "time": meta.get("time", ""),
+        "city": meta.get("city", ""),
+        "country": meta.get("country", ""),
+        "lat": meta.get("lat", "0"),
+        "lng": meta.get("lng", "0"),
+        "tz": meta.get("tz", "UTC"),
+        "marketingOptIn": meta.get("marketingOptIn") == "true",
+    }
     print(f"[generate-after-payment] Session found, email={payload.get('email')}")
     name = payload["name"] or "the person"
     email = payload["email"]
