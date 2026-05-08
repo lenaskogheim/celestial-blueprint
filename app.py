@@ -1384,8 +1384,10 @@ def payment_success():
             return render_template("index.html",
                 auto_generate=False, chart_data="null", meta_data="null")
 
-        # Access metadata - Stripe metadata is already a dict-like object, use direct key access
-        meta = session.metadata if isinstance(session.metadata, dict) else {k: v for k, v in session.metadata.items()}
+        # Convert Stripe metadata StripeObject to plain dict using to_dict()
+        # (Stripe SDK v8+ removed dict inheritance, to_dict() is the correct method)
+        meta = session.metadata.to_dict()
+        print(f"[payment-success] Meta keys found: {list(meta.keys())}")
         print(f"[payment-success] Metadata: email={meta.get('email')}, name={meta.get('name')}")
         # Store verified session data server-side
         _paid_sessions[session_id] = {
