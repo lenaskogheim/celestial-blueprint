@@ -36,15 +36,10 @@ header {
   text-align: center;
 }
 
-.brand {
-  font-family: Impact, 'Arial Narrow Bold', sans-serif;
-  font-size: clamp(3rem, 9vw, 6rem);
-  line-height: 0.9;
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
+.logo {
+  width: clamp(160px, 30vw, 260px);
+  height: auto;
 }
-.brand .l1 { color: var(--pink-deep); display: block; }
-.brand .l2 { color: var(--terracotta); display: block; }
 
 .tagline {
   font-style: italic;
@@ -170,10 +165,7 @@ footer {
 <body>
 
 <header>
-  <h1 class="brand">
-    <span class="l1">Luna</span>
-    <span class="l2">bylena</span>
-  </h1>
+  <img src="/static/luna-logo.png" alt="Luna by Lena" class="logo">
   <p class="tagline">Personalised astrology reports</p>
 </header>
 
@@ -185,9 +177,9 @@ footer {
   <div class="reports-grid">
 
     <div class="report-card">
-      <span class="card-eyebrow">The Purpose Blueprint</span>
+      <span class="card-eyebrow">Celestial Blueprint</span>
       <div class="card-title">
-        <span class="t1">Celestial</span>
+        <span class="t1">The Purpose</span>
         <span class="t2">Blueprint</span>
       </div>
       <p class="card-desc">Life Purpose, Career &amp; Personal Brand. A deep-dive into who you are, what you&rsquo;re here to do, and how to build a life and business that fits your soul.</p>
