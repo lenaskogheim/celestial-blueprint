@@ -30,48 +30,81 @@ body {
   align-items: center;
 }
 
+/* ── HEADER ── */
 header {
   width: 100%;
-  padding: 3rem 2rem 0;
+  padding: 2.5rem 2rem 0;
   text-align: center;
 }
 
 .logo {
-  width: clamp(160px, 30vw, 260px);
+  width: clamp(100px, 18vw, 160px);
   height: auto;
 }
 
-.tagline {
-  font-style: italic;
-  font-size: clamp(1rem, 2.5vw, 1.25rem);
-  color: var(--ink-soft);
-  margin-top: 1.2rem;
-}
-
-.divider {
-  width: 60px;
-  height: 1px;
-  background: var(--pink-deep);
-  margin: 2.5rem auto;
-}
-
-main {
+/* ── HERO ── */
+.hero {
   width: 100%;
-  max-width: 860px;
-  padding: 0 2rem 5rem;
+  max-width: 720px;
+  padding: 4rem 2rem 4.5rem;
+  text-align: center;
 }
 
-.section-label {
+.hero-headline {
+  font-size: clamp(2rem, 5.5vw, 3.25rem);
+  font-weight: 700;
+  line-height: 1.15;
+  color: var(--ink);
+  margin-bottom: 1.5rem;
+}
+
+.hero-headline em {
+  font-style: italic;
+  color: var(--pink-deep);
+}
+
+.hero-body {
+  font-size: clamp(1rem, 2.2vw, 1.2rem);
+  font-style: italic;
+  color: var(--ink-soft);
+  line-height: 1.8;
+  max-width: 580px;
+  margin: 0 auto;
+}
+
+/* ── CELESTIAL BLUEPRINT SECTION ── */
+.cb-section {
+  width: 100%;
+  background: var(--pink-soft);
+  padding: 4rem 2rem 5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.cb-heading {
   font-family: Impact, 'Arial Narrow Bold', sans-serif;
-  font-size: 0.75rem;
-  letter-spacing: 0.35em;
+  font-size: clamp(1.1rem, 3vw, 1.5rem);
+  letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: var(--purple);
+  color: var(--pink-deep);
+  margin-bottom: 1.25rem;
   text-align: center;
-  margin-bottom: 2.5rem;
+}
+
+.cb-desc {
+  font-style: italic;
+  font-size: clamp(0.95rem, 2vw, 1.1rem);
+  color: var(--ink-soft);
+  line-height: 1.8;
+  max-width: 580px;
+  text-align: center;
+  margin-bottom: 3rem;
 }
 
 .reports-grid {
+  width: 100%;
+  max-width: 860px;
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 1.5rem;
@@ -151,8 +184,9 @@ main {
 .coming-soon .card-eyebrow::after { content: ' — Coming soon'; }
 
 footer {
+  width: 100%;
   margin-top: auto;
-  padding: 2rem;
+  padding: 2.5rem 2rem;
   text-align: center;
   font-family: Impact, 'Arial Narrow Bold', sans-serif;
   font-size: 0.7rem;
@@ -166,13 +200,16 @@ footer {
 
 <header>
   <img src="/static/luna-logo.png" alt="Luna by Lena" class="logo">
-  <p class="tagline">Personalised astrology reports</p>
 </header>
 
-<div class="divider"></div>
+<section class="hero">
+  <h1 class="hero-headline">You already are who you&rsquo;re trying to become.</h1>
+  <p class="hero-body">Luna by Lena helps you remember that through astrology, identity work, and the science of how we actually create our reality.</p>
+</section>
 
-<main>
-  <p class="section-label">✦ Choose your report ✦</p>
+<section class="cb-section">
+  <p class="cb-heading">✦ Celestial Blueprint ✦</p>
+  <p class="cb-desc">Your birth chart is a map of who you came here to be. These reports read that map — in depth, in your specific chart, not your Sun sign.</p>
 
   <div class="reports-grid">
 
@@ -188,7 +225,7 @@ footer {
     </div>
 
   </div>
-</main>
+</section>
 
 <footer>✦ Lunabylena.com ✦</footer>
 
