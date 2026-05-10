@@ -1225,6 +1225,11 @@ def log_customer(name, email, marketing_opt_in, date, city, country):
 
 @app.route("/")
 def index():
+    return render_template("home.html")
+
+
+@app.route("/purpose")
+def purpose():
     return render_template("index.html",
         auto_generate=False,
         chart_data="null",
@@ -1340,8 +1345,8 @@ def create_checkout_session():
             }],
             mode="payment",
             customer_email=email,
-            success_url=f"{request.host_url}payment-success?session_id={{CHECKOUT_SESSION_ID}}",
-            cancel_url=f"{request.host_url}?cancelled=true",
+            success_url=f"{request.host_url}purpose/payment-success?session_id={{CHECKOUT_SESSION_ID}}",
+            cancel_url=f"{request.host_url}purpose?cancelled=true",
             metadata={
                 "name": name,
                 "email": email,
@@ -1360,7 +1365,7 @@ def create_checkout_session():
         return jsonify({"error": str(e)}), 500
 
 
-@app.route("/payment-success")
+@app.route("/purpose/payment-success")
 def payment_success():
     """After Stripe payment, verify session then render the page.
     The frontend calls /generate-after-payment to stream the report."""

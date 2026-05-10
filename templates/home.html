@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lunabylena — Astrology Reports</title>
+<meta name="description" content="Personalised astrology reports by Lunabylena. Life Purpose, Career & Personal Brand blueprints based on your birth chart.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400;1,500;1,700&family=Caveat:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --cream:#EFEBEA;
+  --pink-soft:#FFE3EC;
+  --pink-deep:#AA3157;
+  --terracotta:#C04C2D;
+  --purple:#7E4A92;
+  --ink:#1E1E1E;
+  --ink-soft:#3A3030;
+  --ink-muted:#8A7575;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Playfair Display', Georgia, serif;
+  background: var(--cream);
+  color: var(--ink);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+header {
+  width: 100%;
+  padding: 3rem 2rem 0;
+  text-align: center;
+}
+
+.brand {
+  font-family: Impact, 'Arial Narrow Bold', sans-serif;
+  font-size: clamp(3rem, 9vw, 6rem);
+  line-height: 0.9;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+.brand .l1 { color: var(--pink-deep); display: block; }
+.brand .l2 { color: var(--terracotta); display: block; }
+
+.tagline {
+  font-style: italic;
+  font-size: clamp(1rem, 2.5vw, 1.25rem);
+  color: var(--ink-soft);
+  margin-top: 1.2rem;
+}
+
+.divider {
+  width: 60px;
+  height: 1px;
+  background: var(--pink-deep);
+  margin: 2.5rem auto;
+}
+
+main {
+  width: 100%;
+  max-width: 860px;
+  padding: 0 2rem 5rem;
+}
+
+.section-label {
+  font-family: Impact, 'Arial Narrow Bold', sans-serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: var(--purple);
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.reports-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.report-card {
+  background: #fff;
+  border: 2px solid var(--ink);
+  padding: 2rem 1.75rem;
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.report-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 4px 4px 0 var(--ink);
+}
+
+.card-eyebrow {
+  font-family: Impact, 'Arial Narrow Bold', sans-serif;
+  font-size: 0.7rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--purple);
+}
+
+.card-title {
+  font-family: Impact, 'Arial Narrow Bold', sans-serif;
+  font-size: 1.6rem;
+  line-height: 0.95;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+.card-title .t1 { color: var(--pink-deep); display: block; }
+.card-title .t2 { color: var(--terracotta); display: block; }
+
+.card-desc {
+  font-style: italic;
+  font-size: 0.95rem;
+  color: var(--ink-soft);
+  line-height: 1.65;
+}
+
+.card-price {
+  font-family: Impact, 'Arial Narrow Bold', sans-serif;
+  font-size: 1rem;
+  letter-spacing: 0.1em;
+  color: var(--ink);
+  margin-top: auto;
+  padding-top: 0.75rem;
+  border-top: 1px solid #ddd;
+}
+
+.card-cta {
+  display: inline-block;
+  background: var(--pink-deep);
+  color: #fff;
+  font-family: Impact, 'Arial Narrow Bold', sans-serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  padding: 0.65rem 1.4rem;
+  text-decoration: none;
+  margin-top: 0.25rem;
+  align-self: flex-start;
+}
+.card-cta:hover { background: var(--terracotta); }
+
+.coming-soon {
+  opacity: 0.55;
+  cursor: default;
+  pointer-events: none;
+}
+.coming-soon .card-eyebrow::after { content: ' — Coming soon'; }
+
+footer {
+  margin-top: auto;
+  padding: 2rem;
+  text-align: center;
+  font-family: Impact, 'Arial Narrow Bold', sans-serif;
+  font-size: 0.7rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--pink-deep);
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1 class="brand">
+    <span class="l1">Luna</span>
+    <span class="l2">bylena</span>
+  </h1>
+  <p class="tagline">Personalised astrology reports</p>
+</header>
+
+<div class="divider"></div>
+
+<main>
+  <p class="section-label">✦ Choose your report ✦</p>
+
+  <div class="reports-grid">
+
+    <div class="report-card">
+      <span class="card-eyebrow">The Purpose Blueprint</span>
+      <div class="card-title">
+        <span class="t1">Celestial</span>
+        <span class="t2">Blueprint</span>
+      </div>
+      <p class="card-desc">Life Purpose, Career &amp; Personal Brand. A deep-dive into who you are, what you&rsquo;re here to do, and how to build a life and business that fits your soul.</p>
+      <span class="card-price">€27</span>
+      <a href="/purpose" class="card-cta">Get your blueprint →</a>
+    </div>
+
+  </div>
+</main>
+
+<footer>✦ Lunabylena.com ✦</footer>
+
+</body>
+</html>
