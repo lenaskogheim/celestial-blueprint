@@ -531,9 +531,12 @@ def clean_dashes(text):
     """Strip em-dashes and en-dashes that make text feel AI-generated.
     Used everywhere text flows to user - PDF, email, on-screen preview."""
     import re
-    # Em-dash with spaces -> comma + space
-    text = re.sub(r'\s*,\s*', ', ', text)
+    # Em-dash (U+2014) with optional surrounding spaces -> comma + space
+    text = re.sub(r'\s*—\s*', ', ', text)
+    # En-dash (U+2013) with optional surrounding spaces -> comma + space
     text = re.sub(r'\s*–\s*', ', ', text)
+    # Also catch the HTML entities in case they appear
+    text = text.replace('&mdash;', ', ').replace('&ndash;', ', ')
     # Clean any double commas from substitution
     text = re.sub(r',\s*,', ',', text)
     # Clean comma right before terminal punctuation
@@ -1271,15 +1274,7 @@ def generate():
 
     birth_info = {"date": date_str, "time": time_str, "city": city, "country": country}
 
-    # Start background generation for full report + email
-    thread = threading.Thread(
-        target=background_generate_and_send,
-        args=(email, chart, birth_info),
-        daemon=True
-    )
-    thread.start()
-
-    # Stream the preview (Soul's Signature) to the user immediately
+    # Stream the preview only — full PDF is sent after payment
     preview_prompt = build_prompt(chart, birth_info, preview_only=True)
     client = anthropic.Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY",""))
 

@@ -888,6 +888,9 @@ input::placeholder { color: var(--ink-muted); font-style: italic; opacity: 0.7; 
 }
 .confirm-sections .section-item::before { content: '✦'; color: var(--pink-deep); font-size: 0.7rem; flex-shrink: 0; }
 .email-confirm .confirm-note { font-size: 0.85rem; color: var(--ink-muted); margin-top: 1.6rem; font-style: italic; }
+.paywall-btn { display: block; margin: 2rem auto 0; padding: 1rem 2.4rem; background: var(--pink-deep); color: #fff; border: none; border-radius: 3px; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1rem; font-weight: 600; letter-spacing: 0.08em; cursor: pointer; transition: background 0.2s, transform 0.15s; }
+.paywall-btn:hover:not(:disabled) { background: var(--terracotta); transform: translateY(-1px); }
+.paywall-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 
 .report-actions { display: flex; gap: 1rem; margin-top: 3rem; justify-content: center; flex-wrap: wrap; }
 .action-btn {
@@ -1076,8 +1079,8 @@ input::placeholder { color: var(--ink-muted); font-style: italic; opacity: 0.7; 
         </label>
       </div>
       <div class="error-msg" id="errorMsg"></div>
-      <button class="submit-btn" onclick="handleSubmit()">Reveal My Blueprint &mdash; €27</button>
-      <p class="form-note">Secure payment via Stripe · The Purpose Blueprint</p>
+      <button class="submit-btn" onclick="handleSubmit()">Generate My Blueprint</button>
+      <p class="form-note">Free preview · Full PDF report unlocked after payment</p>
     </div>
   </section>
 
@@ -2050,6 +2053,49 @@ var currentEmail = '';
 var rawText = '';
 var lastHeader = '';
 var openSpecial = null;
+var _isPaidFlow = false;
+var _currentPayload = null;
+
+// Typewriter state
+var _twInterval = null;
+var _twDisplayed = 0;  // how many chars of rawText are currently shown
+var _twDone = false;   // true when stream has finished
+
+var EM_DASH_RE = /—|–|&mdash;|&ndash;/g;
+
+function _stripDashes(str) {
+  return str.replace(EM_DASH_RE, function(m, offset, s) {
+    // Replace with comma only if not already preceded by punctuation
+    var before = s[offset - 1] || '';
+    return /[,;.]/.test(before) ? ' ' : ', ';
+  });
+}
+
+function startTypewriter() {
+  _twDisplayed = 0;
+  _twDone = false;
+  if (_twInterval) clearInterval(_twInterval);
+  _twInterval = setInterval(function() {
+    if (_twDisplayed >= rawText.length) {
+      if (_twDone) { clearInterval(_twInterval); _twInterval = null; }
+      return;
+    }
+    // Advance ~6 chars per tick at 16ms ≈ 375 chars/sec (fast but visibly typing)
+    _twDisplayed = Math.min(_twDisplayed + 6, rawText.length);
+    renderReport(rawText.slice(0, _twDisplayed));
+  }, 16);
+}
+
+function flushTypewriter() {
+  if (_twInterval) { clearInterval(_twInterval); _twInterval = null; }
+  _twDone = true;
+  _twDisplayed = rawText.length;
+}
+
+function streamText(content) {
+  rawText += _stripDashes(content);
+  if (!_twInterval && !_twDone) startTypewriter();
+}
 
 var loadingSteps = [
   ['Calculating Your Chart','Mapping planetary positions at the moment of your birth'],
@@ -2090,7 +2136,8 @@ window.onload = function() {
   // Check if we're returning from a successful Stripe payment
   // Flask injects auto_generate, chart_data and meta_data as template variables
   if (typeof AUTO_GENERATE !== 'undefined' && AUTO_GENERATE && PAYMENT_SESSION_ID) {
-    // Returning from Stripe payment
+    // Returning from Stripe payment — mark as paid so email confirmation shows (not paywall)
+    _isPaidFlow = true;
     var sessionId = PAYMENT_SESSION_ID;
     showLoading();
     // Call the dedicated post-payment streaming endpoint
@@ -2121,7 +2168,7 @@ window.onload = function() {
                 document.getElementById('loadingSection').style.display = 'none';
                 document.getElementById('reportSection').style.display = 'block';
               }
-              rawText += event.content; renderReport(rawText);
+              streamText(event.content);
             }
             else if (event.type === 'done') { currentEmail = event.email; removeCursor(); }
           }
@@ -2306,39 +2353,41 @@ function handleSubmit() {
   if (email.indexOf('@') === -1) { showError('Please enter a valid email address.'); return; }
   if (!selectedCity) { showError('Please select a city from the dropdown list.'); return; }
 
-  // Show loading while we create the Stripe session
-  var btn = document.querySelector('.submit-btn');
-  btn.textContent = 'Preparing checkout...';
-  btn.disabled = true;
-  document.getElementById('errorMsg').style.display = 'none';
-
   var payload = {
     name: name, email: email, date: date, time: time,
     city: selectedCity.name, country: selectedCity.country,
     lat: selectedCity.lat, lng: selectedCity.lng,
     tz: selectedCity.tz, marketingOptIn: marketingOptIn
   };
+  _currentPayload = payload;
+  _isPaidFlow = false;
+
+  showLoading();
+  generateReport(payload);
+}
+
+function triggerPayment() {
+  if (!_currentPayload) return;
+  var btn = document.getElementById('paywallBtn');
+  if (btn) { btn.textContent = 'Preparing checkout...'; btn.disabled = true; }
 
   fetch('/create-checkout-session', {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify(payload)
+    body: JSON.stringify(_currentPayload)
   })
   .then(function(res) { return res.json(); })
   .then(function(data) {
     if (data.error) {
+      if (btn) { btn.textContent = 'Get Your Full Blueprint — €27'; btn.disabled = false; }
       showError(data.error);
-      btn.textContent = 'Reveal My Blueprint';
-      btn.disabled = false;
     } else {
-      // Redirect to Stripe checkout
       window.location.href = data.url;
     }
   })
   .catch(function() {
+    if (btn) { btn.textContent = 'Get Your Full Blueprint — €27'; btn.disabled = false; }
     showError('Something went wrong. Please try again.');
-    btn.textContent = 'Reveal My Blueprint';
-    btn.disabled = false;
   });
 }
 
@@ -2370,7 +2419,7 @@ function generateReport(payload) {
               document.getElementById('loadingSection').style.display = 'none';
               document.getElementById('reportSection').style.display = 'block';
             }
-            rawText += event.content; renderReport(rawText);
+            streamText(event.content);
           }
           else if (event.type === 'done') { removeCursor(); }
         }
@@ -2452,10 +2501,39 @@ function renderReport(text) {
 }
 
 function removeCursor() {
+  _twDone = true;
+  flushTypewriter();
   var c = document.querySelector('.cursor'); if (c) c.remove();
   renderReport(rawText);
   try { localStorage.setItem('cb_complete', '1'); } catch(e) {}
-  showEmailConfirmation();
+  if (_isPaidFlow) { showEmailConfirmation(); } else { showPaywall(); }
+}
+
+function showPaywall() {
+  var existing = document.getElementById('paywallBlock');
+  if (existing) return;
+  var div = document.createElement('div');
+  div.id = 'paywallBlock';
+  div.className = 'email-confirm';
+  div.innerHTML =
+    '<div class="confirm-ornament">✦</div>' +
+    '<h3>Your Blueprint Awaits</h3>' +
+    '<p class="confirm-teaser">This is a glimpse of what your chart holds. Unlock your complete Celestial Blueprint as a beautifully designed PDF sent straight to your inbox.</p>' +
+    '<div class="confirm-sections">' +
+      '<div class="section-label">Your Full Report Includes</div>' +
+      '<div class="section-item">Your IC: Where You Come From</div>' +
+      '<div class="section-item">Your Life Purpose</div>' +
+      '<div class="section-item">Your Career Path &amp; Calling</div>' +
+      '<div class="section-item">Careers That Fit Your Chart</div>' +
+      '<div class="section-item">Your Unique Gifts</div>' +
+      '<div class="section-item">Your Greatest Challenges</div>' +
+      '<div class="section-item">Your Business &amp; Personal Brand Blueprint</div>' +
+      '<div class="section-item">A Message From Your Chart</div>' +
+      '<div class="section-item">Your First Three Steps</div>' +
+    '</div>' +
+    '<button id="paywallBtn" class="paywall-btn" onclick="triggerPayment()">Get Your Full Blueprint &mdash; &euro;27</button>' +
+    '<p class="confirm-note">Secure payment via Stripe &middot; PDF sent to <strong>' + currentEmail + '</strong></p>';
+  document.getElementById('reportBody').appendChild(div);
 }
 
 function showEmailConfirmation() {
@@ -2492,6 +2570,8 @@ function restart() {
     localStorage.removeItem('cb_complete');
   } catch(e) {}
   rawText = ''; lastHeader = ''; selectedCity = null; openSpecial = null;
+  _isPaidFlow = false; _currentPayload = null;
+  flushTypewriter(); _twDisplayed = 0; _twDone = false;
   document.getElementById('reportSection').style.display = 'none';
   document.getElementById('reportBody').innerHTML = '';
   document.getElementById('chartStrip').innerHTML = '';
