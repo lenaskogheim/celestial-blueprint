@@ -461,30 +461,28 @@ input::placeholder { color: var(--ink-muted); font-style: italic; opacity: 0.7; 
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
 
 .city-wrapper { position: relative; }
-.city-dropdown {
-  position: absolute;
-  top: calc(100% + 4px);
-  left: 0; right: 0;
-  background: #FFFFFF;
+
+/* Style the Google Places autocomplete dropdown to match the site */
+.pac-container {
+  font-family: 'Playfair Display', Georgia, serif;
   border: 1.5px solid var(--ink);
-  z-index: 9999;
-  max-height: 240px;
-  overflow-y: auto;
-  display: none;
+  border-top: none;
   box-shadow: 4px 4px 0 var(--pink-deep);
+  border-radius: 0;
+  background: #fff;
 }
-.city-option {
-  padding: 0.8rem 1.1rem;
+.pac-item {
+  padding: 0.7rem 1.1rem;
   font-size: 0.95rem;
   color: var(--ink);
   cursor: pointer;
-  border-bottom: 1px solid rgba(30,30,30,0.1);
-  transition: background 0.12s;
+  border-top: 1px solid rgba(30,30,30,0.08);
 }
-.city-option:last-child { border-bottom: none; }
-.city-option:hover { background: var(--pink-soft); }
-.city-name { font-weight: 500; }
-.city-country { font-size: 0.82rem; color: var(--ink-muted); margin-left: 0.4rem; font-style: italic; }
+.pac-item:hover, .pac-item-selected { background: var(--pink-soft); }
+.pac-item-query { font-weight: 600; color: var(--ink); font-size: 0.95rem; }
+.pac-matched { font-weight: 700; }
+.pac-icon { display: none; }
+.pac-logo:after { display: none; }
 
 .opt-in-group { margin: 1.8rem 0 1.5rem; }
 .opt-in-label {
@@ -1067,8 +1065,7 @@ input::placeholder { color: var(--ink-muted); font-style: italic; opacity: 0.7; 
       <div class="form-group">
         <label>Place of Birth</label>
         <div class="city-wrapper">
-          <input type="text" id="cityInput" placeholder="Start typing a city…">
-          <div class="city-dropdown" id="cityDropdown"></div>
+          <input type="text" id="cityInput" placeholder="Start typing a city…" autocomplete="off">
         </div>
       </div>
       <div class="opt-in-group">
@@ -2187,141 +2184,16 @@ window.onload = function() {
 
   tryRestoreReport();
 
-  var input = document.getElementById('cityInput');
-  var dd = document.getElementById('cityDropdown');
-  var debounceTimer = null;
-  var lastQuery = '';
-
-  function renderDropdown(matches) {
-    dd.innerHTML = '';
-    if (matches.length === 0) { dd.style.display = 'none'; return; }
-    for (var i = 0; i < matches.length; i++) {
-      (function(city) {
-        var div = document.createElement('div');
-        div.className = 'city-option';
-        div.innerHTML = '<span class="city-name">' + city.name + '</span><span class="city-country">' + city.country + '</span>';
-        div.onclick = function() {
-          selectedCity = city;
-          input.value = city.name + ', ' + city.country;
-          dd.style.display = 'none';
-        };
-        dd.appendChild(div);
-      })(matches[i]);
-    }
-    dd.style.display = 'block';
-  }
-
-  function searchBuiltIn(q) {
-    return CITIES.filter(function(c) {
-      return c.name.toLowerCase().indexOf(q) === 0;
-    }).slice(0, 8);
-  }
-
-  function fetchLiveCities(q, callback) {
-    var url = 'https://nominatim.openstreetmap.org/search?q=' + encodeURIComponent(q) + '&format=json&limit=8&addressdetails=1&accept-language=en';
-    fetch(url, { headers: {'Accept-Language':'en'} })
-      .then(function(res) { return res.json(); })
-      .then(function(data) {
-        if (!data || !Array.isArray(data)) { callback([]); return; }
-        var liveCities = data
-          .filter(function(d) {
-            return d.class === 'place' || ['city','town','village','municipality','suburb','hamlet'].indexOf(d.type) !== -1;
-          })
-          .map(function(d) {
-            var addr = d.address || {};
-            var name = addr.city || addr.town || addr.village || addr.hamlet || addr.suburb || addr.municipality || d.name || '';
-            var country = addr.country || '';
-            var cc = (addr.country_code || '').toUpperCase();
-            return {
-              name: name,
-              country: country,
-              lat: parseFloat(d.lat),
-              lng: parseFloat(d.lon),
-              tz: guessTzFromCC(cc, parseFloat(d.lon))
-            };
-          })
-          .filter(function(c) { return c.name; });
-        callback(liveCities.slice(0, 8));
-      })
-      .catch(function() { callback([]); });
-  }
-
-  function guessTzFromCC(cc, lng) {
-    var map = {
-      'NO':'Europe/Oslo','SE':'Europe/Stockholm','DK':'Europe/Copenhagen','FI':'Europe/Helsinki',
-      'IS':'Atlantic/Reykjavik','GB':'Europe/London','IE':'Europe/Dublin','FR':'Europe/Paris',
-      'DE':'Europe/Berlin','NL':'Europe/Amsterdam','BE':'Europe/Brussels','AT':'Europe/Vienna',
-      'CH':'Europe/Zurich','IT':'Europe/Rome','ES':'Europe/Madrid','PT':'Europe/Lisbon',
-      'GR':'Europe/Athens','PL':'Europe/Warsaw','CZ':'Europe/Prague','SK':'Europe/Bratislava',
-      'HU':'Europe/Budapest','RO':'Europe/Bucharest','BG':'Europe/Sofia','RS':'Europe/Belgrade',
-      'HR':'Europe/Zagreb','SI':'Europe/Ljubljana','BA':'Europe/Sarajevo','MK':'Europe/Skopje',
-      'AL':'Europe/Tirane','TR':'Europe/Istanbul','RU':'Europe/Moscow','UA':'Europe/Kyiv',
-      'BY':'Europe/Minsk','LT':'Europe/Vilnius','LV':'Europe/Riga','EE':'Europe/Tallinn',
-      'GE':'Asia/Tbilisi','AM':'Asia/Yerevan','AZ':'Asia/Baku','KZ':'Asia/Almaty',
-      'IL':'Asia/Jerusalem','LB':'Asia/Beirut','SY':'Asia/Damascus','JO':'Asia/Amman',
-      'IQ':'Asia/Baghdad','IR':'Asia/Tehran','SA':'Asia/Riyadh','AE':'Asia/Dubai',
-      'QA':'Asia/Qatar','KW':'Asia/Kuwait','BH':'Asia/Bahrain','OM':'Asia/Muscat',
-      'EG':'Africa/Cairo','MA':'Africa/Casablanca','DZ':'Africa/Algiers','TN':'Africa/Tunis',
-      'LY':'Africa/Tripoli','NG':'Africa/Lagos','KE':'Africa/Nairobi','ET':'Africa/Addis_Ababa',
-      'TZ':'Africa/Dar_es_Salaam','UG':'Africa/Kampala','RW':'Africa/Kigali','GH':'Africa/Accra',
-      'SN':'Africa/Dakar','CI':'Africa/Abidjan','ZA':'Africa/Johannesburg','ZW':'Africa/Harare',
-      'ZM':'Africa/Lusaka','MZ':'Africa/Maputo','AO':'Africa/Luanda','CD':'Africa/Kinshasa',
-      'IN':'Asia/Kolkata','PK':'Asia/Karachi','BD':'Asia/Dhaka','LK':'Asia/Colombo',
-      'NP':'Asia/Kathmandu','JP':'Asia/Tokyo','KR':'Asia/Seoul','CN':'Asia/Shanghai',
-      'HK':'Asia/Hong_Kong','TW':'Asia/Taipei','TH':'Asia/Bangkok','VN':'Asia/Ho_Chi_Minh',
-      'SG':'Asia/Singapore','MY':'Asia/Kuala_Lumpur','ID':'Asia/Jakarta','PH':'Asia/Manila',
-      'KH':'Asia/Phnom_Penh','MM':'Asia/Yangon','LA':'Asia/Vientiane','MN':'Asia/Ulaanbaatar',
-      'AU':'Australia/Sydney','NZ':'Pacific/Auckland','FJ':'Pacific/Fiji',
-      'US':'America/New_York','CA':'America/Toronto','MX':'America/Mexico_City',
-      'CU':'America/Havana','DO':'America/Santo_Domingo','PR':'America/Puerto_Rico',
-      'JM':'America/Jamaica','HT':'America/Port-au-Prince','BS':'America/Nassau',
-      'BB':'America/Barbados','GT':'America/Guatemala','SV':'America/El_Salvador',
-      'HN':'America/Tegucigalpa','NI':'America/Managua','CR':'America/Costa_Rica',
-      'PA':'America/Panama','BR':'America/Sao_Paulo','AR':'America/Argentina/Buenos_Aires',
-      'CL':'America/Santiago','PE':'America/Lima','CO':'America/Bogota','VE':'America/Caracas',
-      'EC':'America/Guayaquil','BO':'America/La_Paz','PY':'America/Asuncion','UY':'America/Montevideo'
-    };
-    return map[cc] || 'UTC';
-  }
-
-  input.addEventListener('input', function() {
-    var q = this.value.toLowerCase().trim();
-    selectedCity = null;
-    if (q.length < 1) { dd.style.display = 'none'; return; }
-
-    var builtInMatches = searchBuiltIn(q);
-    renderDropdown(builtInMatches);
-
-    if (debounceTimer) clearTimeout(debounceTimer);
-    if (q.length < 2) return;
-
-    debounceTimer = setTimeout(function() {
-      var currentQuery = q;
-      lastQuery = currentQuery;
-      fetchLiveCities(currentQuery, function(liveCities) {
-        if (lastQuery !== currentQuery) return;
-        if (selectedCity) return;
-        var seen = {};
-        var merged = [];
-        builtInMatches.forEach(function(c) {
-          var key = c.name.toLowerCase() + '|' + c.country.toLowerCase();
-          seen[key] = true;
-          merged.push(c);
-        });
-        liveCities.forEach(function(c) {
-          var key = c.name.toLowerCase() + '|' + c.country.toLowerCase();
-          if (!seen[key]) { seen[key] = true; merged.push(c); }
-        });
-        renderDropdown(merged.slice(0, 12));
-      });
-    }, 350);
-  });
-
-  document.onclick = function(e) {
-    if (!e.target.closest || !e.target.closest('.city-wrapper')) {
-      dd.style.display = 'none';
-    }
-  };
+  // Load Google Places autocomplete after fetching the key from the backend
+  fetch('/google-places-key')
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (!data.key) return;
+      var script = document.createElement('script');
+      script.src = 'https://maps.googleapis.com/maps/api/js?key=' + data.key + '&libraries=places&callback=initCityAutocomplete';
+      script.async = true;
+      document.head.appendChild(script);
+    });
 };
 
 function showError(msg) {
@@ -2582,9 +2454,55 @@ function restart() {
   document.getElementById('date').value = '';
   document.getElementById('time').value = '';
   document.getElementById('cityInput').value = '';
+  selectedCity = null;
   document.getElementById('errorMsg').style.display = 'none';
   document.getElementById('landingPage').style.display = 'block';
   window.scrollTo(0,0);
+}
+
+// Called by Google Maps JS library once loaded
+function initCityAutocomplete() {
+  var input = document.getElementById('cityInput');
+  var autocomplete = new google.maps.places.Autocomplete(input, {
+    types: ['(cities)'],
+    fields: ['geometry', 'address_components', 'name', 'formatted_address']
+  });
+
+  autocomplete.addListener('place_changed', function() {
+    var place = autocomplete.getPlace();
+    if (!place.geometry) { selectedCity = null; return; }
+
+    var lat = place.geometry.location.lat();
+    var lng = place.geometry.location.lng();
+
+    // Extract city name and country from address components
+    var cityName = place.name || '';
+    var country = '';
+    if (place.address_components) {
+      place.address_components.forEach(function(c) {
+        if (c.types.indexOf('country') !== -1) country = c.long_name;
+      });
+    }
+
+    // Get accurate timezone from backend using timezonefinder
+    fetch('/timezone', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({lat: lat, lng: lng})
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      selectedCity = { name: cityName, country: country, lat: lat, lng: lng, tz: data.tz };
+    })
+    .catch(function() {
+      selectedCity = { name: cityName, country: country, lat: lat, lng: lng, tz: 'UTC' };
+    });
+  });
+
+  // Clear selectedCity if user edits the field after picking
+  input.addEventListener('input', function() {
+    selectedCity = null;
+  });
 }
 
 </script>

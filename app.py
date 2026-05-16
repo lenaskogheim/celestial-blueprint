@@ -1498,5 +1498,25 @@ def stripe_key():
     return jsonify({"publishable_key": STRIPE_PUBLISHABLE_KEY})
 
 
+@app.route("/google-places-key")
+def google_places_key():
+    """Return the Google Places API key for the frontend."""
+    return jsonify({"key": os.environ.get("GOOGLE_PLACES_KEY", "")})
+
+
+@app.route("/timezone", methods=["POST"])
+def get_timezone():
+    """Return the IANA timezone string for a given lat/lng."""
+    from timezonefinder import TimezoneFinder
+    data = request.json
+    try:
+        lat = float(data.get("lat", 0))
+        lng = float(data.get("lng", 0))
+        tz = TimezoneFinder().timezone_at(lat=lat, lng=lng) or "UTC"
+    except Exception:
+        tz = "UTC"
+    return jsonify({"tz": tz})
+
+
 if __name__ == "__main__":
     app.run(debug=False, port=5000)
