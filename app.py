@@ -635,7 +635,7 @@ def build_email_body_html(name):
     return f"""<!DOCTYPE html>
 <html><head>
 <meta charset="UTF-8">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400;1,500;1,700&family=Caveat:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400;1,500;1,700&family=Mrs+Saint+Delafield&display=swap" rel="stylesheet">
 </head>
 <body style="margin:0;padding:0;background:#EFEBEA;font-family:'Playfair Display',Georgia,serif;">
 <table width="100%" cellpadding="0" cellspacing="0" style="background:#EFEBEA;padding:50px 20px;">
@@ -669,7 +669,7 @@ def build_email_body_html(name):
       <p style="margin:0 0 22px;font-family:'Playfair Display',Georgia,serif;">I am so grateful for your trust and support. If the reading resonates, I would love to hear from you.</p>
 
       <p style="margin:0 0 4px;font-family:'Playfair Display',Georgia,serif;">With warmth,</p>
-      <p style="margin:0 0 0;font-family:'Caveat',cursive;font-size:32px;color:#AA3157;line-height:1;">Lena</p>
+      <p style="margin:0 0 0;font-family:'Mrs Saint Delafield',cursive;font-size:32px;color:#AA3157;line-height:1;">Lena</p>
     </td></tr>
 
     <tr><td style="padding-top:50px;text-align:center;">
@@ -719,7 +719,7 @@ def build_pdf_html(name, report_text, birth_info, chart):
     return f"""<!DOCTYPE html>
 <html><head><meta charset="UTF-8">
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400;1,500;1,700&family=Caveat:wght@400;500;600&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400;1,500;1,700&family=Mrs+Saint+Delafield&display=swap');
   @page {{ size: A4; margin: 18mm 18mm; background: #EFEBEA; }}
 
   * {{ box-sizing: border-box; }}
