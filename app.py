@@ -1498,10 +1498,58 @@ def stripe_key():
     return jsonify({"publishable_key": STRIPE_PUBLISHABLE_KEY})
 
 
-@app.route("/google-places-key")
-def google_places_key():
-    """Return the Google Places API key for the frontend."""
-    return jsonify({"key": os.environ.get("GOOGLE_PLACES_KEY", "")})
+@app.route("/city-search")
+def city_search():
+    """Proxy Google Places autocomplete — keeps the API key server-side."""
+    q = request.args.get("q", "").strip()
+    if len(q) < 2:
+        return jsonify({"results": []})
+    api_key = os.environ.get("GOOGLE_PLACES_KEY", "")
+    if not api_key:
+        return jsonify({"results": []})
+    try:
+        r = requests.get(
+            "https://maps.googleapis.com/maps/api/place/autocomplete/json",
+            params={"input": q, "types": "(cities)", "language": "en", "key": api_key},
+            timeout=5
+        )
+        preds = r.json().get("predictions", [])
+        results = [{
+            "place_id": p.get("place_id", ""),
+            "main_text": p.get("structured_formatting", {}).get("main_text", ""),
+            "secondary_text": p.get("structured_formatting", {}).get("secondary_text", ""),
+        } for p in preds]
+        return jsonify({"results": results})
+    except Exception as e:
+        print(f"City search error: {e}")
+        return jsonify({"results": []})
+
+
+@app.route("/city-details")
+def city_details():
+    """Fetch lat/lng and country for a Google place_id — keeps the API key server-side."""
+    place_id = request.args.get("place_id", "")
+    if not place_id:
+        return jsonify({"error": "No place_id"}), 400
+    api_key = os.environ.get("GOOGLE_PLACES_KEY", "")
+    try:
+        r = requests.get(
+            "https://maps.googleapis.com/maps/api/place/details/json",
+            params={"place_id": place_id, "fields": "geometry,name,address_components", "key": api_key},
+            timeout=5
+        )
+        result = r.json().get("result", {})
+        lat = result.get("geometry", {}).get("location", {}).get("lat")
+        lng = result.get("geometry", {}).get("location", {}).get("lng")
+        name = result.get("name", "")
+        country = next(
+            (c.get("long_name", "") for c in result.get("address_components", []) if "country" in c.get("types", [])),
+            ""
+        )
+        return jsonify({"name": name, "country": country, "lat": lat, "lng": lng})
+    except Exception as e:
+        print(f"City details error: {e}")
+        return jsonify({"error": str(e)}), 500
 
 
 @app.route("/timezone", methods=["POST"])

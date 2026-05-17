@@ -461,28 +461,29 @@ input::placeholder { color: var(--ink-muted); font-style: italic; opacity: 0.7; 
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
 
 .city-wrapper { position: relative; }
-
-/* Style the Google Places autocomplete dropdown to match the site */
-.pac-container {
-  font-family: 'Playfair Display', Georgia, serif;
+.city-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0; right: 0;
+  background: #FFFFFF;
   border: 1.5px solid var(--ink);
-  border-top: none;
+  z-index: 9999;
+  max-height: 260px;
+  overflow-y: auto;
+  display: none;
   box-shadow: 4px 4px 0 var(--pink-deep);
-  border-radius: 0;
-  background: #fff;
 }
-.pac-item {
-  padding: 0.7rem 1.1rem;
+.city-option {
+  padding: 0.8rem 1.1rem;
   font-size: 0.95rem;
   color: var(--ink);
   cursor: pointer;
-  border-top: 1px solid rgba(30,30,30,0.08);
+  border-bottom: 1px solid rgba(30,30,30,0.08);
 }
-.pac-item:hover, .pac-item-selected { background: var(--pink-soft); }
-.pac-item-query { font-weight: 600; color: var(--ink); font-size: 0.95rem; }
-.pac-matched { font-weight: 700; }
-.pac-icon { display: none; }
-.pac-logo:after { display: none; }
+.city-option:last-child { border-bottom: none; }
+.city-option:hover, .city-option.active { background: var(--pink-soft); }
+.city-main { font-weight: 600; }
+.city-secondary { font-size: 0.82rem; color: var(--ink-muted); margin-left: 0.3rem; font-style: italic; }
 
 .opt-in-group { margin: 1.8rem 0 1.5rem; }
 .opt-in-label {
@@ -1066,6 +1067,7 @@ input::placeholder { color: var(--ink-muted); font-style: italic; opacity: 0.7; 
         <label>Place of Birth</label>
         <div class="city-wrapper">
           <input type="text" id="cityInput" placeholder="Start typing a city…" autocomplete="new-password" name="birth_city_field">
+          <div class="city-dropdown" id="cityDropdown"></div>
         </div>
       </div>
       <div class="opt-in-group">
@@ -2184,16 +2186,55 @@ window.onload = function() {
 
   tryRestoreReport();
 
-  // Load Google Places autocomplete after fetching the key from the backend
-  fetch('/google-places-key')
-    .then(function(r) { return r.json(); })
-    .then(function(data) {
-      if (!data.key) return;
-      var script = document.createElement('script');
-      script.src = 'https://maps.googleapis.com/maps/api/js?key=' + data.key + '&libraries=places&callback=initCityAutocomplete';
-      script.async = true;
-      document.head.appendChild(script);
+  var cityInput = document.getElementById('cityInput');
+  var cityDropdown = document.getElementById('cityDropdown');
+  var debounceTimer = null;
+
+  function renderCityDropdown(results) {
+    cityDropdown.innerHTML = '';
+    if (!results.length) { cityDropdown.style.display = 'none'; return; }
+    results.forEach(function(r) {
+      var div = document.createElement('div');
+      div.className = 'city-option';
+      div.innerHTML = '<span class="city-main">' + r.main_text + '</span><span class="city-secondary">' + r.secondary_text + '</span>';
+      div.onclick = function() {
+        cityInput.value = r.main_text + (r.secondary_text ? ', ' + r.secondary_text : '');
+        cityDropdown.style.display = 'none';
+        // Fetch lat/lng then timezone
+        fetch('/city-details?place_id=' + encodeURIComponent(r.place_id))
+          .then(function(res) { return res.json(); })
+          .then(function(d) {
+            return fetch('/timezone', {
+              method: 'POST',
+              headers: {'Content-Type':'application/json'},
+              body: JSON.stringify({lat: d.lat, lng: d.lng})
+            }).then(function(res) { return res.json(); }).then(function(tz) {
+              selectedCity = { name: d.name, country: d.country, lat: d.lat, lng: d.lng, tz: tz.tz };
+            });
+          })
+          .catch(function() { selectedCity = null; });
+      };
+      cityDropdown.appendChild(div);
     });
+    cityDropdown.style.display = 'block';
+  }
+
+  cityInput.addEventListener('input', function() {
+    var q = this.value.trim();
+    selectedCity = null;
+    if (q.length < 2) { cityDropdown.style.display = 'none'; return; }
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(function() {
+      fetch('/city-search?q=' + encodeURIComponent(q))
+        .then(function(r) { return r.json(); })
+        .then(function(data) { renderCityDropdown(data.results || []); })
+        .catch(function() { cityDropdown.style.display = 'none'; });
+    }, 300);
+  });
+
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('.city-wrapper')) cityDropdown.style.display = 'none';
+  });
 };
 
 function showError(msg) {
@@ -2460,50 +2501,6 @@ function restart() {
   window.scrollTo(0,0);
 }
 
-// Called by Google Maps JS library once loaded
-function initCityAutocomplete() {
-  var input = document.getElementById('cityInput');
-  var autocomplete = new google.maps.places.Autocomplete(input, {
-    types: ['(cities)'],
-    fields: ['geometry', 'address_components', 'name', 'formatted_address']
-  });
-
-  autocomplete.addListener('place_changed', function() {
-    var place = autocomplete.getPlace();
-    if (!place.geometry) { selectedCity = null; return; }
-
-    var lat = place.geometry.location.lat();
-    var lng = place.geometry.location.lng();
-
-    // Extract city name and country from address components
-    var cityName = place.name || '';
-    var country = '';
-    if (place.address_components) {
-      place.address_components.forEach(function(c) {
-        if (c.types.indexOf('country') !== -1) country = c.long_name;
-      });
-    }
-
-    // Get accurate timezone from backend using timezonefinder
-    fetch('/timezone', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({lat: lat, lng: lng})
-    })
-    .then(function(r) { return r.json(); })
-    .then(function(data) {
-      selectedCity = { name: cityName, country: country, lat: lat, lng: lng, tz: data.tz };
-    })
-    .catch(function() {
-      selectedCity = { name: cityName, country: country, lat: lat, lng: lng, tz: 'UTC' };
-    });
-  });
-
-  // Clear selectedCity if user edits the field after picking
-  input.addEventListener('input', function() {
-    selectedCity = null;
-  });
-}
 
 </script>
 <script>
