@@ -2079,10 +2079,11 @@ function startTypewriter() {
       if (_twDone) { clearInterval(_twInterval); _twInterval = null; }
       return;
     }
-    // Advance ~6 chars per tick at 16ms ≈ 375 chars/sec (fast but visibly typing)
-    _twDisplayed = Math.min(_twDisplayed + 6, rawText.length);
+    // Advance ~2 chars per tick at 28ms ≈ 70 chars/sec — feels like a fast typist
+    var step = 2 + Math.floor(Math.random() * 2); // 2–3 chars, slight variation
+    _twDisplayed = Math.min(_twDisplayed + step, rawText.length);
     renderReport(rawText.slice(0, _twDisplayed));
-  }, 16);
+  }, 28);
 }
 
 function flushTypewriter() {
@@ -2292,14 +2293,14 @@ function triggerPayment() {
   .then(function(res) { return res.json(); })
   .then(function(data) {
     if (data.error) {
-      if (btn) { btn.textContent = 'Get Your Full Blueprint — €27'; btn.disabled = false; }
+      if (btn) { btn.textContent = 'Get Your Full Blueprint · €27'; btn.disabled = false; }
       showError(data.error);
     } else {
       window.location.href = data.url;
     }
   })
   .catch(function() {
-    if (btn) { btn.textContent = 'Get Your Full Blueprint — €27'; btn.disabled = false; }
+    if (btn) { btn.textContent = 'Get Your Full Blueprint · €27'; btn.disabled = false; }
     showError('Something went wrong. Please try again.');
   });
 }
@@ -2357,6 +2358,7 @@ function buildReportHeader(chart, payload) {
     localStorage.setItem('cb_email', payload.email);
   } catch(e) {}
   var possessive = chart.name.endsWith('s') ? "&#39;" : "&#39;s";
+  function ordinal(n) { var s=['th','st','nd','rd'], v=n%100; return n+(s[(v-20)%10]||s[v]||s[0]); }
   document.getElementById('reportName').innerHTML = chart.name + possessive + ' <span class="italic">Purpose Blueprint</span>';
   document.getElementById('reportMeta').textContent = payload.date + ' · ' + payload.time + ' · ' + payload.city + ', ' + payload.country + ' · Whole Sign Houses';
   var cells = [
@@ -2364,7 +2366,7 @@ function buildReportHeader(chart, payload) {
     ['Mercury',p.Mercury.sign,p.Mercury.house],['Venus',p.Venus.sign,p.Venus.house],
     ['Mars',p.Mars.sign,p.Mars.house],['Jupiter',p.Jupiter.sign,p.Jupiter.house],
     ['Saturn',p.Saturn.sign,p.Saturn.house],
-    ['MC',a.MC.sign,'H'+a.MC.ws_house],['IC',a.IC.sign,'H'+a.IC.ws_house],
+    ['MC',a.MC.sign,ordinal(a.MC.ws_house)],['IC',a.IC.sign,ordinal(a.IC.ws_house)],
   ];
   document.getElementById('chartStripHeading').style.display = 'block';
   document.getElementById('chartStrip').innerHTML = cells.map(function(c) {
@@ -2430,7 +2432,7 @@ function showPaywall() {
   div.className = 'email-confirm';
   div.innerHTML =
     '<div class="confirm-ornament">✦</div>' +
-    '<h3>Your Blueprint Awaits</h3>' +
+    '<h3>Unlock Your Blueprint</h3>' +
     '<p class="confirm-teaser">This is a glimpse of what your chart holds. Unlock your complete Celestial Blueprint as a beautifully designed PDF sent straight to your inbox.</p>' +
     '<div class="confirm-sections">' +
       '<div class="section-label">Your Full Report Includes</div>' +
@@ -2444,7 +2446,7 @@ function showPaywall() {
       '<div class="section-item">A Message From Your Chart</div>' +
       '<div class="section-item">Your First Three Steps</div>' +
     '</div>' +
-    '<button id="paywallBtn" class="paywall-btn" onclick="triggerPayment()">Get Your Full Blueprint &mdash; &euro;27</button>' +
+    '<button id="paywallBtn" class="paywall-btn" onclick="triggerPayment()">Get Your Full Blueprint &middot; &euro;27</button>' +
     '<p class="confirm-note">Secure payment via Stripe &middot; PDF sent to <strong>' + currentEmail + '</strong></p>';
   document.getElementById('reportBody').appendChild(div);
 }

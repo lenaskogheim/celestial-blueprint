@@ -1379,11 +1379,12 @@ def payment_success():
             return render_template("index.html",
                 auto_generate=False, chart_data="null", meta_data="null")
 
-        print(f"[payment-success] Verified — passing session_id to frontend")
-        return render_template("index.html",
-            auto_generate=True,
-            chart_data=session_id,
-            meta_data="null")
+        meta = session.metadata.to_dict()
+        print(f"[payment-success] Verified — rendering thank you page for {meta.get('email')}")
+        return render_template("thank_you.html",
+            session_id=session_id,
+            name=meta.get("name", ""),
+            email=meta.get("email", ""))
 
     except Exception as e:
         print(f"Payment success error: {e}")
