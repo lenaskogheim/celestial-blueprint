@@ -1511,7 +1511,7 @@ def city_search():
     try:
         r = requests.get(
             "https://maps.googleapis.com/maps/api/place/autocomplete/json",
-            params={"input": q, "types": "(cities)", "language": "en", "key": api_key},
+            params={"input": q, "types": "(regions)", "language": "en", "key": api_key},
             timeout=5
         )
         preds = r.json().get("predictions", [])
@@ -1553,6 +1553,34 @@ def city_details():
         return jsonify({"error": str(e)}), 500
 
 
+@app.route("/geocode")
+def geocode():
+    """Geocode a free-text place name — fallback when user doesn't pick from dropdown."""
+    q = request.args.get("q", "").strip()
+    if not q:
+        return jsonify({"error": "No query"}), 400
+    api_key = os.environ.get("GOOGLE_PLACES_KEY", "")
+    try:
+        r = requests.get(
+            "https://maps.googleapis.com/maps/api/geocode/json",
+            params={"address": q, "language": "en", "key": api_key},
+            timeout=5
+        )
+        results = r.json().get("results", [])
+        if not results:
+            return jsonify({"error": "Not found"}), 404
+        res = results[0]
+        lat = res["geometry"]["location"]["lat"]
+        lng = res["geometry"]["location"]["lng"]
+        components = res.get("address_components", [])
+        name = next((c["long_name"] for c in components if "locality" in c.get("types", [])
+                     or "administrative_area_level_3" in c.get("types", [])), q.split(",")[0].strip())
+        country = next((c["long_name"] for c in components if "country" in c.get("types", [])), "")
+        return jsonify({"name": name, "country": country, "lat": lat, "lng": lng})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
 @app.route("/timezone", methods=["POST"])
 def get_timezone():
     """Return the IANA timezone string for a given lat/lng."""
@@ -1567,5 +1595,13 @@ def get_timezone():
     return jsonify({"tz": tz})
 
 
+@app.route("/preview-thank-you")
+def preview_thank_you():
+    return render_template("thank_you.html",
+        session_id=None,
+        name="Lena Skogheim",
+        email="lena@example.com")
+
 if __name__ == "__main__":
-    app.run(debug=False, port=5000)
+    import os as _os
+    app.run(debug=False, port=int(_os.environ.get("PORT", 5001)))

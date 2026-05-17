@@ -2265,19 +2265,38 @@ function handleSubmit() {
   document.getElementById('errorMsg').style.display = 'none';
   if (!name || !email || !date || !time) { showError('Please fill in all fields before continuing.'); return; }
   if (email.indexOf('@') === -1) { showError('Please enter a valid email address.'); return; }
-  if (!selectedCity) { showError('Please select a city from the dropdown list.'); return; }
+  var cityText = document.getElementById('cityInput').value.trim();
+  if (!selectedCity && !cityText) { showError('Please enter your place of birth.'); return; }
 
-  var payload = {
-    name: name, email: email, date: date, time: time,
-    city: selectedCity.name, country: selectedCity.country,
-    lat: selectedCity.lat, lng: selectedCity.lng,
-    tz: selectedCity.tz, marketingOptIn: marketingOptIn
-  };
-  _currentPayload = payload;
-  _isPaidFlow = false;
+  function proceed(city) {
+    var payload = {
+      name: name, email: email, date: date, time: time,
+      city: city.name, country: city.country,
+      lat: city.lat, lng: city.lng,
+      tz: city.tz, marketingOptIn: marketingOptIn
+    };
+    _currentPayload = payload;
+    _isPaidFlow = false;
+    showLoading();
+    generateReport(payload);
+  }
 
-  showLoading();
-  generateReport(payload);
+  if (selectedCity) { proceed(selectedCity); return; }
+
+  // Fallback: geocode whatever the user typed
+  fetch('/geocode?q=' + encodeURIComponent(cityText))
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
+      if (d.error || !d.lat) { showError('Could not find that place. Please select a city from the dropdown list.'); return; }
+      return fetch('/timezone', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({lat: d.lat, lng: d.lng})
+      }).then(function(r) { return r.json(); }).then(function(tz) {
+        proceed({ name: d.name, country: d.country, lat: d.lat, lng: d.lng, tz: tz.tz });
+      });
+    })
+    .catch(function() { showError('Could not find that place. Please select a city from the dropdown list.'); });
 }
 
 function triggerPayment() {
