@@ -52,25 +52,22 @@ header {
 
 .hero-headline {
   font-family: Impact, 'Arial Narrow Bold', sans-serif;
-  font-size: clamp(2rem, 5.5vw, 3.25rem);
+  font-size: clamp(2.5rem, 7vw, 4.5rem);
   font-weight: 400;
-  line-height: 1.15;
-  color: var(--ink);
+  line-height: 1.1;
   margin-bottom: 1.5rem;
   text-transform: uppercase;
   letter-spacing: 0.02em;
 }
 
-.hero-headline em {
-  font-style: italic;
-  color: var(--pink-deep);
-}
+.hero-headline .h1 { color: var(--pink-deep); }
+.hero-headline .h2 { color: var(--terracotta); }
 
 .hero-body {
-  font-size: clamp(1rem, 2.2vw, 1.2rem);
+  font-size: clamp(1.3rem, 3vw, 1.9rem);
   font-style: italic;
   color: var(--ink-soft);
-  line-height: 1.8;
+  line-height: 1.7;
   max-width: 580px;
   margin: 0 auto;
 }
@@ -208,7 +205,10 @@ footer {
 </header>
 
 <section class="hero">
-  <h1 class="hero-headline">You already are who you&rsquo;re trying to become.</h1>
+  <h1 class="hero-headline">
+    <span class="h1">You already are who you&rsquo;re</span><br>
+    <span class="h2">trying to become.</span>
+  </h1>
   <p class="hero-body">Luna by Lena helps you remember that through astrology, identity work, and the science of how we actually create our reality.</p>
 </section>
 
