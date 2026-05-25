@@ -59,9 +59,9 @@ def calculate_chart(name, year, month, day, hour, minute, lat, lng, tz_str):
     }
 
     # Build house rulers with TRADITIONAL as primary, MODERN as secondary co-ruler.
-    # Houses 1, 2, 3, 6, 10, 11 are the most relevant for purpose/career/values/brand.
+    # All 12 houses included so both purpose and love reports can use the same chart data.
     hr = {}
-    for h in [1, 2, 3, 6, 10, 11]:
+    for h in range(1, 13):
         sign_abbr = ws_houses[h-1]
         hr[h] = {
             "sign": fs(sign_abbr),
@@ -1059,7 +1059,7 @@ def build_pdf_html(name, report_text, birth_info, chart):
 </body></html>"""
 
 
-def send_report_email(to_email, to_name, email_body_html, pdf_bytes):
+def send_report_email(to_email, to_name, email_body_html, pdf_bytes, subject=None, filename=None):
     """Send email via Resend API with short personal body + PDF attachment."""
     api_key = os.environ.get("RESEND_API_KEY", "")
     if not api_key:
@@ -1069,14 +1069,14 @@ def send_report_email(to_email, to_name, email_body_html, pdf_bytes):
     payload = {
         "from": "Celestial Blueprint <hello@lunabylena.com>",
         "to": [to_email],
-        "subject": f"Your Celestial Blueprint ✦ {to_name}",
+        "subject": subject or f"Your Celestial Blueprint ✦ {to_name}",
         "html": email_body_html,
     }
 
     if pdf_bytes:
         pdf_b64 = base64.b64encode(pdf_bytes).decode()
         payload["attachments"] = [{
-            "filename": f"{to_name}-celestial-blueprint.pdf",
+            "filename": filename or f"{to_name}-celestial-blueprint.pdf",
             "content": pdf_b64,
         }]
 
@@ -1123,7 +1123,7 @@ def background_generate_and_send(email, chart, birth_info):
         print(f"Background generation failed: {e}")
 
 
-def add_to_kit(name, email):
+def add_to_kit(name, email, tag_name="purpose-blueprint"):
     """Add a subscriber to Kit using V4 API with X-Kit-Api-Key header."""
     import requests as req
 
@@ -1159,18 +1159,18 @@ def add_to_kit(name, email):
             print(f"Kit: no subscriber id in response: {sub_data}")
             return False
 
-        # Step 2: Get or create the purpose-blueprint tag
+        # Step 2: Get or create the tag
         tags_resp = req.get(f"{base}/tags", headers=headers, timeout=10)
         tag_id = None
         for tag in tags_resp.json().get("tags", []):
-            if tag.get("name") == "purpose-blueprint":
+            if tag.get("name") == tag_name:
                 tag_id = tag["id"]
                 break
 
         if not tag_id:
             create_resp = req.post(
                 f"{base}/tags",
-                json={"name": "purpose-blueprint"},
+                json={"name": tag_name},
                 headers=headers,
                 timeout=10
             )
@@ -1181,7 +1181,6 @@ def add_to_kit(name, email):
             return True
 
         # Step 3: Tag the subscriber
-        # V4 endpoint: POST /v4/tags/{tag_id}/subscribers/{subscriber_id}
         tag_resp = req.post(
             f"{base}/tags/{tag_id}/subscribers/{subscriber_id}",
             headers=headers,
@@ -1189,7 +1188,7 @@ def add_to_kit(name, email):
         )
 
         if tag_resp.status_code in (200, 201):
-            print(f"Kit: added {email} with tag purpose-blueprint (subscriber {subscriber_id})")
+            print(f"Kit: added {email} with tag {tag_name} (subscriber {subscriber_id})")
         else:
             print(f"Kit: subscriber added but tagging failed: {tag_resp.status_code} {tag_resp.text[:200]}")
         return True
@@ -1198,7 +1197,7 @@ def add_to_kit(name, email):
         print(f"Kit: error adding subscriber: {e}")
         return False
 
-def log_customer(name, email, marketing_opt_in, date, city, country):
+def log_customer(name, email, marketing_opt_in, date, city, country, tag_name="purpose-blueprint"):
     """Log customer to CSV (always) and push to Kit if they opted in."""
     import csv
     from datetime import datetime
@@ -1223,7 +1222,7 @@ def log_customer(name, email, marketing_opt_in, date, city, country):
 
     # Push to Kit only if they opted in
     if marketing_opt_in:
-        add_to_kit(name=name, email=email)
+        add_to_kit(name=name, email=email, tag_name=tag_name)
 
 
 @app.route("/")
@@ -1601,6 +1600,601 @@ def preview_thank_you():
         session_id=None,
         name="Lena Skogheim",
         email="lena@example.com")
+
+
+# ─────────────────────────────────────────────
+#  LOVE BLUEPRINT — shared helpers
+# ─────────────────────────────────────────────
+
+def build_love_prompt(chart, birth_info, preview_only=False):
+    pd = chart["planets"]
+    a = chart["angles"]
+    hr = chart["house_rulers"]
+    aspects = chart["aspects"]
+    language_guidance = build_language_guidance(
+        chart.get("dominant_element", "earth"),
+        chart.get("asc_element", "earth"),
+        chart.get("element_balance", {"fire":25,"earth":25,"air":25,"water":25})
+    )
+
+    planet_lines = [f"  - {n}: {d['sign']}, {d['house']} house, {d['position']}°" for n,d in pd.items()]
+
+    house_occupants = {h: [] for h in range(1, 13)}
+    house_num_map = {"1st":1,"2nd":2,"3rd":3,"4th":4,"5th":5,"6th":6,"7th":7,"8th":8,"9th":9,"10th":10,"11th":11,"12th":12}
+    for pname, pdata in pd.items():
+        h_num = house_num_map.get(pdata["house"])
+        if h_num:
+            house_occupants[h_num].append(f"{pname} ({pdata['sign']} {pdata['position']}°)")
+
+    ws_signs = ["Aries","Taurus","Gemini","Cancer","Leo","Virgo","Libra","Scorpio","Sagittarius","Capricorn","Aquarius","Pisces"]
+    asc_idx_h = ws_signs.index(a["ASC"]["sign"])
+
+    def ordinal(n):
+        return {1:"1st",2:"2nd",3:"3rd",4:"4th",5:"5th",6:"6th",7:"7th",8:"8th",9:"9th",10:"10th",11:"11th",12:"12th"}.get(n, f"{n}th")
+
+    occupants_lines = []
+    for h in range(1, 13):
+        sign_on_cusp = ws_signs[(asc_idx_h + h - 1) % 12]
+        occupants = house_occupants[h]
+        h_ord = ordinal(h)
+        tag = f": {', '.join(occupants)}" if occupants else ": EMPTY (no planets)"
+        occupants_lines.append(f"  - {h_ord} house ({sign_on_cusp} on cusp){tag}")
+
+    def describe_ruler(ruler_name, h_ord_label=None):
+        rd = pd.get(ruler_name, {})
+        rs, rh, rp = rd.get("sign","?"), rd.get("house","?"), rd.get("position","?")
+        if h_ord_label and rh == h_ord_label:
+            return f"{ruler_name} sits in {rs} at {rp}° in the {rh} house (ruler IS in its own house here)"
+        elif h_ord_label:
+            return f"{ruler_name} sits in {rs} at {rp}° in the {rh} house (ruler is NOT in the {h_ord_label} house, it is in the {rh})"
+        return f"{ruler_name} sits in {rs} at {rp}° in the {rh} house"
+
+    love_ruler_lines = []
+    for h in [5, 7, 8]:
+        if h not in hr:
+            continue
+        h_ord = ordinal(h)
+        trad = hr[h]["ruler"]
+        mod = hr[h].get("modern_ruler")
+        line = f"  - {h_ord} house ({hr[h]['sign']} on cusp): TRADITIONAL ruler is {trad}. {describe_ruler(trad, h_ord)}"
+        if mod:
+            line += f"\n      Modern co-ruler is {mod}. {describe_ruler(mod, h_ord)}"
+        love_ruler_lines.append(line)
+
+    # Key points for love
+    love_key = ["Venus", "Moon", "Mars", "North Node", "South Node", "Chiron"]
+    for h in [5, 7, 8]:
+        if h in hr:
+            for k in [hr[h]["ruler"], hr[h].get("modern_ruler")]:
+                if k and k not in love_key:
+                    love_key.append(k)
+
+    love_asp_by_planet = {}
+    for asp in aspects:
+        for side in [asp["p1"], asp["p2"]]:
+            if side in love_key:
+                other = asp["p2"] if side == asp["p1"] else asp["p1"]
+                love_asp_by_planet.setdefault(side, []).append(f"{asp['aspect']} {other} ({asp['orb']}°)")
+
+    love_summary_lines = []
+    for kp in love_key:
+        if kp in love_asp_by_planet:
+            love_summary_lines.append(f"  - {kp}: {'; '.join(love_asp_by_planet[kp][:5])}")
+
+    aspect_lines = [f"  - {x['p1']} {x['aspect']} {x['p2']} (orb: {x['orb']}°)" for x in aspects[:25]]
+
+    chart_data = f"""BIRTH DETAILS: {chart['name']}, {birth_info['date']}, {birth_info['time']}, {birth_info['city']}, {birth_info['country']}
+House System: Whole Sign
+
+PLANETS BY POSITION:
+{chr(10).join(planet_lines)}
+
+PLANETS IN EACH HOUSE (AUTHORITATIVE — use ONLY this for "planets in X house" statements):
+{chr(10).join(occupants_lines)}
+
+ANGLES:
+  - ASC: {a['ASC']['sign']} {a['ASC']['position']}°
+  - MC: {a['MC']['sign']} {a['MC']['position']}° (Whole Sign house {a['MC']['ws_house']})
+  - IC: {a['IC']['sign']} {a['IC']['position']}° (Whole Sign house {a['IC']['ws_house']})
+
+LOVE-RELEVANT HOUSE RULERS — 5th (romance/pleasure), 7th (partnership), 8th (deep intimacy):
+(Use TRADITIONAL rulers as primary; modern co-rulers add nuance but never replace the traditional reading)
+{chr(10).join(love_ruler_lines)}
+
+KEY ASPECTS BY PLANET (love-relevant points — use these for aspect citations):
+{chr(10).join(love_summary_lines)}
+
+ALL KEY ASPECTS (tightest first):
+{chr(10).join(aspect_lines)}"""
+
+    if preview_only:
+        return f"""You are a professional astrologer writing a single opening paragraph called "Your Love Signature" for a premium love and relationship birth chart report. Second person. Match the language register precisely to this person's elemental signature.
+
+{language_guidance}
+
+{chart_data}
+
+Write ONLY this one section. EXACTLY 4-5 sentences. Capture the essence of how this person loves, what they most deeply seek in relationship, and the quality of intimacy they carry. Weave Venus sign and house, Moon sign and house, and the tightest Venus or Moon aspect. Make it feel like the most intimate true thing anyone has said about how they love. Output only the paragraph content, no heading, no preamble. Honour the language register without naming it explicitly."""
+
+    return f"""You are a professional astrologer writing a premium, deeply personal Love & Relationship Blueprint. Second person. No jargon, only meaning. Every sentence tied to specific placements in this chart. Be rich and detailed — this is a paid premium report.
+
+CRITICAL — ADAPT LANGUAGE TO THIS CHART:
+{language_guidance}
+
+{chart_data}
+
+Write the report using EXACTLY these nine sections with ## headers. Go deep. Every sub-section must have at least 1 full paragraph. When interpreting any house, always cover BOTH the sign on the cusp AND planets in it.
+
+## Your Love Signature
+4-5 sentences. A powerful, poetic opening capturing the essence of how this person loves, what they most deeply seek, and the energy they bring into relationship. Weave Venus sign and house, Moon sign and house, and the tightest Venus or Moon aspect. Make it feel unmistakably, specifically true.
+
+## How You Love — Venus
+3 paragraphs. Venus sign (the quality and style of how they love), Venus house (where and how love plays out in life), and the most exact Venus aspect (what shapes or complicates their way of giving love). Close with the Venus house ruler's placement and at least one of its aspects. What does love feel like when this person gives it?
+
+## What You Desire — Mars
+2 paragraphs. Mars sign (the quality of desire and drive in relationship), Mars house (where desire activates), and the tightest Mars aspect. What ignites them? What do they pursue? Handle this section with maturity — desire is normal and specific to this chart. Never moralise. Never generalise.
+
+## What You Need to Feel Safe — The Moon
+3 paragraphs. Moon sign (emotional nature and instinctive responses), Moon house (where they seek emotional security), and key Moon aspects especially conjunctions or squares that shape attachment patterns. What does this person need to feel truly safe and held in love? Be specific to this Moon placement.
+
+## The Partner You Seek — The 7th House
+3 paragraphs.
+First paragraph: The sign on the 7th house cusp and what it reveals about the qualities this person seeks (and often projects onto) a partner. Explicitly acknowledge the projection: what we seek in others is often what we have not yet claimed in ourselves.
+Second paragraph: Any planets IN the 7th house and what they add to the partnership picture. If the 7th is empty, say so and read it from the ruler.
+Third paragraph: The 7th house ruler — where it sits, what sign, and at least one aspect with exact orb. This is non-negotiable. The ruler describes where and how partnership energy actually expresses in the life.
+
+## The Pattern You Keep Repeating
+3 paragraphs.
+First paragraph: The South Node sign and house in the context of relationship — what familiar relational dynamic this person keeps returning to, and why it feels safe even when it costs them.
+Second paragraph: Any challenging Venus or Moon aspects (squares, oppositions, or tight conjunctions with Saturn, Pluto, Neptune, or Chiron) that reinforce this pattern. Name it precisely and with compassion. Never pathologise.
+Third paragraph: What the pattern is protecting. End this section with what the repeating dynamic is guarding — what vulnerability it shields — rather than only what it costs. This paragraph is essential.
+
+## What Happens When Love Goes Deep — The 8th House
+2 paragraphs.
+First paragraph: The sign on the 8th house cusp and what it reveals about how this person handles intimacy, vulnerability, power dynamics, and the dissolution of self that deep love requires.
+Second paragraph: Any planets IN the 8th house and their meaning. The 8th house ruler — where it sits and at least one aspect with exact orb. What happens when this person lets someone all the way in?
+
+## Your Love Language From the Chart
+2 paragraphs.
+First paragraph: Synthesise Venus sign and house, Moon sign, and the 5th house ruler's placement and sign. How does this person actually receive love? What makes them feel most deeply seen and cherished? Be concrete and specific to these placements.
+Second paragraph: What they may need to communicate to partners about how they receive love, and how this can be misread or missed if not expressed.
+
+## What Love Is Asking of You
+3 paragraphs.
+First paragraph: The North Node sign and house in the context of relationship — what new relational capacity this person is being called to develop in this lifetime. What does growth look like in love for this chart?
+Second paragraph: The tightest Venus or Moon growth aspect (trine, sextile, or a difficult aspect with genuine growth potential). What is the invitation inside the tension or the gift already present?
+Third paragraph: A direct, warm, personal closing message from the chart. Reference the single most exact Venus or Moon aspect. What does love most want from this person right now? Leave them feeling seen and capable.
+
+FORMATTING RULES — FOLLOW STRICTLY:
+- Start directly with "## Your Love Signature". No title line like "# Report For [Name]".
+- Do NOT use horizontal rules (---, ***, ___).
+- Do NOT use **bold** as a sub-heading. Use ### if you need sub-sections.
+- Use ## only for the nine main section headings.
+- Regular prose paragraphs only. No numbered lists in running prose.
+
+PUNCTUATION RULES — FOLLOW STRICTLY:
+- DO NOT use em-dashes (—) anywhere. They make prose feel AI-generated.
+- DO NOT use en-dashes (–) for parentheticals.
+- Use commas, full stops, semicolons, colons, or parentheses depending on what the sentence needs.
+
+TONE RULES — NON-NEGOTIABLE:
+- Never pathologise. Every placement is information, not verdict.
+- Never use the word "toxic" — use misaligned, unconscious, or unintegrated instead.
+- Always cite specific placements and aspects with exact orbs. No generic love astrology language.
+- The 7th house section must acknowledge projection.
+- The repeating pattern section must end with what the pattern is protecting.
+- Mars content handled with maturity — desire is normal and chart-specific.
+
+CRITICAL — PLANETS-IN-HOUSE vs HOUSE RULER (do not confuse these):
+- A planet IS IN a house only when listed in "PLANETS IN EACH HOUSE" above. That is the only authoritative source.
+- The house RULER governs the sign on the cusp. It may or may not physically be in that house.
+- NEVER say a planet is "in" a house unless confirmed above.
+- Pattern: "Your 7th house in [sign] contains [planets or EMPTY]. The ruler, [ruler], sits in [sign and house], which means..."
+
+CRITICAL — TRADITIONAL VS MODERN RULERSHIP:
+- Use traditional rulers as the PRIMARY interpretive layer. Traditional rulers: Aries/Mars, Taurus/Venus, Gemini/Mercury, Cancer/Moon, Leo/Sun, Virgo/Mercury, Libra/Venus, Scorpio/Mars, Sagittarius/Jupiter, Capricorn/Saturn, Aquarius/Saturn, Pisces/Jupiter.
+- Modern rulers (Aquarius/Uranus, Pisces/Neptune, Scorpio/Pluto) add nuance but never replace the traditional reading.
+
+ASPECT COVERAGE — NON-NEGOTIABLE:
+- The 7th house ruler MUST be discussed with at least one aspect cited by exact orb.
+- The 8th house ruler MUST be discussed with at least one aspect cited by exact orb.
+- Every Venus and Moon aspect under 3° orb must be named somewhere in the report.
+- If Venus or Moon conjuncts, squares, or opposes Pluto, Saturn, Neptune, or Chiron within 5°, name it explicitly and handle with depth.
+- The tightest Venus or Moon aspect carries the most interpretive weight in this entire report.
+
+Content rules: Every sentence tied to specific placements. No generic statements that could apply to anyone."""
+
+
+def build_love_email_body_html(name):
+    return f"""<!DOCTYPE html>
+<html><head>
+<meta charset="UTF-8">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400;1,500;1,700&family=Mrs+Saint+Delafield&display=swap" rel="stylesheet">
+</head>
+<body style="margin:0;padding:0;background:#EFEBEA;font-family:'Playfair Display',Georgia,serif;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#EFEBEA;padding:50px 20px;">
+<tr><td align="center">
+  <table width="580" cellpadding="0" cellspacing="0" style="max-width:580px;">
+
+    <tr><td style="text-align:center;padding-bottom:30px;">
+      <span style="color:#AA3157;font-size:18px;letter-spacing:0.4em;">✦ ✦ ✦</span>
+    </td></tr>
+
+    <tr><td style="text-align:center;padding-bottom:36px;">
+      <div style="font-family:Impact,'Arial Narrow Bold',sans-serif;font-size:42px;letter-spacing:0.02em;line-height:0.95;color:#AA3157;text-transform:uppercase;">
+        THE LOVE
+      </div>
+      <div style="font-family:Impact,'Arial Narrow Bold',sans-serif;font-size:42px;letter-spacing:0.02em;line-height:0.95;color:#C04C2D;text-transform:uppercase;">
+        BLUEPRINT
+      </div>
+    </td></tr>
+
+    <tr><td style="text-align:center;padding-bottom:36px;">
+      <div style="display:inline-block;width:80px;height:1px;background:#AA3157;"></div>
+    </td></tr>
+
+    <tr><td style="font-family:'Playfair Display',Georgia,serif;font-size:18px;line-height:1.85;color:#1E1E1E;text-align:left;padding:0 20px;">
+      <p style="margin:0 0 22px;font-family:'Playfair Display',Georgia,serif;">Dear {name},</p>
+
+      <p style="margin:0 0 22px;font-family:'Playfair Display',Georgia,serif;">Thank you so much for ordering your Love Blueprint. Your complete Love & Relationship report is attached as a PDF.</p>
+
+      <p style="margin:0 0 22px;font-family:'Playfair Display',Georgia,serif;">Find a quiet moment to read it somewhere you feel at ease. My hope is that it reflects something true about how you love, and perhaps puts words to things you have always sensed but never quite named.</p>
+
+      <p style="margin:0 0 22px;font-family:'Playfair Display',Georgia,serif;">I am so grateful for your trust. If the reading resonates, I would love to hear from you.</p>
+
+      <p style="margin:0 0 4px;font-family:'Playfair Display',Georgia,serif;">With warmth,</p>
+      <p style="margin:0 0 0;font-family:'Mrs Saint Delafield',cursive;font-size:32px;color:#AA3157;line-height:1;">Lena</p>
+    </td></tr>
+
+    <tr><td style="padding-top:50px;text-align:center;">
+      <div style="display:inline-block;width:60px;height:1px;background:#AA3157;margin-bottom:18px;"></div>
+      <div style="color:#AA3157;font-family:Impact,'Arial Narrow Bold',sans-serif;font-size:13px;letter-spacing:0.3em;text-transform:uppercase;">
+        ✦ Lunabylena.com ✦
+      </div>
+      <div style="font-family:'Playfair Display',Georgia,serif;font-style:italic;font-size:12px;color:#8A7575;margin-top:8px;">
+        Whole Sign houses · Swiss Ephemeris
+      </div>
+    </td></tr>
+
+  </table>
+</td></tr>
+</table>
+</body></html>"""
+
+
+def build_love_pdf_html(name, report_text, birth_info, chart):
+    report_body = markdown_to_html(report_text)
+    name_possessive = "&#39;" if name.endswith("s") else "&#39;s"
+    city_upper = birth_info["city"].upper()
+    country_upper = birth_info["country"].upper()
+
+    p = chart["planets"]
+    a = chart["angles"]
+    cells = [
+        ("Rising", a["ASC"]["sign"], "1st"),
+        ("Sun", p["Sun"]["sign"], p["Sun"]["house"]),
+        ("Moon", p["Moon"]["sign"], p["Moon"]["house"]),
+        ("Venus", p["Venus"]["sign"], p["Venus"]["house"]),
+        ("Mars", p["Mars"]["sign"], p["Mars"]["house"]),
+        ("Mercury", p["Mercury"]["sign"], p["Mercury"]["house"]),
+        ("Jupiter", p["Jupiter"]["sign"], p["Jupiter"]["house"]),
+        ("Saturn", p["Saturn"]["sign"], p["Saturn"]["house"]),
+        ("N.Node", p["North Node"]["sign"], p["North Node"]["house"]),
+        ("Chiron", p["Chiron"]["sign"], p["Chiron"]["house"]),
+    ]
+
+    def make_cell(label, value, house):
+        return f'<td><div class="cell-label">{label}</div><div class="cell-value">{value}</div><div class="cell-house">{house}</div></td>'
+
+    row1 = "".join(make_cell(*c) for c in cells[:5])
+    row2 = "".join(make_cell(*c) for c in cells[5:])
+    cells_html = f"<tr>{row1}</tr><tr>{row2}</tr>"
+
+    return f"""<!DOCTYPE html>
+<html><head><meta charset="UTF-8">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400;1,500;1,700&family=Mrs+Saint+Delafield&display=swap');
+  @page {{ size: A4; margin: 18mm 18mm; background: #EFEBEA; }}
+  * {{ box-sizing: border-box; }}
+  html, body {{ margin:0;padding:0;background:#EFEBEA;font-family:'Playfair Display',Georgia,serif;color:#1E1E1E; }}
+  .page {{ background:#EFEBEA; }}
+  .cover {{ text-align:center;padding:50px 0 30px;page-break-after:always; }}
+  .cover .stars-row {{ margin-bottom:32px;color:#AA3157;font-size:16px;letter-spacing:0.4em; }}
+  .cover .brand {{ font-family:Impact,'Arial Narrow Bold',sans-serif;font-size:76px;line-height:0.92;letter-spacing:0.02em;text-transform:uppercase;margin:0; }}
+  .cover .brand .line1 {{ color:#AA3157;display:block; }}
+  .cover .brand .line2 {{ color:#C04C2D;display:block; }}
+  .cover .tagline {{ font-family:'Playfair Display',serif;font-style:italic;font-size:14px;color:#3A3030;margin:22px 0 0;letter-spacing:0.02em; }}
+  .cover-divider {{ width:80px;height:1px;background:#AA3157;margin:50px auto; }}
+  .cover .eyebrow {{ display:inline-block;font-family:Impact,'Arial Narrow Bold',sans-serif;font-size:11px;letter-spacing:0.3em;text-transform:uppercase;color:#EFEBEA;background:#AA3157;padding:6px 18px;margin-bottom:28px; }}
+  .cover .report-name {{ font-family:'Playfair Display',serif;font-weight:700;font-size:52px;color:#1E1E1E;margin:0 0 16px;line-height:1.05; }}
+  .cover .report-name .italic {{ font-style:italic;color:#AA3157;font-weight:700; }}
+  .cover .meta {{ font-family:Impact,'Arial Narrow Bold',sans-serif;font-size:10px;letter-spacing:0.22em;text-transform:uppercase;color:#7E4A92;margin:18px 0 0; }}
+  .chart-strip-heading {{ font-family:Impact,'Arial Narrow Bold',sans-serif;font-size:11px;letter-spacing:0.3em;text-transform:uppercase;color:#AA3157;text-align:center;margin:0 0 18px; }}
+  .chart-on-cover {{ margin-top:32px; }}
+  .chart-table {{ width:100%;border-collapse:collapse;border:2px solid #1E1E1E;margin:0;table-layout:fixed; }}
+  .chart-table tr {{ height:56px; }}
+  .chart-table td {{ background:#EFEBEA;padding:6px 4px;text-align:center;border:1px solid #1E1E1E;width:20%;vertical-align:middle; }}
+  .cell-label {{ font-family:Impact,'Arial Narrow Bold',sans-serif;font-size:8px;letter-spacing:0.18em;text-transform:uppercase;color:#7E4A92;margin-bottom:3px; }}
+  .cell-value {{ font-family:'Playfair Display',serif;font-weight:500;font-size:13px;color:#1E1E1E; }}
+  .cell-house {{ font-family:Impact,'Arial Narrow Bold',sans-serif;font-size:8px;color:#8A7575;margin-top:2px;letter-spacing:0.1em; }}
+  .report h2 {{ font-family:Impact,'Arial Narrow Bold',sans-serif;font-size:24px;letter-spacing:0.02em;text-transform:uppercase;color:#AA3157;margin:32px 0 14px;padding-bottom:8px;border-bottom:2px solid #1E1E1E;line-height:1.05;page-break-after:avoid; }}
+  .report h3 {{ font-family:'Playfair Display',serif;font-weight:700;font-style:italic;font-size:14px;color:#1E1E1E;margin:20px 0 8px;page-break-after:avoid; }}
+  .report h3::before {{ content:'✦  ';color:#AA3157;font-style:normal;font-weight:400;font-size:11px; }}
+  .report p {{ font-family:'Playfair Display',Georgia,serif;font-size:12px;line-height:1.75;color:#3A3030;margin:0 0 12px;text-align:left;orphans:3;widows:3; }}
+  .message-callout {{ margin:36px 0 14px;padding:22px 26px;background:#FFE3EC;border:2px solid #1E1E1E;page-break-inside:avoid; }}
+  .message-callout h2 {{ margin:0 0 12px;padding:0;border:none;color:#AA3157;font-size:20px; }}
+  .message-callout p {{ font-style:italic;color:#1E1E1E;font-size:12.5px;line-height:1.85; }}
+  .steps-section {{ margin:36px 0 14px;padding:24px 28px;background:#AA3157;color:#EFEBEA;border:2px solid #1E1E1E; }}
+  .steps-section h2 {{ margin-top:0;color:#EFEBEA;border-bottom:2px solid #EFEBEA; }}
+  .steps-section h3 {{ color:#EFEBEA;font-style:normal;font-family:Impact,'Arial Narrow Bold',sans-serif;font-size:11px;letter-spacing:0.2em;text-transform:uppercase;margin-top:18px; }}
+  .steps-section h3::before {{ color:#EFEBEA; }}
+  .steps-section p {{ color:#EFEBEA;font-style:italic; }}
+  .footer {{ margin-top:50px;padding-top:20px;border-top:1px solid #AA3157;text-align:center; }}
+  .footer-label {{ font-family:Impact,'Arial Narrow Bold',sans-serif;font-size:10px;letter-spacing:0.3em;text-transform:uppercase;color:#AA3157; }}
+  .footer-note {{ font-family:'Playfair Display',serif;font-style:italic;font-size:9px;color:#8A7575;margin-top:4px; }}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="cover">
+    <div class="stars-row">✦ ✦ ✦</div>
+    <h1 class="brand">
+      <span class="line1">THE LOVE</span>
+      <span class="line2">BLUEPRINT</span>
+    </h1>
+    <p class="tagline">Love · Desire · Partnership · Intimacy</p>
+    <div class="cover-divider"></div>
+    <span class="eyebrow">The Love Blueprint</span>
+    <h2 class="report-name">{name}{name_possessive} <span class="italic">Love Blueprint</span></h2>
+    <p class="meta">{birth_info['date']} · {birth_info['time']} · {city_upper}, {country_upper}</p>
+    <div class="chart-on-cover">
+      <p class="chart-strip-heading">Your Chart at a Glance</p>
+      <table class="chart-table">{cells_html}</table>
+    </div>
+  </div>
+  <div class="report">{report_body}</div>
+  <div class="footer">
+    <div class="footer-label">✦ Lunabylena.com ✦</div>
+    <div class="footer-note">Whole Sign houses · Swiss Ephemeris</div>
+  </div>
+</div>
+</body></html>"""
+
+
+def background_generate_and_send_love(email, chart, birth_info):
+    try:
+        prompt = build_love_prompt(chart, birth_info, preview_only=False)
+        report_text = generate_full_report(prompt)
+        pdf_html = build_love_pdf_html(chart["name"], report_text, birth_info, chart)
+        pdf_bytes = generate_pdf(pdf_html)
+        email_body = build_love_email_body_html(chart["name"])
+        send_report_email(
+            email, chart["name"], email_body, pdf_bytes,
+            subject=f"Your Love Blueprint ✦ {chart['name']}",
+            filename=f"{chart['name']}-love-blueprint.pdf"
+        )
+    except Exception as e:
+        print(f"Love background generation failed: {e}")
+
+
+# ─────────────────────────────────────────────
+#  LOVE BLUEPRINT — routes
+# ─────────────────────────────────────────────
+
+@app.route("/love")
+def love():
+    return render_template("love.html",
+        auto_generate=False,
+        chart_data="null",
+        meta_data="null")
+
+
+@app.route("/love/generate", methods=["POST"])
+def love_generate():
+    data = request.json
+    name = data.get("name","").strip() or "the person"
+    email = data.get("email","").strip()
+    date_str = data.get("date","")
+    time_str = data.get("time","")
+    city = data.get("city","")
+    country = data.get("country","")
+    lat = data.get("lat")
+    lng = data.get("lng")
+    tz_str = data.get("tz")
+    marketing_opt_in = bool(data.get("marketingOptIn", False))
+
+    if not email or "@" not in email:
+        return jsonify({"error": "Please provide a valid email address."}), 400
+
+    log_customer(name=name, email=email, marketing_opt_in=marketing_opt_in,
+                 date=date_str, city=city, country=country, tag_name="love-blueprint")
+
+    try:
+        year, month, day = [int(x) for x in date_str.split("-")]
+        hour, minute = [int(x) for x in time_str.split(":")]
+        lat, lng = float(lat), float(lng)
+    except Exception:
+        return jsonify({"error": "Invalid birth details."}), 400
+
+    try:
+        chart = calculate_chart(name, year, month, day, hour, minute, lat, lng, tz_str)
+    except Exception as e:
+        return jsonify({"error": f"Chart calculation failed: {str(e)}"}), 500
+
+    birth_info = {"date": date_str, "time": time_str, "city": city, "country": country}
+    preview_prompt = build_love_prompt(chart, birth_info, preview_only=True)
+    client = anthropic.Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY",""))
+
+    def stream():
+        yield f"data: {json.dumps({'type':'chart','data':chart})}\n\n"
+        buffer = ""
+        with client.messages.stream(
+            model="claude-haiku-4-5-20251001",
+            max_tokens=600,
+            messages=[{"role":"user","content":preview_prompt}]
+        ) as st:
+            for text in st.text_stream:
+                buffer += text
+                if len(buffer) > 3:
+                    flush = buffer[:-3]; buffer = buffer[-3:]
+                    yield f"data: {json.dumps({'type':'text','content':clean_dashes(flush)})}\n\n"
+        if buffer:
+            yield f"data: {json.dumps({'type':'text','content':clean_dashes(buffer)})}\n\n"
+        yield f"data: {json.dumps({'type':'done','email':email})}\n\n"
+
+    return Response(stream(), mimetype="text/event-stream",
+                   headers={"Cache-Control":"no-cache","X-Accel-Buffering":"no"})
+
+
+@app.route("/love/create-checkout-session", methods=["POST"])
+def love_create_checkout_session():
+    import stripe as stripe_lib
+    stripe_lib.api_key = os.environ.get("STRIPE_SECRET_KEY", "")
+    data = request.json
+
+    name = data.get("name", "").strip()
+    email = data.get("email", "").strip()
+    if not name or not email or "@" not in email:
+        return jsonify({"error": "Please provide your name and a valid email address."}), 400
+    if not data.get("date") or not data.get("time"):
+        return jsonify({"error": "Please provide your birth date and time."}), 400
+    if not data.get("lat") or not data.get("lng"):
+        return jsonify({"error": "Please select a city from the dropdown."}), 400
+
+    try:
+        session = stripe_lib.checkout.Session.create(
+            payment_method_types=["card"],
+            line_items=[{
+                "price_data": {
+                    "currency": "eur",
+                    "unit_amount": PRICE_EUR,
+                    "product_data": {
+                        "name": "The Love Blueprint",
+                        "description": "Your personalised astrology report — Love, Desire & Relationship patterns from your birth chart",
+                    },
+                },
+                "quantity": 1,
+            }],
+            mode="payment",
+            customer_email=email,
+            success_url=f"{request.host_url}love/payment-success?session_id={{CHECKOUT_SESSION_ID}}",
+            cancel_url=f"{request.host_url}love?cancelled=true",
+            metadata={
+                "name": name,
+                "email": email,
+                "date": data.get("date", ""),
+                "time": data.get("time", ""),
+                "city": data.get("city", ""),
+                "country": data.get("country", ""),
+                "lat": str(data.get("lat", "")),
+                "lng": str(data.get("lng", "")),
+                "tz": data.get("tz", "UTC"),
+                "marketingOptIn": "true" if data.get("marketingOptIn") else "false",
+                "report": "love-blueprint",
+            }
+        )
+        return jsonify({"url": session.url})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/love/payment-success")
+def love_payment_success():
+    session_id = request.args.get("session_id")
+    if not session_id:
+        return render_template("love.html",
+            auto_generate=False, chart_data="null", meta_data="null")
+    try:
+        import stripe as stripe_lib
+        stripe_lib.api_key = os.environ.get("STRIPE_SECRET_KEY", "")
+        session = stripe_lib.checkout.Session.retrieve(session_id)
+        if session.payment_status != "paid":
+            return render_template("love.html",
+                auto_generate=False, chart_data="null", meta_data="null")
+        meta = session.metadata.to_dict()
+        return render_template("love_thank_you.html",
+            session_id=session_id,
+            name=meta.get("name", ""),
+            email=meta.get("email", ""))
+    except Exception as e:
+        print(f"Love payment success error: {e}")
+        return render_template("love.html",
+            auto_generate=False, chart_data="null", meta_data="null")
+
+
+@app.route("/love/generate-after-payment", methods=["POST"])
+def love_generate_after_payment():
+    import stripe as stripe_lib
+    stripe_lib.api_key = os.environ.get("STRIPE_SECRET_KEY", "")
+    data = request.json
+    session_id = data.get("session_id", "")
+
+    try:
+        session = stripe_lib.checkout.Session.retrieve(session_id)
+    except Exception as e:
+        return jsonify({"error": f"Could not verify payment: {type(e).__name__}: {e}"}), 400
+
+    if session.payment_status != "paid":
+        return jsonify({"error": "Payment not complete."}), 400
+
+    meta = session.metadata.to_dict()
+    name = meta.get("name", "") or "the person"
+    email = meta.get("email", "")
+    date_str = meta.get("date", "")
+    time_str = meta.get("time", "")
+    city = meta.get("city", "")
+    country = meta.get("country", "")
+    tz_str = meta.get("tz", "UTC")
+    marketing_opt_in = meta.get("marketingOptIn") == "true"
+
+    try:
+        lat = float(meta.get("lat", "0"))
+        lng = float(meta.get("lng", "0"))
+        year, month, day = [int(x) for x in date_str.split("-")]
+        hour, minute = [int(x) for x in time_str.split(":")]
+    except Exception as e:
+        return jsonify({"error": f"Invalid birth data: {e}"}), 400
+
+    try:
+        chart = calculate_chart(name, year, month, day, hour, minute, lat, lng, tz_str)
+    except Exception as e:
+        return jsonify({"error": f"Chart calculation failed: {e}"}), 500
+
+    birth_info = {"date": date_str, "time": time_str, "city": city, "country": country}
+    log_customer(name=name, email=email, marketing_opt_in=marketing_opt_in,
+                date=date_str, city=city, country=country, tag_name="love-blueprint")
+
+    thread = threading.Thread(
+        target=background_generate_and_send_love,
+        args=(email, chart, birth_info),
+        daemon=True
+    )
+    thread.start()
+
+    preview_prompt = build_love_prompt(chart, birth_info, preview_only=True)
+    client = anthropic.Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY", ""))
+
+    def stream():
+        chart_event = dict(chart)
+        yield f"data: {json.dumps({'type':'chart','data':chart_event,'payload':{'name':name,'email':email,'date':date_str,'time':time_str,'city':city,'country':country,'lat':lat,'lng':lng,'tz':tz_str}})}\n\n"
+        buffer = ""
+        with client.messages.stream(
+            model="claude-haiku-4-5-20251001",
+            max_tokens=600,
+            messages=[{"role":"user","content":preview_prompt}]
+        ) as st:
+            for text in st.text_stream:
+                buffer += text
+                if len(buffer) > 3:
+                    flush = buffer[:-3]; buffer = buffer[-3:]
+                    yield f"data: {json.dumps({'type':'text','content':clean_dashes(flush)})}\n\n"
+        if buffer:
+            yield f"data: {json.dumps({'type':'text','content':clean_dashes(buffer)})}\n\n"
+        yield f"data: {json.dumps({'type':'done','email':email})}\n\n"
+
+    return Response(stream(), mimetype="text/event-stream",
+                   headers={"Cache-Control":"no-cache","X-Accel-Buffering":"no"})
+
 
 if __name__ == "__main__":
     import os as _os
