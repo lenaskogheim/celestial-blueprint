@@ -1,4 +1,4 @@
-import os, json, warnings, threading, io, base64
+import os, json, warnings, threading, io, base64, functools
 warnings.filterwarnings("ignore")
 from flask import Flask, request, jsonify, Response, render_template
 from kerykeion.astrological_subject_factory import AstrologicalSubjectFactory
@@ -7,6 +7,37 @@ import anthropic
 import requests
 
 app = Flask(__name__)
+
+# ── BASIC AUTH (remove when site goes public) ──────────────────────────────
+_SITE_USER = "luna"
+_SITE_PASS = "luna"
+
+def require_auth(f):
+    @functools.wraps(f)
+    def decorated(*args, **kwargs):
+        auth = request.authorization
+        if not auth or auth.username != _SITE_USER or auth.password != _SITE_PASS:
+            return Response(
+                "Access restricted — please log in.",
+                401,
+                {"WWW-Authenticate": 'Basic realm="Lunabylena"'}
+            )
+        return f(*args, **kwargs)
+    return decorated
+
+@app.before_request
+def check_auth():
+    # Allow Stripe webhook and internal generation endpoints without auth
+    if request.path.startswith("/webhook"):
+        return None
+    auth = request.authorization
+    if not auth or auth.username != _SITE_USER or auth.password != _SITE_PASS:
+        return Response(
+            "Access restricted — please log in.",
+            401,
+            {"WWW-Authenticate": 'Basic realm="Lunabylena"'}
+        )
+# ────────────────────────────────────────────────────────────────────────────
 
 # Stripe configuration
 STRIPE_PUBLISHABLE_KEY = os.environ.get("STRIPE_PUBLISHABLE_KEY", "")
