@@ -109,17 +109,34 @@ section { padding: 4rem 1.25rem; }
   max-width: 620px;
   margin: 0 auto 2rem;
 }
-.mockup {
-  max-width: 560px;
-  margin: 2.5rem auto 0;
-  border: 1px dashed rgba(255,255,255,0.2);
-  border-radius: 1rem;
-  background: rgba(255,255,255,0.035);
-  color: var(--light-muted);
-  font-style: italic;
-  padding: 3.5rem 1.5rem;
-  font-size: 0.95rem;
+.mockup-window {
+  max-width: 540px;
+  margin: 2.75rem auto 0;
+  background: #fff;
+  border-radius: 14px;
+  overflow: hidden;
+  text-align: left;
+  border: 1px solid rgba(255,255,255,0.08);
+  box-shadow: 0 30px 70px rgba(0,0,0,0.5);
 }
+.mw-bar { display: flex; align-items: center; gap: 7px; padding: 11px 14px; background: #e9e2e4; }
+.mw-dot { width: 10px; height: 10px; border-radius: 50%; background: #c7b9be; }
+.mw-url {
+  margin-left: 8px; flex: 1;
+  background: #fff; border-radius: 6px;
+  font-size: 0.72rem; color: var(--ink-muted);
+  padding: 4px 12px;
+}
+.mw-body { padding: 1.5rem 1.5rem 1.7rem; background: #fff; color: var(--ink); }
+.mw-eyebrow { font-size: 0.64rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--pink); font-weight: 600; margin-bottom: 1rem; }
+.mw-section { font-family: 'Playfair Display', serif; font-size: 0.95rem; font-weight: 600; color: var(--ink); margin: 1.1rem 0 0.5rem; }
+.mw-section:first-of-type { margin-top: 0; }
+.mw-belief { background: var(--chip-light); border-left: 3px solid var(--pink); padding: 0.7rem 0.9rem; border-radius: 6px; font-weight: 600; font-size: 0.92rem; color: var(--ink); line-height: 1.45; }
+.mw-text { font-size: 0.85rem; color: var(--ink-soft); line-height: 1.55; margin-top: 0.35rem; }
+.mw-text b { color: var(--ink); }
+.mw-recode { margin-top: 1.15rem; border: 1.5px solid var(--pink); border-radius: 10px; padding: 0.9rem 1rem; background: rgba(207,71,103,0.05); }
+.mw-recode-label { font-size: 0.6rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--pink); font-weight: 700; margin-bottom: 0.35rem; }
+.mw-recode-stmt { font-family: 'Playfair Display', serif; font-style: italic; font-size: 1rem; color: var(--ink); line-height: 1.35; }
 
 /* ── BUTTONS ── */
 .btn {
@@ -318,7 +335,23 @@ footer {
     <h1>Find out exactly which belief is making you <em>choose small</em>, and what your future self would do instead.</h1>
     <p class="sub">In under 10 minutes, The Identity Recode names the specific belief running your current decision, shows you where it came from, and tells you exactly what to do differently. No years of therapy. No excavating your whole past.</p>
     <a href="https://recode.lunabylena.com/api/checkout" class="btn">Get instant access for €27</a>
-    <div class="mockup">Place a mockup or a visual from your tool here.</div>
+    <div class="mockup-window">
+      <div class="mw-bar">
+        <span class="mw-dot"></span><span class="mw-dot"></span><span class="mw-dot"></span>
+        <div class="mw-url">recode.lunabylena.com</div>
+      </div>
+      <div class="mw-body">
+        <div class="mw-eyebrow">✦ The Identity Recode</div>
+        <div class="mw-section">The Belief Running the Show</div>
+        <div class="mw-belief">&ldquo;If I let myself be fully seen, I&rsquo;ll be rejected &mdash; so I keep playing small where it still feels safe.&rdquo;</div>
+        <div class="mw-section">Who Your Future Self Is</div>
+        <p class="mw-text">She moves <b>first</b>. She lets herself be seen before she feels ready, because she knows that being visible is exactly how the life she wants reaches her.</p>
+        <div class="mw-recode">
+          <div class="mw-recode-label">Your Recode</div>
+          <div class="mw-recode-stmt">&ldquo;I am safe being seen. I choose from who I&rsquo;m becoming, not who I was.&rdquo;</div>
+        </div>
+      </div>
+    </div>
   </div>
 </section>
 
