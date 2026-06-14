@@ -2017,6 +2017,11 @@ def identity_recode():
     return render_template("identity_recode.html")
 
 
+@app.route("/identity-recode-v2")
+def identity_recode_v2():
+    return render_template("identity_recode_v2.html")
+
+
 @app.route("/love")
 def love():
     return render_template("love.html",

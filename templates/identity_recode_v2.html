@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Identity Recode · Luna by Lena</title>
+<meta name="description" content="Find out exactly which belief is making you choose small, and what your future self would do instead. In under 10 minutes, for €27.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,500;1,600;1,700&family=Inclusive+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --pink: #cf4767;
+  --pink-glow: #f06a8c;
+  --red: #e23857;
+  --orange: #ff7a3d;
+  --dark: #161214;
+  --dark-2: #1f1a1c;
+  --dark-card: #262022;
+  --light: #f3ebed;
+  --light-muted: #b2a4a9;
+  --border-dark: rgba(255,255,255,0.09);
+  --grad-warm: linear-gradient(135deg, #ff7a3d 0%, #e23857 48%, #97264a 100%);
+  --grad-line: linear-gradient(90deg, #ff7a3d, #e23857, #cf4767);
+  --chip: rgba(226,56,87,0.18);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Inclusive Sans', system-ui, sans-serif;
+  background: var(--dark);
+  color: var(--light);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+h1, h2, h3 { font-family: 'Playfair Display', Georgia, serif; line-height: 1.1; letter-spacing: -0.01em; }
+em, .ital { font-style: italic; color: var(--pink-glow); }
+
+/* ── URGENCY BAR ── */
+.urgency {
+  position: sticky; top: 0; z-index: 60;
+  background: var(--grad-warm);
+  color: #fff; text-align: center;
+  padding: 0.7rem 1rem; font-size: 0.88rem; font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+/* ── HEADER ── */
+.site-header {
+  display: flex; align-items: center; justify-content: space-between;
+  max-width: 1180px; margin: 0 auto; padding: 1.1rem 1.5rem;
+}
+.site-header img { width: clamp(82px, 15vw, 116px); height: auto; filter: brightness(0) invert(1); }
+.login-link { font-size: 0.9rem; font-weight: 600; color: var(--light); text-decoration: none; border-bottom: 1px solid rgba(255,255,255,0.25); padding-bottom: 2px; }
+.login-link:hover { color: var(--pink-glow); border-color: var(--pink-glow); }
+
+/* ── LAYOUT ── */
+section { padding: 4.5rem 1.5rem; position: relative; }
+.wrap { max-width: 760px; margin: 0 auto; }
+.wrap-wide { max-width: 1140px; margin: 0 auto; }
+@media (min-width: 768px) { section { padding: 5.5rem 2rem; } }
+
+.btn {
+  display: inline-block; background: var(--grad-warm); color: #fff;
+  font-weight: 700; font-size: 1.05rem; text-decoration: none;
+  padding: 1.05rem 2.2rem; border-radius: 0.7rem;
+  box-shadow: 0 12px 40px rgba(226,56,87,0.4);
+  transition: transform 0.1s ease, box-shadow 0.15s ease;
+  width: 100%; text-align: center;
+}
+.btn:hover { box-shadow: 0 14px 48px rgba(226,56,87,0.55); }
+.btn:active { transform: scale(0.985); }
+@media (min-width: 600px) { .btn { width: auto; } }
+
+.eyebrow { text-transform: uppercase; letter-spacing: 0.22em; font-size: 0.76rem; font-weight: 700; color: var(--pink-glow); margin-bottom: 1rem; }
+.section-title { font-size: clamp(1.8rem, 4.2vw, 2.6rem); font-weight: 700; color: #fff; margin-bottom: 1.2rem; }
+.lead { font-size: 1.08rem; color: var(--light-muted); margin-bottom: 1rem; }
+
+/* ── HERO ── */
+.hero { padding-top: 3rem; }
+.hero::before {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(ellipse 70% 60% at 75% 15%, rgba(226,56,87,0.5), transparent 60%),
+              radial-gradient(ellipse 50% 40% at 10% 30%, rgba(255,122,61,0.25), transparent 55%);
+  pointer-events: none;
+}
+.hero-grid { display: grid; grid-template-columns: 1fr; gap: 2.5rem; align-items: center; position: relative; }
+@media (min-width: 900px) { .hero-grid { grid-template-columns: 1.1fr 0.9fr; gap: 3rem; } }
+.hero h1 { font-size: clamp(2.3rem, 5.5vw, 3.6rem); font-weight: 800; color: #fff; margin-bottom: 1.4rem; }
+.hero .sub { font-size: clamp(1.02rem, 2vw, 1.2rem); color: var(--light-muted); max-width: 540px; margin-bottom: 2rem; }
+.hero-stats { display: flex; flex-wrap: wrap; gap: 0.5rem 1.5rem; margin-top: 1.8rem; font-size: 0.82rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--light-muted); }
+.hero-stats strong { color: var(--pink-glow); font-weight: 700; }
+
+/* ── PHOTO PLACEHOLDER PANELS ── */
+.photo {
+  position: relative; border-radius: 18px; overflow: hidden;
+  background: var(--grad-warm);
+  min-height: 360px; display: flex; align-items: flex-end;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.5);
+}
+.photo::after {
+  content: '◌ Your photo here'; position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  color: rgba(255,255,255,0.7); font-size: 0.85rem; letter-spacing: 0.1em;
+  font-style: italic;
+}
+.photo.tall { min-height: 460px; }
+.photo.short { min-height: 280px; }
+
+/* ── STAT TICKER ── */
+.ticker {
+  background: var(--dark-2); border-top: 1px solid var(--border-dark); border-bottom: 1px solid var(--border-dark);
+  display: flex; flex-wrap: wrap; justify-content: center; gap: 0.6rem 2rem;
+  padding: 1.1rem 1.5rem; font-size: 0.82rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--light-muted);
+}
+.ticker strong { color: var(--pink-glow); }
+
+/* ── TESTIMONIALS ── */
+.t-row { display: grid; grid-template-columns: 1fr; gap: 1rem; margin-top: 2rem; }
+@media (min-width: 760px) { .t-row { grid-template-columns: repeat(3, 1fr); } }
+.t-card { background: var(--dark-card); border: 1px solid var(--border-dark); border-radius: 14px; padding: 1.4rem; }
+.t-card .stars { color: var(--orange); letter-spacing: 0.1em; font-size: 0.9rem; margin-bottom: 0.7rem; }
+.t-card blockquote { font-size: 0.95rem; font-style: italic; color: var(--light); margin-bottom: 1rem; line-height: 1.5; }
+.t-id { display: flex; align-items: center; gap: 0.6rem; }
+.t-avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--grad-warm); display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: 0.85rem; flex-shrink: 0; }
+.t-name { font-size: 0.82rem; font-weight: 600; color: var(--light); }
+
+/* ── SPLIT NARRATIVE ── */
+.split { display: grid; grid-template-columns: 1fr; gap: 2.5rem; align-items: center; }
+@media (min-width: 900px) { .split { grid-template-columns: 1fr 1fr; gap: 3rem; } .split.rev .split-text { order: 2; } }
+
+/* ── CARD GRID ── */
+.grid { display: grid; grid-template-columns: 1fr; gap: 1rem; margin-top: 2rem; }
+@media (min-width: 700px) { .grid.cols-2 { grid-template-columns: 1fr 1fr; } .grid.cols-3 { grid-template-columns: repeat(3, 1fr); } }
+.card { background: var(--dark-card); border: 1px solid var(--border-dark); border-radius: 16px; padding: 1.6rem; transition: transform 0.15s ease; }
+.card:hover { transform: translateY(-3px); }
+.card h3 { font-size: 1.15rem; font-weight: 600; color: #fff; margin-bottom: 0.45rem; }
+.card p { font-size: 0.95rem; color: var(--light-muted); }
+.chip { width: 44px; height: 44px; border-radius: 12px; background: var(--chip); display: flex; align-items: center; justify-content: center; margin-bottom: 1.1rem; }
+.chip svg { width: 22px; height: 22px; color: var(--pink-glow); fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+/* ── FEATURE TRIO (with gradient tops) ── */
+.feat { background: var(--dark-card); border: 1px solid var(--border-dark); border-radius: 16px; overflow: hidden; }
+.feat-top { background: var(--grad-warm); height: 120px; display: flex; align-items: center; justify-content: center; }
+.feat-top span { font-family: 'Playfair Display', serif; font-style: italic; font-size: 1.5rem; color: #fff; }
+.feat-body { padding: 1.4rem 1.5rem 1.6rem; }
+.feat-body h3 { font-size: 1.2rem; color: #fff; margin-bottom: 0.5rem; }
+.feat-body p { font-size: 0.95rem; color: var(--light-muted); }
+
+/* ── STATEMENT BAND ── */
+.band { background: var(--grad-warm); text-align: center; }
+.band h2 { color: #fff; font-size: clamp(1.6rem, 4vw, 2.6rem); font-weight: 700; max-width: 820px; margin: 0 auto; font-style: italic; }
+
+/* ── PRICE ── */
+.price-card { max-width: 460px; margin: 2rem auto 0; background: var(--dark-card); border: 1px solid var(--border-dark); border-radius: 20px; overflow: hidden; }
+.price-head { background: var(--grad-warm); padding: 1.8rem; text-align: center; }
+.price-head .amt { font-family: 'Playfair Display', serif; font-size: 3.4rem; font-weight: 800; color: #fff; line-height: 1; }
+.price-head .note { color: rgba(255,255,255,0.85); font-size: 0.9rem; margin-top: 0.4rem; }
+.price-body { padding: 1.8rem; }
+.price-list { list-style: none; margin-bottom: 1.6rem; }
+.price-list li { display: flex; gap: 0.6rem; padding: 0.5rem 0; font-size: 0.96rem; color: var(--light); }
+.price-list li::before { content: '✓'; color: var(--pink-glow); font-weight: 700; }
+.price-strike { text-align: center; color: var(--light-muted); margin-bottom: 1.2rem; font-size: 0.95rem; }
+.price-strike s { opacity: 0.7; }
+.price-strike b { color: var(--pink-glow); }
+
+/* ── ACCORDION ── */
+.acc { border: 1px solid var(--border-dark); border-radius: 12px; margin-top: 0.85rem; overflow: hidden; background: var(--dark-card); }
+.acc-head { width: 100%; text-align: left; background: none; border: none; cursor: pointer; padding: 1.15rem 1.3rem; font-family: 'Playfair Display', serif; font-size: 1.05rem; font-weight: 500; color: var(--light); display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
+.acc-head .plus { color: var(--pink-glow); font-size: 1.4rem; flex-shrink: 0; transition: transform 0.2s ease; }
+.acc.open .acc-head .plus { transform: rotate(45deg); }
+.acc-body { display: none; padding: 0 1.3rem 1.3rem; color: var(--light-muted); }
+.acc.open .acc-body { display: block; }
+.acc-body p { margin-bottom: 0.6rem; }
+.acc-body ul { list-style: none; }
+.acc-body ul li { position: relative; padding-left: 1.1rem; margin-bottom: 0.45rem; font-size: 0.93rem; }
+.acc-body ul li::before { content: '·'; position: absolute; left: 0.2rem; color: var(--pink-glow); font-weight: 700; }
+
+/* ── FOR YOU / NOT FOR YOU ── */
+.two { display: grid; grid-template-columns: 1fr; gap: 1.2rem; margin-top: 2rem; }
+@media (min-width: 760px) { .two { grid-template-columns: 1fr 1fr; } }
+.panel { background: var(--dark-card); border: 1px solid var(--border-dark); border-radius: 16px; padding: 1.8rem; }
+.panel h3 { font-size: 1.3rem; color: #fff; margin-bottom: 1.1rem; }
+.panel ul { list-style: none; }
+.panel li { display: flex; gap: 0.6rem; padding: 0.55rem 0; font-size: 0.96rem; color: var(--light-muted); line-height: 1.5; }
+.panel.yes li::before { content: '✓'; color: var(--pink-glow); font-weight: 700; flex-shrink: 0; }
+.panel.no li::before { content: '✕'; color: var(--light-muted); flex-shrink: 0; }
+
+/* ── NOTE FROM LENA ── */
+.note p { font-size: 1.05rem; color: var(--light-muted); margin-bottom: 1rem; }
+.note .signoff { font-family: 'Playfair Display', serif; font-size: 1.5rem; color: #fff; font-style: italic; }
+
+/* ── FINAL CTA ── */
+.final { text-align: center; }
+.final::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 60% 70% at 50% 40%, rgba(226,56,87,0.4), transparent 65%); pointer-events: none; }
+.final h2 { position: relative; font-size: clamp(2rem, 5vw, 3.2rem); font-weight: 800; color: #fff; margin-bottom: 1.8rem; }
+
+/* ── FOOTER ── */
+footer { text-align: center; padding: 2.5rem 1.5rem; font-size: 0.78rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--pink-glow); border-top: 1px solid var(--border-dark); }
+.center { text-align: center; }
+</style>
+</head>
+<body>
+
+<div class="urgency">Only €27 now. Price goes up soon.</div>
+
+<header class="site-header">
+  <img src="/static/luna-logo.png" alt="Luna by Lena">
+  <a href="https://recode.lunabylena.com/login" class="login-link">Log in</a>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="wrap-wide">
+    <div class="hero-grid">
+      <div>
+        <p class="eyebrow">The Identity Recode</p>
+        <h1>Find out exactly which belief is making you <em>choose small</em>, and what your future self would do instead.</h1>
+        <p class="sub">In under 10 minutes, The Identity Recode names the specific belief running your current decision, shows you where it came from, and tells you exactly what to do differently. No years of therapy. No excavating your whole past.</p>
+        <a href="https://recode.lunabylena.com/api/checkout" class="btn">Get instant access for €27</a>
+        <div class="hero-stats">
+          <span><strong>10 min</strong> result</span>
+          <span><strong>€27</strong> one-time</span>
+          <span><strong>Instant</strong> access</span>
+        </div>
+      </div>
+      <div class="photo tall"></div>
+    </div>
+  </div>
+</section>
+
+<!-- TICKER -->
+<div class="ticker">
+  <span><strong>10 min</strong> to your recode</span>
+  <span>✦</span>
+  <span>Built on <strong>Lena&rsquo;s own method</strong></span>
+  <span>✦</span>
+  <span><strong>Instant</strong> access</span>
+</div>
+
+<!-- TESTIMONIALS -->
+<section>
+  <div class="wrap-wide">
+    <h2 class="section-title center">What happened when they finally saw it</h2>
+    <div class="t-row">
+      <div class="t-card">
+        <div class="stars">★★★★★</div>
+        <blockquote>&ldquo;I have been doing manifestation work for two years and this was the first time something named the actual belief clearly. I sat with the output for 20 minutes and made a decision I had been putting off for six months.&rdquo;</blockquote>
+        <div class="t-id"><span class="t-avatar">M</span><span class="t-name">Maja S.<br>Entrepreneur &amp; manifestation practitioner</span></div>
+      </div>
+      <div class="t-card">
+        <div class="stars">★★★★★</div>
+        <blockquote>&ldquo;I expected something generic. What I got was so specific to my situation it felt uncomfortable in the best way. The future self section alone changed how I showed up in a difficult conversation the same afternoon.&rdquo;</blockquote>
+        <div class="t-id"><span class="t-avatar">P</span><span class="t-name">Priya R.<br>Creative &amp; self-concept student</span></div>
+      </div>
+      <div class="t-card">
+        <div class="stars">★★★★★</div>
+        <blockquote>&ldquo;I have spent a lot of money on longer programs that never got this precise. The Identity Recode named a belief I had been dancing around for years and gave me something concrete to do about it right now.&rdquo;</blockquote>
+        <div class="t-id"><span class="t-avatar">C</span><span class="t-name">Chiara M.<br>Coach &amp; personal development enthusiast</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- NARRATIVE SPLIT -->
+<section class="bg-2" style="background:var(--dark-2);">
+  <div class="wrap-wide">
+    <div class="split">
+      <div class="split-text">
+        <p class="eyebrow">Still happening to you?</p>
+        <h2 class="section-title">You know your limiting beliefs are the problem. You just can&rsquo;t see them.</h2>
+        <p class="lead">You have read the books, watched the videos, written the affirmations. You understand the concepts better than most people around you.</p>
+        <p class="lead">But understanding something and actually shifting it are two different things. The belief running your decisions is not the one you think it is.</p>
+        <p class="lead">You are not behind. You are just working on the surface of a block that sits deeper. The Identity Recode goes straight to it.</p>
+      </div>
+      <div class="photo tall"></div>
+    </div>
+  </div>
+</section>
+
+<!-- PAIN POINTS -->
+<section>
+  <div class="wrap">
+    <h2 class="section-title">If you are doing the inner work but still choosing small&hellip;</h2>
+    <p class="lead">This is probably your reality right now:</p>
+    <div class="grid cols-2">
+      <div class="card">
+        <div class="chip"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M16 16s-1.5-2-4-2-4 2-4 2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg></div>
+        <h3>Affirmations every morning, same choices by noon</h3>
+        <p>You say the words, you feel it for a moment, then you make the exact same fear-based decision you always make.</p>
+      </div>
+      <div class="card">
+        <div class="chip"><svg viewBox="0 0 24 24"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/></svg></div>
+        <h3>Inspired for an hour, back to yourself by dinner</h3>
+        <p>You consume the content, feel the shift, close the app, and nothing in your real life actually moves.</p>
+      </div>
+      <div class="card">
+        <div class="chip"><svg viewBox="0 0 24 24"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" y1="2" x2="22" y2="22"/></svg></div>
+        <h3>You know the block is there. You can&rsquo;t name it.</h3>
+        <p>You&rsquo;ve done the work on the surface for months, but the real belief running the show is still sitting untouched underneath.</p>
+      </div>
+      <div class="card">
+        <div class="chip"><svg viewBox="0 0 24 24"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/><path d="m12 5-2 5h4l-2 5"/></svg></div>
+        <h3>You get close to the leap, then pull back</h3>
+        <p>Every time a real step toward the life you want appears in front of you, something in you finds a reason to wait.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURE TRIO -->
+<section style="background:var(--dark-2);">
+  <div class="wrap-wide">
+    <h2 class="section-title center">What you walk away with</h2>
+    <p class="lead center" style="max-width:620px;margin:0 auto 1rem;">You put in three things. You leave knowing the belief, who your future self is, and exactly what to do.</p>
+    <div class="grid cols-3">
+      <div class="feat">
+        <div class="feat-top"><span>The Belief</span></div>
+        <div class="feat-body">
+          <h3>Named in plain language</h3>
+          <p>The specific belief running this one decision &mdash; not a category, the exact thought &mdash; bolded so you cannot miss it, with how it has shaped your real life.</p>
+        </div>
+      </div>
+      <div class="feat">
+        <div class="feat-top"><span>Future Self</span></div>
+        <div class="feat-body">
+          <h3>Who you are instead</h3>
+          <p>A present-tense portrait of the woman who already has this life, with at least five specific actions she would take on your decision today.</p>
+        </div>
+      </div>
+      <div class="feat">
+        <div class="feat-top"><span>The Recode</span></div>
+        <div class="feat-body">
+          <h3>One statement to live by</h3>
+          <p>A single bold identity statement short enough to screenshot, plus a clear instruction on exactly what to do next.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STATEMENT BAND -->
+<section class="band">
+  <div class="wrap">
+    <h2>You were never the problem. You just needed a way to see what you could not see alone.</h2>
+  </div>
+</section>
+
+<!-- PRICE -->
+<section>
+  <div class="wrap">
+    <h2 class="section-title center">Get The Identity Recode now</h2>
+    <p class="lead center" style="max-width:560px;margin:0 auto;">A single identity coaching session to uncover one limiting belief costs upward of $150 and takes weeks to book. This takes under 10 minutes, for €27.</p>
+    <div class="price-card">
+      <div class="price-head">
+        <div class="amt">€27</div>
+        <div class="note">One-time · Price goes up soon</div>
+      </div>
+      <div class="price-body">
+        <ul class="price-list">
+          <li>The Belief Running The Show, named in plain language</li>
+          <li>How it has been running your life, in concrete scenes</li>
+          <li>The Shadow Underneath &mdash; where it came from</li>
+          <li>Who your future self is, with actions for right now</li>
+          <li>Your Recode statement to screenshot and live by</li>
+        </ul>
+        <div class="price-strike">Total value <s>$385</s> &nbsp; Today <b>€27</b> &nbsp; Save $358</div>
+        <a href="https://recode.lunabylena.com/api/checkout" class="btn">Get instant access for €27</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WHAT YOU GET INSIDE -->
+<section style="background:var(--dark-2);">
+  <div class="wrap-wide">
+    <div class="split">
+      <div class="split-text">
+        <h2 class="section-title">What The Identity Recode actually does</h2>
+        <p class="lead">You put in three things. You walk away knowing the exact belief behind your current decision, where it came from, and what your future self does instead.</p>
+        <div class="acc">
+          <button class="acc-head">Step 1: Describe the decision you are stuck in<span class="plus">+</span></button>
+          <div class="acc-body"><p>You put the real situation into words, as specifically as you can &mdash; that specificity is what makes everything that follows precise rather than generic.</p></div>
+        </div>
+        <div class="acc">
+          <button class="acc-head">Step 2: Describe your dream reality and the pattern that repeats<span class="plus">+</span></button>
+          <div class="acc-body"><p>You paint the life you are building toward as a real scene, and name the loop that keeps pulling you back, giving the recode everything it needs to find the gap.</p></div>
+        </div>
+        <div class="acc">
+          <button class="acc-head">Step 3: Receive the belief running the show<span class="plus">+</span></button>
+          <div class="acc-body"><p>You see the specific belief named in plain language, bolded so you cannot miss it, followed by a concrete picture of how it has been operating in your actual life.</p></div>
+        </div>
+        <div class="acc">
+          <button class="acc-head">Step 4: See who your future self is and what she would do<span class="plus">+</span></button>
+          <div class="acc-body"><p>A present-tense portrait of the version of you who already has the life you are building, followed by at least five specific actions she would take today.</p></div>
+        </div>
+        <div class="acc">
+          <button class="acc-head">Step 5: Walk away with your Recode statement<span class="plus">+</span></button>
+          <div class="acc-body"><p>One bold, present-tense identity statement short enough to screenshot, and a clear instruction on exactly what to bring back next time.</p></div>
+        </div>
+      </div>
+      <div class="photo tall"></div>
+    </div>
+  </div>
+</section>
+
+<!-- FOR YOU / NOT FOR YOU -->
+<section>
+  <div class="wrap-wide">
+    <div class="two">
+      <div class="panel yes">
+        <h3>This is for you if&hellip;</h3>
+        <ul>
+          <li>You know the language, you do the practices, but your outer life is not catching up to the inner work</li>
+          <li>You can describe your dream reality in detail, but the moment a real decision sits in front of you, you choose small</li>
+          <li>You repeat affirmations every morning and still decide from the same old fear by afternoon</li>
+          <li>You keep landing on the surface version of your limiting belief, not the one actually driving things</li>
+          <li>You keep putting off the inner work because it feels like it has to be long and painful</li>
+        </ul>
+      </div>
+      <div class="panel no">
+        <h3>This is not for you if&hellip;</h3>
+        <ul>
+          <li>You want a quick motivational hit and aren&rsquo;t open to an honest look at what&rsquo;s driving the pattern</li>
+          <li>You&rsquo;re looking for someone to do the inner work for you, rather than with you</li>
+          <li>You believe nothing about your situation can change, no matter what you see</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- NOTE FROM LENA -->
+<section class="note" style="background:var(--dark-2);">
+  <div class="wrap-wide">
+    <div class="split rev">
+      <div class="split-text">
+        <h2 class="section-title">Built by someone who lives the work</h2>
+        <p class="signoff">Hey, I&rsquo;m Lena.</p>
+        <p>I am an identity and self-concept coach based in Málaga. I left behind a life that looked fine on the outside to rebuild one that actually feels like me, and I know firsthand what it is like to understand all the concepts, do the work on the surface, and still find yourself stuck in the same patterns. That gap between knowing and actually shifting is exactly what Luna by Lena was built to close.</p>
+        <p>I built The Identity Recode because I kept seeing the same thing: women doing everything right, consuming all the content, and still not moving &mdash; not because they weren&rsquo;t trying, but because the real block was sitting untouched underneath the work they were already doing. I want every woman who uses this to leave with more trust in herself than she arrived with.</p>
+      </div>
+      <div class="photo tall"></div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section>
+  <div class="wrap">
+    <h2 class="section-title">FAQs</h2>
+    <div class="acc">
+      <button class="acc-head">How long does it actually take?<span class="plus">+</span></button>
+      <div class="acc-body"><p>Most people are through all three input fields and reading their full output in under 10 minutes. The output itself is detailed, so you may want to sit with certain sections longer, but the recode lands fast.</p></div>
+    </div>
+    <div class="acc">
+      <button class="acc-head">Do I need to know anything about limiting beliefs first?<span class="plus">+</span></button>
+      <div class="acc-body"><p>No. You need to know what decision or pattern is sitting in front of you right now, and what the life you want actually looks like. The Identity Recode does the rest. Prior knowledge of manifestation or self-concept work is not required.</p></div>
+    </div>
+    <div class="acc">
+      <button class="acc-head">What if my situation feels too complicated to describe?<span class="plus">+</span></button>
+      <div class="acc-body"><p>Write it like you would explain it to a friend over coffee. The input fields are open text, so you can be as specific and messy as the real situation is. The more honest and concrete you are, the more precise your output will be.</p></div>
+    </div>
+    <div class="acc">
+      <button class="acc-head">Can I use it more than once, for different decisions?<span class="plus">+</span></button>
+      <div class="acc-body"><p>Yes. Each time you run The Identity Recode, you bring a different decision or pattern, and it names the belief operating in that specific moment. The output tells you exactly what to update and bring next time.</p></div>
+    </div>
+    <div class="acc">
+      <button class="acc-head">Is this a substitute for therapy or coaching?<span class="plus">+</span></button>
+      <div class="acc-body"><p>No, and it does not try to be. The Identity Recode is built to name the belief running one specific decision and show you what your future self would do instead. It is a clarity tool for the moment in front of you, not a replacement for ongoing therapeutic or coaching support.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="final">
+  <div class="wrap">
+    <h2>The pattern changes <em>the moment</em> you name it.</h2>
+    <a href="https://recode.lunabylena.com/api/checkout" class="btn">Get instant access for €27</a>
+  </div>
+</section>
+
+<footer>✦ Lunabylena.com ✦</footer>
+
+<script>
+  document.querySelectorAll('.acc-head').forEach(function(btn) {
+    btn.addEventListener('click', function() { btn.parentElement.classList.toggle('open'); });
+  });
+</script>
+
+</body>
+</html>
