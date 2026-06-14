@@ -2012,6 +2012,11 @@ def background_generate_and_send_love(email, chart, birth_info):
 #  LOVE BLUEPRINT — routes
 # ─────────────────────────────────────────────
 
+@app.route("/identity-recode")
+def identity_recode():
+    return render_template("identity_recode.html")
+
+
 @app.route("/love")
 def love():
     return render_template("love.html",
