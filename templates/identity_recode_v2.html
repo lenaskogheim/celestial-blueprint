@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>The Identity Recode · Luna by Lena</title>
-<meta name="description" content="Know exactly which belief is blocking you, and what to do instead, before you make your next move. In under ten minutes, for €27.">
+<meta name="description" content="Stop choosing from the version of you that got you here. The Identity Recode names the belief running your next decision and what your future self does instead, in under ten minutes.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,500;1,600;1,700&family=Inclusive+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
@@ -47,10 +47,7 @@ em, .ital { font-style: italic; color: var(--pink-glow); }
 }
 
 /* ── HEADER ── */
-.site-header {
-  display: flex; align-items: center; justify-content: space-between;
-  max-width: 1180px; margin: 0 auto; padding: 1.1rem 1.5rem;
-}
+.site-header { display: flex; align-items: center; justify-content: space-between; max-width: 1180px; margin: 0 auto; padding: 1.1rem 1.5rem; }
 .site-header img { width: clamp(82px, 15vw, 116px); height: auto; filter: brightness(0) invert(1); }
 .login-link { font-size: 0.9rem; font-weight: 600; color: var(--light); text-decoration: none; border-bottom: 1px solid rgba(255,255,255,0.25); padding-bottom: 2px; }
 .login-link:hover { color: var(--pink-glow); border-color: var(--pink-glow); }
@@ -76,6 +73,7 @@ section { padding: 4.5rem 1.5rem; position: relative; }
 .eyebrow { text-transform: uppercase; letter-spacing: 0.22em; font-size: 0.76rem; font-weight: 700; color: var(--pink-glow); margin-bottom: 1rem; }
 .section-title { font-size: clamp(1.8rem, 4.2vw, 2.6rem); font-weight: 700; color: #fff; margin-bottom: 1.2rem; }
 .lead { font-size: 1.08rem; color: var(--light-muted); margin-bottom: 1rem; }
+.center { text-align: center; }
 
 /* ── HERO ── */
 .hero { padding-top: 3rem; }
@@ -89,42 +87,15 @@ section { padding: 4.5rem 1.5rem; position: relative; }
 @media (min-width: 900px) { .hero-grid { grid-template-columns: 1.1fr 0.9fr; gap: 3rem; } }
 .hero h1 { font-size: clamp(2.3rem, 5.5vw, 3.6rem); font-weight: 800; color: #fff; margin-bottom: 1.4rem; }
 .hero .sub { font-size: clamp(1.02rem, 2vw, 1.2rem); color: var(--light-muted); max-width: 540px; margin-bottom: 2rem; }
-.hero-stats { display: flex; flex-wrap: wrap; gap: 0.5rem 1.5rem; margin-top: 1.8rem; font-size: 0.82rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--light-muted); }
-.hero-stats strong { color: var(--pink-glow); font-weight: 700; }
 
 /* ── PHOTO PLACEHOLDER PANELS ── */
-.photo {
-  position: relative; border-radius: 18px; overflow: hidden;
-  background: var(--grad-warm);
-  min-height: 360px; display: flex; align-items: flex-end;
-  box-shadow: 0 24px 60px rgba(0,0,0,0.5);
-}
-.photo::after {
-  content: '◌ Your photo here'; position: absolute; inset: 0;
-  display: flex; align-items: center; justify-content: center;
-  color: rgba(255,255,255,0.7); font-size: 0.85rem; letter-spacing: 0.1em;
-  font-style: italic;
-}
+.photo { position: relative; border-radius: 18px; overflow: hidden; background: var(--grad-warm); min-height: 360px; display: flex; align-items: flex-end; box-shadow: 0 24px 60px rgba(0,0,0,0.5); }
+.photo::after { content: '◌ Your photo here'; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.7); font-size: 0.85rem; letter-spacing: 0.1em; font-style: italic; }
 .photo.tall { min-height: 460px; }
-.photo.short { min-height: 280px; }
 
 /* ── STAT TICKER ── */
-.ticker {
-  background: var(--dark-2); border-top: 1px solid var(--border-dark); border-bottom: 1px solid var(--border-dark);
-  display: flex; flex-wrap: wrap; justify-content: center; gap: 0.6rem 2rem;
-  padding: 1.1rem 1.5rem; font-size: 0.82rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--light-muted);
-}
+.ticker { background: var(--dark-2); border-top: 1px solid var(--border-dark); border-bottom: 1px solid var(--border-dark); display: flex; flex-wrap: wrap; justify-content: center; gap: 0.6rem 1.6rem; padding: 1.1rem 1.5rem; font-size: 0.8rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--light-muted); }
 .ticker strong { color: var(--pink-glow); }
-
-/* ── TESTIMONIALS ── */
-.t-row { display: grid; grid-template-columns: 1fr; gap: 1rem; margin-top: 2rem; }
-@media (min-width: 760px) { .t-row { grid-template-columns: repeat(3, 1fr); } }
-.t-card { background: var(--dark-card); border: 1px solid var(--border-dark); border-radius: 14px; padding: 1.4rem; }
-.t-card .stars { color: var(--orange); letter-spacing: 0.1em; font-size: 0.9rem; margin-bottom: 0.7rem; }
-.t-card blockquote { font-size: 0.95rem; font-style: italic; color: var(--light); margin-bottom: 1rem; line-height: 1.5; }
-.t-id { display: flex; align-items: center; gap: 0.6rem; }
-.t-avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--grad-warm); display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: 0.85rem; flex-shrink: 0; }
-.t-name { font-size: 0.82rem; font-weight: 600; color: var(--light); }
 
 /* ── SPLIT NARRATIVE ── */
 .split { display: grid; grid-template-columns: 1fr; gap: 2.5rem; align-items: center; }
@@ -137,12 +108,63 @@ section { padding: 4.5rem 1.5rem; position: relative; }
 .card:hover { transform: translateY(-3px); }
 .card h3 { font-size: 1.15rem; font-weight: 600; color: #fff; margin-bottom: 0.45rem; }
 .card p { font-size: 0.95rem; color: var(--light-muted); }
+.card .life-label { color: var(--pink-glow); font-weight: 700; font-size: 1.05rem; margin-bottom: 0.5rem; }
 .chip { width: 44px; height: 44px; border-radius: 12px; background: var(--chip); display: flex; align-items: center; justify-content: center; margin-bottom: 1.1rem; }
 .chip svg { width: 22px; height: 22px; color: var(--pink-glow); fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 
-/* ── STATEMENT BAND ── */
-.band { background: var(--grad-warm); text-align: center; }
-.band h2 { color: #fff; font-size: clamp(1.6rem, 4vw, 2.6rem); font-weight: 700; max-width: 820px; margin: 0 auto; font-style: italic; }
+/* ── CENTERED NARRATIVE ── */
+.narrative { text-align: center; }
+.narrative .body { max-width: 720px; margin: 0 auto; }
+.narrative .body p { font-size: 1.15rem; color: var(--light-muted); margin-bottom: 1.3rem; line-height: 1.75; }
+.narrative .body p em { color: var(--pink-glow); font-style: italic; }
+
+/* ── TIMELINE ── */
+.timeline { margin-top: 2.5rem; max-width: 760px; }
+.tl-item { display: grid; grid-template-columns: auto 1fr; gap: 1.3rem; padding-bottom: 2.2rem; position: relative; }
+.tl-item:not(:last-child)::before { content: ''; position: absolute; left: 21px; top: 54px; bottom: 0; width: 2px; background: linear-gradient(var(--pink), rgba(207,71,103,0.05)); }
+.tl-num { width: 44px; height: 44px; border-radius: 50%; border: 2px solid var(--pink); color: var(--pink-glow); font-family: 'Playfair Display', serif; font-weight: 700; font-size: 1.3rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0; background: var(--dark); position: relative; z-index: 1; }
+.tl-body h3 { font-size: 1.2rem; color: #fff; margin-bottom: 0.5rem; }
+.tl-body p { color: var(--light-muted); margin-bottom: 0.7rem; }
+.tl-body ul { list-style: none; }
+.tl-body li { position: relative; padding-left: 1.1rem; margin-bottom: 0.45rem; font-size: 0.95rem; color: var(--light-muted); }
+.tl-body li::before { content: '·'; position: absolute; left: 0.2rem; color: var(--pink-glow); font-weight: 700; }
+
+/* ── JOURNEY (3 columns) ── */
+.journey { display: grid; grid-template-columns: 1fr; gap: 2.2rem; margin-top: 3rem; position: relative; }
+@media (min-width: 820px) { .journey { grid-template-columns: repeat(3, 1fr); gap: 2.5rem; }
+  .journey::before { content: ''; position: absolute; top: 6px; left: 16.6%; right: 16.6%; height: 2px; background: var(--grad-line); opacity: 0.45; } }
+.j-col { text-align: center; position: relative; }
+.j-dot { width: 14px; height: 14px; border-radius: 50%; background: var(--pink); margin: 0 auto 1.1rem; position: relative; z-index: 1; box-shadow: 0 0 0 5px var(--dark); }
+.j-marker { font-family: 'Playfair Display', serif; font-weight: 700; color: var(--pink-glow); font-size: 1.15rem; margin-bottom: 0.7rem; }
+.j-col p { color: var(--light-muted); font-size: 0.98rem; }
+.closer-line { text-align: center; font-style: italic; color: var(--pink-glow); font-size: 1.25rem; margin-top: 3rem; }
+
+/* ── CHECKLIST ── */
+.checklist { list-style: none; max-width: 760px; margin: 2rem auto 0; }
+.checklist li { display: flex; gap: 0.8rem; padding: 0.85rem 0; border-bottom: 1px solid var(--border-dark); font-size: 1.05rem; color: var(--light-muted); line-height: 1.55; }
+.checklist li:last-child { border-bottom: none; }
+.checklist li::before { content: '✓'; color: var(--pink-glow); font-weight: 700; flex-shrink: 0; }
+
+/* ── TESTIMONIALS ── */
+.t-row { display: grid; grid-template-columns: 1fr; gap: 1rem; margin-top: 2rem; }
+@media (min-width: 760px) { .t-row { grid-template-columns: repeat(3, 1fr); } }
+.t-card { background: var(--dark-card); border: 1px solid var(--border-dark); border-radius: 14px; padding: 1.4rem; }
+.t-card .stars { color: var(--orange); letter-spacing: 0.1em; font-size: 0.9rem; margin-bottom: 0.7rem; }
+.t-card blockquote { font-size: 0.95rem; font-style: italic; color: var(--light); margin-bottom: 1rem; line-height: 1.5; }
+.t-id { display: flex; align-items: center; gap: 0.6rem; }
+.t-avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--grad-warm); display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: 0.85rem; flex-shrink: 0; }
+.t-name { font-size: 0.82rem; font-weight: 600; color: var(--light); }
+
+/* ── NOTE FROM LENA ── */
+.note p { font-size: 1.05rem; color: var(--light-muted); margin-bottom: 1rem; }
+.note .signoff { font-family: 'Playfair Display', serif; font-size: 1.5rem; color: #fff; font-style: italic; }
+
+/* ── MOMENT (three months) ── */
+.moment { text-align: center; }
+.moment::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 60% 70% at 50% 35%, rgba(226,56,87,0.35), transparent 65%); pointer-events: none; }
+.moment h2 { position: relative; font-size: clamp(1.8rem, 4.5vw, 2.8rem); color: #fff; margin-bottom: 1.6rem; }
+.moment p { position: relative; color: var(--light-muted); max-width: 680px; margin: 0 auto 1.1rem; font-size: 1.08rem; }
+.moment .em-line { color: var(--light); font-weight: 600; }
 
 /* ── PRICE ── */
 .price-card { max-width: 460px; margin: 2rem auto 0; background: var(--dark-card); border: 1px solid var(--border-dark); border-radius: 20px; overflow: hidden; }
@@ -150,34 +172,7 @@ section { padding: 4.5rem 1.5rem; position: relative; }
 .price-head .amt { font-family: 'Playfair Display', serif; font-size: 3.4rem; font-weight: 800; color: #fff; line-height: 1; }
 .price-head .note { color: rgba(255,255,255,0.85); font-size: 0.9rem; margin-top: 0.4rem; }
 .price-body { padding: 1.8rem; }
-.price-list { list-style: none; margin-bottom: 1.6rem; }
-.price-list li { display: flex; gap: 0.6rem; padding: 0.5rem 0; font-size: 0.96rem; color: var(--light); }
-.price-list li::before { content: '✓'; color: var(--pink-glow); font-weight: 700; }
-.price-strike { text-align: center; color: var(--light-muted); margin-bottom: 1.2rem; font-size: 0.95rem; }
-.price-strike s { opacity: 0.7; }
-.price-strike b { color: var(--pink-glow); }
-
-/* ── ACCORDION ── */
-.acc { border: 1px solid var(--border-dark); border-radius: 12px; margin-top: 0.85rem; overflow: hidden; background: var(--dark-card); }
-.acc-head { width: 100%; text-align: left; background: none; border: none; cursor: pointer; padding: 1.15rem 1.3rem; font-family: 'Playfair Display', serif; font-size: 1.05rem; font-weight: 500; color: var(--light); display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
-.acc-head .plus { color: var(--pink-glow); font-size: 1.4rem; flex-shrink: 0; transition: transform 0.2s ease; }
-.acc.open .acc-head .plus { transform: rotate(45deg); }
-.acc-body { display: none; padding: 0 1.3rem 1.3rem; color: var(--light-muted); }
-.acc.open .acc-body { display: block; }
-.acc-body p { margin-bottom: 0.6rem; }
-.acc-body ul { list-style: none; }
-.acc-body ul li { position: relative; padding-left: 1.1rem; margin-bottom: 0.45rem; font-size: 0.93rem; }
-.acc-body ul li::before { content: '·'; position: absolute; left: 0.2rem; color: var(--pink-glow); font-weight: 700; }
-
-/* ── FOR YOU / NOT FOR YOU ── */
-.two { display: grid; grid-template-columns: 1fr; gap: 1.2rem; margin-top: 2rem; }
-@media (min-width: 760px) { .two { grid-template-columns: 1fr 1fr; } }
-.panel { background: var(--dark-card); border: 1px solid var(--border-dark); border-radius: 16px; padding: 1.8rem; }
-.panel h3 { font-size: 1.3rem; color: #fff; margin-bottom: 1.1rem; }
-.panel ul { list-style: none; }
-.panel li { display: flex; gap: 0.6rem; padding: 0.55rem 0; font-size: 0.96rem; color: var(--light-muted); line-height: 1.5; }
-.panel.yes li::before { content: '✓'; color: var(--pink-glow); font-weight: 700; flex-shrink: 0; }
-.panel.no li::before { content: '✕'; color: var(--light-muted); flex-shrink: 0; }
+.price-body .lead { font-size: 1rem; margin-bottom: 1.5rem; }
 
 /* ── OBJECTIONS ── */
 .obj { margin-top: 2rem; }
@@ -187,34 +182,32 @@ section { padding: 4.5rem 1.5rem; position: relative; }
 .obj-a { color: var(--light-muted); display: flex; gap: 0.6rem; line-height: 1.55; }
 .obj-a::before { content: '✓'; color: var(--pink-glow); font-weight: 700; flex-shrink: 0; }
 
-/* ── VALUE STACK ── */
-.stack { list-style: none; margin: 1.8rem auto 0; max-width: 660px; }
-.stack li { display: flex; justify-content: space-between; gap: 1rem; padding: 0.8rem 0; border-bottom: 1px solid var(--border-dark); font-size: 0.98rem; color: var(--light-muted); }
-.stack li .label { display: flex; gap: 0.6rem; }
-.stack li .label::before { content: '✓'; color: var(--pink-glow); font-weight: 700; flex-shrink: 0; }
-.stack li .v { font-weight: 700; color: var(--light); white-space: nowrap; }
-.totals { text-align: center; margin-top: 1.4rem; }
-.totals .row { color: var(--light-muted); }
-.totals .today { font-family: 'Playfair Display', serif; font-size: 2.4rem; font-weight: 800; color: var(--pink-glow); margin: 0.3rem 0; }
-.totals .save { color: var(--light); font-weight: 600; }
+/* ── ACCORDION (FAQ) ── */
+.acc { border: 1px solid var(--border-dark); border-radius: 12px; margin-top: 0.85rem; overflow: hidden; background: var(--dark-card); }
+.acc-head { width: 100%; text-align: left; background: none; border: none; cursor: pointer; padding: 1.15rem 1.3rem; font-family: 'Playfair Display', serif; font-size: 1.05rem; font-weight: 500; color: var(--light); display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
+.acc-head .plus { color: var(--pink-glow); font-size: 1.4rem; flex-shrink: 0; transition: transform 0.2s ease; }
+.acc.open .acc-head .plus { transform: rotate(45deg); }
+.acc-body { display: none; padding: 0 1.3rem 1.3rem; color: var(--light-muted); }
+.acc.open .acc-body { display: block; }
 
-/* ── NOTE FROM LENA ── */
-.note p { font-size: 1.05rem; color: var(--light-muted); margin-bottom: 1rem; }
-.note .signoff { font-family: 'Playfair Display', serif; font-size: 1.5rem; color: #fff; font-style: italic; }
+/* ── EVERYTHING INSIDE FOOTER ── */
+.inside-foot { text-align: center; margin-top: 2rem; }
+.inside-foot .today { font-family: 'Playfair Display', serif; font-size: 2.4rem; font-weight: 800; color: var(--pink-glow); margin-bottom: 0.3rem; }
+.inside-foot .note { color: var(--light-muted); font-size: 0.92rem; margin-bottom: 1.4rem; }
 
-/* ── FINAL CTA ── */
+/* ── FINAL / CLOSING HERO ── */
 .final { text-align: center; }
 .final::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 60% 70% at 50% 40%, rgba(226,56,87,0.4), transparent 65%); pointer-events: none; }
-.final h2 { position: relative; font-size: clamp(2rem, 5vw, 3.2rem); font-weight: 800; color: #fff; margin-bottom: 1.8rem; }
+.final h2 { position: relative; font-size: clamp(2rem, 5vw, 3.2rem); font-weight: 800; color: #fff; margin-bottom: 1.2rem; }
+.final p { position: relative; color: var(--light-muted); max-width: 620px; margin: 0 auto 1.8rem; font-size: 1.08rem; }
 
 /* ── FOOTER ── */
 footer { text-align: center; padding: 2.5rem 1.5rem; font-size: 0.78rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--pink-glow); border-top: 1px solid var(--border-dark); }
-.center { text-align: center; }
 </style>
 </head>
 <body>
 
-<div class="urgency">Only €27 now. Price goes up soon.</div>
+<div class="urgency">Launch pricing: €27. Price goes up when the launch window closes.</div>
 
 <header class="site-header">
   <img src="/static/luna-logo.png" alt="Luna by Lena">
@@ -227,101 +220,118 @@ footer { text-align: center; padding: 2.5rem 1.5rem; font-size: 0.78rem; letter-
     <div class="hero-grid">
       <div>
         <p class="eyebrow">The Identity Recode</p>
-        <h1>Know exactly which belief is blocking you, and what to do instead, <em>before</em> you make your next move.</h1>
-        <p class="sub">You describe the decision in front of you right now. The Identity Recode names the belief running it, shows you who your future self is instead, and tells you exactly what she would do next. In under ten minutes.</p>
+        <h1>Stop choosing from the version of you that <em>got you here</em>.</h1>
+        <p class="sub">You describe the decision in front of you right now. The Identity Recode names the exact belief running it, shows you who your future self is on the other side, and tells you precisely what she would do next. And the more you use it, the more clearly it sees you. In under ten minutes.</p>
         <a href="https://recode.lunabylena.com/api/checkout" class="btn">Yes, I want The Identity Recode</a>
-        <div class="hero-stats">
-          <span><strong>10 min</strong> results</span>
-          <span><strong>€27</strong> price</span>
-          <span><strong>Instant</strong> access</span>
-        </div>
       </div>
       <div class="photo tall"></div>
     </div>
   </div>
 </section>
 
-<!-- TICKER -->
+<!-- SOCIAL PROOF TICKER -->
 <div class="ticker">
-  <span><strong>10 min</strong> results</span>
+  <span><strong>Under 10 minutes</strong></span>
   <span>✦</span>
-  <span><strong>€27</strong> price</span>
+  <span><strong>Remembers</strong> your patterns</span>
+  <span>✦</span>
+  <span><strong>€27</strong> one time</span>
   <span>✦</span>
   <span><strong>Instant</strong> access</span>
 </div>
-
-<!-- TESTIMONIALS -->
-<section>
-  <div class="wrap-wide">
-    <h2 class="section-title center">What happened when they finally saw it</h2>
-    <div class="t-row">
-      <div class="t-card">
-        <div class="stars">★★★★★</div>
-        <blockquote>&ldquo;I have been doing manifestation work for two years and this was the first time something named the actual belief clearly. I sat with the output for 20 minutes and made a decision I had been putting off for six months.&rdquo;</blockquote>
-        <div class="t-id"><span class="t-avatar">M</span><span class="t-name">Maja S.<br>Entrepreneur &amp; manifestation practitioner</span></div>
-      </div>
-      <div class="t-card">
-        <div class="stars">★★★★★</div>
-        <blockquote>&ldquo;I expected something generic. What I got was so specific to my situation it felt uncomfortable in the best way. The future self section alone changed how I showed up in a difficult conversation the same afternoon.&rdquo;</blockquote>
-        <div class="t-id"><span class="t-avatar">P</span><span class="t-name">Priya R.<br>Creative &amp; self-concept student</span></div>
-      </div>
-      <div class="t-card">
-        <div class="stars">★★★★★</div>
-        <blockquote>&ldquo;I have spent a lot of money on longer programs that never got this precise. The Identity Recode named a belief I had been dancing around for years and gave me something concrete to do about it right now.&rdquo;</blockquote>
-        <div class="t-id"><span class="t-avatar">C</span><span class="t-name">Chiara M.<br>Coach &amp; personal development enthusiast</span></div>
-      </div>
-    </div>
-  </div>
-</section>
 
 <!-- THE STRUGGLE -->
 <section style="background:var(--dark-2);">
   <div class="wrap-wide">
     <div class="split">
       <div class="split-text">
-        <p class="eyebrow">Still happening?</p>
-        <h2 class="section-title">You know your beliefs are the block. You just can&rsquo;t see which one.</h2>
-        <p class="lead">And you don&rsquo;t have to keep guessing anymore.</p>
-        <p class="lead">You&rsquo;ve done the visualizations. You&rsquo;ve written the affirmations. You understand, intellectually, that your subconscious is what&rsquo;s keeping you stuck. But understanding it and actually seeing it are two completely different things.</p>
-        <p class="lead">The problem isn&rsquo;t that you&rsquo;re not trying. The problem is that you&rsquo;re working on the surface while the real block sits untouched underneath, unnamed, invisible, driving every decision you make.</p>
-        <p class="lead">You don&rsquo;t need years of therapy or a full spiritual overhaul. You need to see exactly which belief is running this one decision, so you can finally make the choice that belongs to the person you&rsquo;re becoming.</p>
+        <p class="eyebrow">Still here?</p>
+        <h2 class="section-title">You&rsquo;ve done the inner work. You know your self-concept is the block. You just can&rsquo;t see which belief is actually running the show.</h2>
+        <p class="lead">And until you can see it, nothing shifts. That&rsquo;s not a failure of effort. That&rsquo;s just how invisible beliefs work.</p>
+        <p class="lead">You&rsquo;ve read the books. You&rsquo;ve done the visualizations. You understand, intellectually, that your subconscious is creating your reality. You know manifestation is identity work. You know the outside follows the inside.</p>
+        <p class="lead">You know all of it.</p>
+        <p class="lead">And you&rsquo;re still making the same decision from the same version of yourself on a Tuesday afternoon.</p>
       </div>
       <div class="photo tall"></div>
     </div>
 
-    <p class="lead" style="margin-top:2.5rem;">If you&rsquo;re a woman who&rsquo;s doing the inner work but still finding herself back at the same decision, the same hesitation, the same spot she started from, this is probably your reality right now:</p>
+    <p class="lead" style="margin-top:2.5rem;">The problem is not that you&rsquo;re not trying. The problem is that you&rsquo;re working on the surface while the real block sits underneath, unnamed, invisible, choosing for you.</p>
+    <p class="lead">You don&rsquo;t need years of excavation. You don&rsquo;t need to be fully healed before you can move. You need to see the specific belief running this one decision so you can finally choose from the woman you&rsquo;re becoming instead.</p>
+    <p class="lead">If you&rsquo;re a woman doing the inner work but still finding yourself back at the same crossroads, the same hesitation, the same spot you swore you&rsquo;d left behind, this is probably your reality right now:</p>
 
     <div class="grid cols-2">
       <div class="card">
         <div class="chip"><svg viewBox="0 0 24 24"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/></svg></div>
         <h3>You close the app and feel like yourself again</h3>
-        <p>The inspiration lasts about twenty minutes, then the old version of you quietly takes the wheel back.</p>
+        <p>You get inspired for twenty minutes. You feel it shift. Then the old version of you quietly takes the wheel back, and nothing in your actual life moves.</p>
       </div>
       <div class="card">
-        <div class="chip"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M16 16s-1.5-2-4-2-4 2-4 2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg></div>
+        <div class="chip"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg></div>
         <h3>Affirmations every morning, same choices by noon</h3>
-        <p>You say the words out loud but your decisions still come from the same fear they always did.</p>
+        <p>You say the words. You mean them. And then the fear-based decision happens anyway, like the affirmations never reached the part of you that actually chooses.</p>
       </div>
       <div class="card">
-        <div class="chip"><svg viewBox="0 0 24 24"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" y1="2" x2="22" y2="22"/></svg></div>
-        <h3>You can feel the block but you can&rsquo;t name it</h3>
-        <p>You work on everything except the one belief that&rsquo;s actually running the show.</p>
+        <div class="chip"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></div>
+        <h3>You can feel the block. You just can&rsquo;t name it.</h3>
+        <p>You know something is running underneath your choices. You&rsquo;ve been working around it for months. But without being able to see it clearly, you can&rsquo;t touch it.</p>
       </div>
       <div class="card">
-        <div class="chip"><svg viewBox="0 0 24 24"><rect width="16" height="10" x="2" y="7" rx="2"/><path d="M22 11v2"/><path d="M6 11v2"/></svg></div>
-        <h3>Healing feels like years of work you&rsquo;re not ready for</h3>
-        <p>So you put it off, and three months pass, and the same pattern is still there waiting.</p>
+        <div class="chip"><svg viewBox="0 0 24 24"><rect x="14" y="4" width="4" height="16" rx="1"/><rect x="6" y="4" width="4" height="16" rx="1"/></svg></div>
+        <h3>You get close to the leap, then pull back.</h3>
+        <p>Every time a real step toward the life you want sits in front of you, something in you finds a reason to wait. Not yet. Not quite. Maybe once you&rsquo;re more ready.</p>
       </div>
     </div>
 
-    <p class="lead" style="margin-top:2rem;">That&rsquo;s exactly what The Identity Recode gives you, the specific belief running this decision, named and made workable, right now.</p>
+    <p class="lead" style="margin-top:2rem;">You were never the problem. You just needed a way to see what you couldn&rsquo;t see alone.</p>
+    <p class="lead">That&rsquo;s exactly what The Identity Recode gives you. The specific belief running this decision, named in plain language, made workable, right now.</p>
   </div>
 </section>
 
-<!-- STATEMENT BAND -->
-<section class="band">
+<!-- WHAT YOUR MANIFESTATIONS ARE WAITING FOR -->
+<section class="narrative">
   <div class="wrap">
-    <h2>You were never the problem. You just needed to see what was actually running the show.</h2>
+    <p class="eyebrow">This is where the work actually lives.</p>
+    <h2 class="section-title">What your manifestations are waiting for</h2>
+    <div class="body">
+      <p>You already know that manifestation is not about saying the right words. It is about <em>who you are being</em> when you say them.</p>
+      <p>The version of you affirming abundance while the subconscious runs &ldquo;I am not someone things come easily to&rdquo; is not manifesting abundance. She is reinforcing the gap between what she says and what she believes <em>at the level that actually creates reality</em>.</p>
+      <p>Your manifestations are not stalled because you&rsquo;re not trying hard enough. They are stalled because <em>the identity generating them hasn&rsquo;t shifted yet</em>.</p>
+      <p>This is the part most manifestation content skips. Not the vision. The belief underneath the vision that keeps canceling it.</p>
+      <p>The Identity Recode goes <em>underneath the affirmation</em>. It names the belief that&rsquo;s been running counter to everything you&rsquo;ve been building toward, so you know exactly what you&rsquo;re actually working with, and exactly what your future self does differently.</p>
+    </div>
+  </div>
+</section>
+
+<!-- SAME BELIEF ACROSS YOUR LIFE -->
+<section style="background:var(--dark-2);">
+  <div class="wrap-wide">
+    <p class="eyebrow center">It&rsquo;s not just one area.</p>
+    <h2 class="section-title center">This is what the same belief looks like across your life</h2>
+    <p class="lead center" style="max-width:640px;margin:0 auto;">The same belief shows up everywhere. Different face, different situation, same feeling underneath.</p>
+    <div class="grid cols-2">
+      <div class="card">
+        <div class="chip"><svg viewBox="0 0 24 24"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg></div>
+        <div class="life-label">In love</div>
+        <p>You meet someone new and tell yourself this one is different. Six months later you&rsquo;re in the same dynamic you always end up in. A different person playing the same role. You leave and wonder why you keep attracting the same kind of unavailable.</p>
+      </div>
+      <div class="card">
+        <div class="chip"><svg viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="7" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></div>
+        <div class="life-label">In business and money</div>
+        <p>You know what move would actually grow things. You think about it for weeks. You build toward it, get close, and then find something else to fix first. The launch gets pushed. The email doesn&rsquo;t get sent. The offer sits in drafts.</p>
+      </div>
+      <div class="card">
+        <div class="chip"><svg viewBox="0 0 24 24"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg></div>
+        <div class="life-label">In visibility</div>
+        <p>You have something worth saying. You know it. You start drafting the post, the video, the pitch, and then you go quiet. The work stays private. The world doesn&rsquo;t see what you&rsquo;re actually capable of.</p>
+      </div>
+      <div class="card">
+        <div class="chip"><svg viewBox="0 0 24 24"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1Z"/></svg></div>
+        <div class="life-label">In self-worth</div>
+        <p>You do the work. You show up. And then someone gives you a compliment and you immediately find a reason it doesn&rsquo;t count. You are the last person in any room who believes in yourself fully, even when the evidence is right in front of you.</p>
+      </div>
+    </div>
+    <p class="lead center" style="margin-top:2rem;">It is the same belief. Running all of it.</p>
+    <p class="lead center">The Identity Recode names it once. And when you can see it clearly, you can finally start choosing differently across every area it&rsquo;s been quietly controlling.</p>
   </div>
 </section>
 
@@ -331,120 +341,189 @@ footer { text-align: center; padding: 2.5rem 1.5rem; font-size: 0.78rem; letter-
     <h2 class="section-title center">What changes when The Identity Recode is in your hands</h2>
     <div class="grid cols-2">
       <div class="card">
-        <div class="chip"><svg viewBox="0 0 24 24"><path d="M9.94 14.06A2 2 0 0 0 8.5 12.62l-5.62-1.45a.5.5 0 0 1 0-.96L8.5 8.76a2 2 0 0 0 1.44-1.44l1.45-5.62a.5.5 0 0 1 .96 0l1.45 5.62a2 2 0 0 0 1.44 1.44l5.62 1.45a.5.5 0 0 1 0 .96l-5.62 1.45a2 2 0 0 0-1.44 1.44l-1.45 5.62a.5.5 0 0 1-.96 0Z"/><path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/></svg></div>
+        <div class="chip"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg></div>
         <h3>You make decisions from your future self, not your past</h3>
-        <p>You stop second-guessing and start choosing from the version of you who already has the life you&rsquo;re building toward.</p>
+        <p>You stop defaulting to the version of you who&rsquo;s been running the show, and start choosing from the woman who already has the life you&rsquo;re building toward.</p>
       </div>
       <div class="card">
-        <div class="chip"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></div>
+        <div class="chip"><svg viewBox="0 0 24 24"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/></svg></div>
         <h3>You catch yourself mid-pattern and know exactly why</h3>
-        <p>You see the belief driving the loop the moment it starts, and you know the specific thing to do to interrupt it.</p>
+        <p>You see the belief the moment it activates. You have the language for it. And you know the specific thing to do to interrupt it before you end up exactly where you started.</p>
       </div>
       <div class="card">
-        <div class="chip"><svg viewBox="0 0 24 24"><path d="M12 2v8"/><path d="m4.93 10.93 1.41 1.41"/><path d="M2 18h2"/><path d="M20 18h2"/><path d="m19.07 10.93-1.41 1.41"/><path d="M22 22H2"/><path d="m8 6 4-4 4 4"/><path d="M16 18a4 4 0 0 0-8 0"/></svg></div>
-        <h3>No year-long healing journey required</h3>
-        <p>Instead of months of inner work at €200 a session, you get the one belief that&rsquo;s running this decision named and workable in ten minutes for €27.</p>
+        <div class="chip"><svg viewBox="0 0 24 24"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg></div>
+        <h3>Your manifestations finally have ground to land on</h3>
+        <p>When the belief underneath the affirmation shifts, the affirmation stops bouncing off. Identity-first manifestation works when the identity actually changes. This is how it changes.</p>
       </div>
       <div class="card">
-        <div class="chip"><svg viewBox="0 0 24 24"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg></div>
-        <h3>You trust yourself to move when it matters</h3>
-        <p>The hesitation that used to stall you for weeks gets replaced with a clear identity statement and a concrete next step you can act on today.</p>
+        <div class="chip"><svg viewBox="0 0 24 24"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></div>
+        <h3>You move without needing to be fully healed first</h3>
+        <p>You don&rsquo;t have to excavate your whole past to take the next step. You get what you need for this one decision, right now, in ten minutes.</p>
       </div>
     </div>
   </div>
 </section>
 
-<!-- 5 STEPS -->
+<!-- WHAT IT ACTUALLY DOES (TIMELINE) -->
 <section style="background:var(--dark-2);">
+  <div class="wrap">
+    <h2 class="section-title">What The Identity Recode actually does</h2>
+    <p class="lead">You put in three things. You walk away knowing the belief, the identity, and the exact next move. Nothing vague. Nothing left to interpret.</p>
+    <div class="timeline">
+      <div class="tl-item">
+        <div class="tl-num">1</div>
+        <div class="tl-body">
+          <h3>Describe the decision or situation you&rsquo;re stuck in right now</h3>
+          <p>You put the real, specific moment on the page. The thing you&rsquo;ve been circling, stalling on, or replaying. The more honest and concrete you go here, the more precise everything that follows will be.</p>
+          <ul>
+            <li>Name the exact decision, the avoidance loop, or the moment you keep repeating</li>
+            <li>This is not the time to tidy it up. Messy and real is what the tool needs to work with</li>
+          </ul>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-num">2</div>
+        <div class="tl-body">
+          <h3>Describe your dream reality and the pattern you keep seeing repeat</h3>
+          <p>You paint the life you&rsquo;re building toward as a real scene, not an abstract vision. And you name the loop that keeps pulling you back. That gap between the two is exactly where the belief lives.</p>
+          <ul>
+            <li>Write what your future life actually looks and feels like from the inside, not what it looks like from the outside</li>
+            <li>Name the behavior, relationship dynamic, or recurring thought that keeps showing up no matter what you do</li>
+          </ul>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-num">3</div>
+        <div class="tl-body">
+          <h3>The Identity Recode names the belief running the show</h3>
+          <p>You see the specific belief that has been driving your decisions, named clearly, in plain language, with its exact impact on your real life spelled out in concrete scenes. Not a category. The actual thought.</p>
+          <ul>
+            <li>Section 1 names and bolds the belief so there is no ambiguity about what you are working with</li>
+            <li>Section 2 shows you, in the specific situations you described, how that belief has been making your choices</li>
+          </ul>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-num">4</div>
+        <div class="tl-body">
+          <h3>Meet your future self and see what she does next</h3>
+          <p>You read who your future self actually is. Her identity, her traits, her way of moving through the world. And then you see exactly what she does in response to the situation you described.</p>
+          <ul>
+            <li>Section 4 describes your future self in present tense with bold identity markers so she feels real and reachable, not abstract</li>
+            <li>Section 5 gives you a numbered list of exactly what she would do right now, with the identity reasoning behind each action</li>
+          </ul>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-num">5</div>
+        <div class="tl-body">
+          <h3>Get your recode statement and your next step</h3>
+          <p>You leave with one present-tense identity statement short enough to screenshot and carry with you. And a clear instruction for what to bring back next time.</p>
+          <ul>
+            <li>Section 6 delivers your recode. One bold statement, set apart visually, impossible to miss</li>
+            <li>Section 7 tells you exactly what to update and bring next time, so each run builds on the last one</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- THE MORE YOU USE IT -->
+<section>
   <div class="wrap-wide">
-    <div class="split">
+    <p class="eyebrow center">It builds a picture of you.</p>
+    <h2 class="section-title center">The more you use it, the more it sees</h2>
+    <p class="lead center" style="max-width:680px;margin:0 auto;">Most tools give you the same experience every time. The Identity Recode gets more precise the more you bring to it.</p>
+    <p class="lead center" style="max-width:680px;margin:0.4rem auto 0;">Every session is remembered. The belief from three sessions ago. The dream you described in your first one. The pattern you said you&rsquo;d moved past that just showed up again in a different relationship, a different decision, a different form of the same hesitation.</p>
+    <div class="journey">
+      <div class="j-col">
+        <div class="j-dot"></div>
+        <div class="j-marker">Sessions 1 to 3</div>
+        <p>The belief running this specific decision, named and made workable. You leave knowing what&rsquo;s been choosing for you and what your future self does instead.</p>
+      </div>
+      <div class="j-col">
+        <div class="j-dot"></div>
+        <div class="j-marker">Sessions 4 to 6</div>
+        <p>A clearer picture of the core wound. The Identity Recode starts to see the thread connecting what came up in your love life to what&rsquo;s stalling in your business to the moment you go quiet before visibility. Same belief, different faces.</p>
+      </div>
+      <div class="j-col">
+        <div class="j-dot"></div>
+        <div class="j-marker">Sessions 7 and beyond</div>
+        <p>The full arc. What has already shifted. What is still running. What the next layer is. The Identity Recode knows your patterns well enough to see not just the belief in front of you, but the one sitting underneath it.</p>
+      </div>
+    </div>
+    <p class="lead center" style="max-width:680px;margin:2.5rem auto 0;">This is what turns a ten-minute clarity tool into something that holds a picture of who you&rsquo;re becoming, session by session, decision by decision.</p>
+    <p class="closer-line">One payment. Every decision, from here.</p>
+  </div>
+</section>
+
+<!-- THIS IS FOR YOU IF -->
+<section style="background:var(--dark-2);">
+  <div class="wrap">
+    <h2 class="section-title center">This is for you if</h2>
+    <ul class="checklist">
+      <li>You can describe your dream life in vivid detail but something stops you every single time you try to take a real step toward it.</li>
+      <li>You do the manifestation work daily and feel genuinely inspired in the moment, then close the app and go right back to deciding from the old version of yourself.</li>
+      <li>You repeat affirmations every morning and still make the same fear-based choice by the afternoon, wondering why nothing is moving.</li>
+      <li>You know your beliefs are the block but you keep landing on the surface version, not the one that is actually running your decisions.</li>
+      <li>You keep attracting the same dynamic in love, the same ceiling in money, the same hesitation before visibility, and you know it is the same root pattern showing up with different packaging.</li>
+      <li>You don&rsquo;t want to excavate your whole past. You just want to see what&rsquo;s driving this one decision so you can finally move.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section>
+  <div class="wrap-wide">
+    <h2 class="section-title center">What women are saying</h2>
+    <div class="t-row">
+      <div class="t-card">
+        <div class="stars">★★★★★</div>
+        <blockquote>&ldquo;I&rsquo;d been putting off launching my offer for two months. The Identity Recode named the exact belief making me stall in under ten minutes. I sent the email that same afternoon. That&rsquo;s not a small thing.&rdquo;</blockquote>
+        <div class="t-id"><span class="t-avatar">S</span><span class="t-name">Sofia R.<br>Online coach</span></div>
+      </div>
+      <div class="t-card">
+        <div class="stars">★★★★★</div>
+        <blockquote>&ldquo;I&rsquo;ve done a lot of inner work and I was skeptical something this fast could actually land. What it named was so specific to my situation it was uncomfortable in the best way. It wasn&rsquo;t the belief I thought it was. That&rsquo;s why it worked.&rdquo;</blockquote>
+        <div class="t-id"><span class="t-avatar">M</span><span class="t-name">Mia T.<br>Spiritual entrepreneur</span></div>
+      </div>
+      <div class="t-card">
+        <div class="stars">★★★★★</div>
+        <blockquote>&ldquo;I recognized the same pattern from my last two relationships and my business in one output. It&rsquo;s the same belief. I&rsquo;d been working around it for years without ever seeing it clearly. This named it in ten minutes.&rdquo;</blockquote>
+        <div class="t-id"><span class="t-avatar">J</span><span class="t-name">Jade K.<br>Manifestation practitioner</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- A NOTE FROM LENA -->
+<section class="note" style="background:var(--dark-2);">
+  <div class="wrap-wide">
+    <div class="split rev">
       <div class="split-text">
-        <h2 class="section-title">5 steps to your next decision made from the woman you&rsquo;re becoming, in under 10 minutes</h2>
-        <p class="lead">You walk away knowing the belief, the identity, and the exact next move. Nothing vague, nothing to interpret.</p>
-
-        <div class="acc">
-          <button class="acc-head">Step 1: Describe the decision or situation in front of you right now<span class="plus">+</span></button>
-          <div class="acc-body">
-            <p>You put the real, specific moment on the page, the thing you&rsquo;ve been circling, stalling on, or replaying, and The Identity Recode has exactly what it needs to work with.</p>
-            <ul>
-              <li>A dedicated field asks you to describe what&rsquo;s actually happening, in your own words, as specifically as you can</li>
-              <li>The more real you make it, the more precise your recode will be</li>
-            </ul>
-          </div>
-        </div>
-
-        <div class="acc">
-          <button class="acc-head">Step 2: Describe your dream reality and the pattern you keep seeing repeat<span class="plus">+</span></button>
-          <div class="acc-body">
-            <p>You paint the life you&rsquo;re building toward as a real scene, and name the loop that keeps pulling you back, giving The Identity Recode the gap it needs to locate the belief sitting in between.</p>
-            <ul>
-              <li>One field asks what your future life actually looks and feels like, not in abstract terms, but as a scene you can step into</li>
-              <li>A second field asks for the recurring pattern: the behavior, the relationship dynamic, or the thought that keeps showing up</li>
-            </ul>
-          </div>
-        </div>
-
-        <div class="acc">
-          <button class="acc-head">Step 3: The Identity Recode names the belief running the show<span class="plus">+</span></button>
-          <div class="acc-body">
-            <p>You see the specific belief that&rsquo;s been driving your decisions, named clearly, in plain language, with its exact impact on your life spelled out.</p>
-            <ul>
-              <li>Section 1 names and bolds the belief so there&rsquo;s no ambiguity about what you&rsquo;re working with</li>
-              <li>Section 2 shows you, in concrete scenes, exactly how that belief has been shaping your choices</li>
-            </ul>
-          </div>
-        </div>
-
-        <div class="acc">
-          <button class="acc-head">Step 4: Meet your future self and see what she does next<span class="plus">+</span></button>
-          <div class="acc-body">
-            <p>You read who your future self actually is, her identity, her traits, and the specific actions she takes in response to the exact situation you described.</p>
-            <ul>
-              <li>Section 4 describes your future self in present tense with bold identity markers so she feels real and reachable, not abstract</li>
-              <li>Section 5 gives you a numbered list of exactly what she would do right now, with the identity reasoning behind each action</li>
-            </ul>
-          </div>
-        </div>
-
-        <div class="acc">
-          <button class="acc-head">Step 5: Get your recode statement and your next step<span class="plus">+</span></button>
-          <div class="acc-body">
-            <p>You leave with a single, present-tense identity statement short enough to screenshot and carry with you, and a clear instruction for what to bring next time you use The Identity Recode.</p>
-            <ul>
-              <li>Section 6 delivers your recode, one bold identity statement set apart visually so it&rsquo;s impossible to miss</li>
-              <li>Section 7 tells you exactly what to update and bring back next time, so each run builds on the last</li>
-            </ul>
-          </div>
-        </div>
+        <h2 class="section-title">A note from Lena</h2>
+        <p class="signoff">Hey, I&rsquo;m Lena.</p>
+        <p>I&rsquo;m an identity and self-concept coach, and I know that gap between understanding everything and still making the same choice on a Tuesday afternoon better than I&rsquo;d like to admit.</p>
+        <p>I left behind a life that looked completely fine on the outside to rebuild one that actually feels like me. And the thing that finally moved the needle wasn&rsquo;t more content, more journaling, or more affirmations. It was seeing the specific belief that had been choosing for me for years. Once I could see it clearly, I couldn&rsquo;t unsee it. And once I couldn&rsquo;t unsee it, it lost its grip.</p>
+        <p>I built The Identity Recode because I kept seeing the same thing in the women I work with. Spiritually aware, genuinely trying, doing all the practices, and still watching the same pattern play out in their love life, their business, their sense of what they&rsquo;re allowed to want. Not because they weren&rsquo;t doing the work. Because the belief running the show was sitting just underneath the work they were already doing, untouched.</p>
+        <p>I want every woman who finds her way here to leave with more trust in herself than she arrived with. Not because I handed her the answers, but because she finally saw what was already true about her.</p>
+        <p>This tool is the fastest way I know to get there.</p>
       </div>
       <div class="photo tall"></div>
     </div>
   </div>
 </section>
 
-<!-- FOR YOU / NOT FOR YOU -->
-<section>
-  <div class="wrap-wide">
-    <div class="two">
-      <div class="panel yes">
-        <h3>This is for you if&hellip;</h3>
-        <ul>
-          <li>You can describe your dream life in vivid detail but something stops you every time you try to take a real step toward it.</li>
-          <li>You consume manifestation content daily and feel inspired in the moment, but close the app and go right back to deciding from the old version of yourself.</li>
-          <li>You repeat affirmations every morning and still make the same fear-based choices by the afternoon.</li>
-          <li>You know your limiting beliefs are the problem but you have no idea which ones are actually running your decisions or where they came from.</li>
-          <li>You don&rsquo;t want to excavate your whole past, you just want to understand what&rsquo;s driving this one decision, right now, so you can move.</li>
-        </ul>
-      </div>
-      <div class="panel no">
-        <h3>This is not for you if&hellip;</h3>
-        <ul>
-          <li>You want a quick motivational hit and aren&rsquo;t open to an honest look at what&rsquo;s driving the pattern.</li>
-          <li>You&rsquo;re looking for someone to do the inner work for you, rather than with you.</li>
-          <li>You believe nothing about your situation can change, no matter what you see.</li>
-        </ul>
-      </div>
-    </div>
+<!-- THREE MONTHS -->
+<section class="moment">
+  <div class="wrap">
+    <h2>Three months from now, you are still her</h2>
+    <p>You keep consuming the content. You keep writing the affirmations. You feel it on a Sunday and make the same choice from the same fear on Monday.</p>
+    <p>The decision sitting in front of you right now doesn&rsquo;t get made from your future self. It gets made from the version of you who has been running the show all along. And every decision from that place builds more of a life that belongs to her, not to the one you&rsquo;re becoming.</p>
+    <p class="em-line">Your manifestations are not late. They are waiting for the identity underneath to catch up.</p>
+    <p>The belief doesn&rsquo;t move until you can see it. That is the only thing standing between where you are and where you&rsquo;re going.</p>
+    <p class="em-line">The Identity Recode takes under ten minutes.</p>
   </div>
 </section>
 
@@ -452,21 +531,13 @@ footer { text-align: center; padding: 2.5rem 1.5rem; font-size: 0.78rem; letter-
 <section>
   <div class="wrap">
     <h2 class="section-title center">Get The Identity Recode for €27</h2>
-    <p class="lead center" style="max-width:580px;margin:0 auto;">A single session with an identity coach to unpack one belief costs €150 or more, and that&rsquo;s if you can get an appointment this week. The Identity Recode gives you the same named belief, the same identity work, and the same concrete next step, in ten minutes, on demand, every time a new decision shows up.</p>
     <div class="price-card">
       <div class="price-head">
         <div class="amt">€27</div>
-        <div class="note">One-time · Price goes up soon</div>
+        <div class="note">Launch pricing · Price goes up when the launch window closes</div>
       </div>
       <div class="price-body">
-        <ul class="price-list">
-          <li>Belief identification, named and explained for your situation</li>
-          <li>Pattern mapping, how it&rsquo;s run your real-life choices</li>
-          <li>Future self identity profile, who you are on the other side</li>
-          <li>Future self action plan, 5+ steps she takes right now</li>
-          <li>Your recode statement, one line to screenshot and carry</li>
-        </ul>
-        <div class="price-strike">Total value <s>$375</s> &nbsp; Today <b>€27</b> &nbsp; Save $348</div>
+        <p class="lead">A single session with an identity coach to unpack one belief costs €150 or more, and that&rsquo;s if you can get an appointment this week. The Identity Recode gives you the named belief, the future self portrait, and the specific next actions for your current decision, in ten minutes, on demand, every time a new decision shows up. And unlike a single session, it remembers everything you&rsquo;ve brought to it before.</p>
         <a href="https://recode.lunabylena.com/api/checkout" class="btn">Yes, I want The Identity Recode</a>
       </div>
     </div>
@@ -477,74 +548,56 @@ footer { text-align: center; padding: 2.5rem 1.5rem; font-size: 0.78rem; letter-
 <section class="center">
   <div class="wrap">
     <a href="https://recode.lunabylena.com/api/checkout" class="btn">Yes, I want The Identity Recode</a>
-    <p class="lead" style="margin-top:1.1rem;">Instant access. No healing experience needed. Know exactly which belief is running your next decision in under ten minutes.</p>
+    <p class="lead" style="margin-top:1.1rem;">Instant access. No prior healing experience required. Know exactly which belief is running your next decision, and what your future self does instead, in under ten minutes.</p>
   </div>
 </section>
 
-<!-- NOTE FROM LENA -->
-<section class="note" style="background:var(--dark-2);">
-  <div class="wrap-wide">
-    <div class="split rev">
-      <div class="split-text">
-        <h2 class="section-title">A note from Lena</h2>
-        <p class="signoff">Hey, I&rsquo;m Lena.</p>
-        <p>I&rsquo;m an identity and self-concept coach, and I left behind a life that looked completely fine on the outside to rebuild one that actually feels like me. I know what it&rsquo;s like to understand the concepts, do the work on the surface, and still find yourself making the same fearful choice on a Tuesday afternoon. That gap between knowing and actually shifting is exactly what Luna by Lena was built to close.</p>
-        <p>I built The Identity Recode because I kept seeing the same thing in the women I work with, spiritually aware, doing the work, consuming all the content, and still not moving, not because they weren&rsquo;t trying, but because they were working on the surface while the real block sat untouched underneath. I want every woman who finds her way here to leave with more trust in herself than she arrived with, not because I gave her the answers, but because I helped her see what was already true about her.</p>
-      </div>
-      <div class="photo tall"></div>
-    </div>
-  </div>
-</section>
-
-<!-- THREE MONTHS -->
-<section class="band">
+<!-- WHAT YOU MIGHT BE THINKING -->
+<section style="background:var(--dark-2);">
   <div class="wrap">
-    <h2>Three months from now, you&rsquo;re still her.</h2>
-    <p class="lead" style="color:rgba(255,255,255,0.9);margin-top:1.4rem;">You keep consuming the content. You keep writing the affirmations. You feel inspired on a Sunday and make the same choice from the same fear on Monday. The decision that&rsquo;s sitting in front of you right now doesn&rsquo;t get made from your future self, it gets made from the version of you who&rsquo;s been running the show all along. Every decision you make from that place builds more of a life that belongs to her, not to the one you&rsquo;re trying to become. The belief doesn&rsquo;t move until you can see it clearly. That&rsquo;s the only thing standing between where you are and where you&rsquo;re going.</p>
-  </div>
-</section>
-
-<!-- OBJECTIONS -->
-<section>
-  <div class="wrap">
-    <h2 class="section-title">&ldquo;I&rsquo;ve tried this before and nothing actually changed.&rdquo;</h2>
+    <h2 class="section-title">What you might be thinking right now</h2>
     <div class="obj">
       <div class="obj-item">
-        <div class="obj-q">&ldquo;I don&rsquo;t know which beliefs are actually running me, I keep identifying the wrong ones.&rdquo;</div>
-        <div class="obj-a">That&rsquo;s exactly the gap The Identity Recode closes. You don&rsquo;t guess. You describe the real situation in your own words, and the tool locates the specific belief active in that moment, not a generic one pulled from a list, but the one that&rsquo;s driving this decision right now.</div>
+        <div class="obj-q">&ldquo;I&rsquo;ve tried to find my limiting beliefs before and I always end up going in circles.&rdquo;</div>
+        <div class="obj-a">That happens when you&rsquo;re looking at the whole picture at once. The Identity Recode focuses on one specific decision and traces the belief active in that moment. That&rsquo;s why what it names is workable instead of abstract. You&rsquo;re not digging through your whole history. You&rsquo;re looking at this one thing, right now.</div>
       </div>
       <div class="obj-item">
-        <div class="obj-q">&ldquo;I&rsquo;m not ready to go deep into my past. I don&rsquo;t have the emotional capacity right now.&rdquo;</div>
-        <div class="obj-a">You don&rsquo;t go into your past. You describe what&rsquo;s happening in front of you today. The Identity Recode works from the present moment outward, you get the belief named, the identity laid out, and the next action made clear, without excavating anything you&rsquo;re not ready for.</div>
-      </div>
-      <div class="obj-item">
-        <div class="obj-q">&ldquo;I do affirmations and visualizations every day and nothing in my outer life is actually moving.&rdquo;</div>
+        <div class="obj-q">&ldquo;I do affirmations and visualizations every day and nothing in my outer life is moving.&rdquo;</div>
         <div class="obj-a">Affirmations work on the surface. The belief running underneath keeps making the same decisions regardless of what you say out loud. The Identity Recode goes underneath the affirmation and names the belief that&rsquo;s been canceling it, so you finally know what you&rsquo;re actually working with.</div>
       </div>
       <div class="obj-item">
-        <div class="obj-q">&ldquo;What if I use it once and then fall back into the same pattern anyway?&rdquo;</div>
-        <div class="obj-a">Section 7 of every output tells you exactly what to bring back next time. The Identity Recode is built to be run again, each time you&rsquo;re in a new decision, a new stall, or the same pattern showing up in a different shape, you run it again. It grows with you.</div>
+        <div class="obj-q">&ldquo;I&rsquo;m not ready to go deep into my past right now.&rdquo;</div>
+        <div class="obj-a">You don&rsquo;t go into your past. You describe what&rsquo;s in front of you today. The Identity Recode works from the present moment outward. You get the belief named, the identity laid out, and the next action made clear, without excavating anything you&rsquo;re not ready for.</div>
+      </div>
+      <div class="obj-item">
+        <div class="obj-q">&ldquo;I already know my patterns. I don&rsquo;t think more information will change anything.&rdquo;</div>
+        <div class="obj-a">Knowing a pattern and seeing the specific belief running this one decision are different things. The output gives you the named belief, concrete scenes from your own life, and a numbered list of exactly what your future self would do today. Information is not the output. Direction is.</div>
+      </div>
+      <div class="obj-item">
+        <div class="obj-q">&ldquo;What if I use it once and fall right back into the same pattern?&rdquo;</div>
+        <div class="obj-a">That&rsquo;s exactly why the memory exists. The Identity Recode remembers what you&rsquo;ve brought before. So when the pattern shows up again in a different shape, you come back and it already knows the thread. You&rsquo;re not starting over. You&rsquo;re going deeper.</div>
       </div>
     </div>
   </div>
 </section>
 
 <!-- EVERYTHING INSIDE -->
-<section style="background:var(--dark-2);">
+<section>
   <div class="wrap">
     <h2 class="section-title center">Everything inside The Identity Recode</h2>
-    <ul class="stack">
-      <li><span class="label">Belief identification: the exact belief named and explained for your specific situation</span><span class="v">$97</span></li>
-      <li><span class="label">Pattern mapping: how that belief has been running your real-life choices, in concrete scenes</span><span class="v">$67</span></li>
-      <li><span class="label">Future self identity profile: who you are on the other side, in present tense</span><span class="v">$97</span></li>
-      <li><span class="label">Future self action plan: 5+ specific steps she takes right now, with the identity reasoning behind each</span><span class="v">$67</span></li>
-      <li><span class="label">Your recode statement: one bold identity line short enough to screenshot and carry with you</span><span class="v">$47</span></li>
+    <ul class="checklist">
+      <li>The exact belief running your current decision, named in plain language</li>
+      <li>How that belief has been operating in your real life, in concrete scenes specific to what you described</li>
+      <li>Where the belief came from and why it made sense when it formed</li>
+      <li>Your future self&rsquo;s identity portrait, written in present tense with her key traits bolded</li>
+      <li>Five or more specific actions your future self takes on your current decision, with the identity reasoning behind each one</li>
+      <li>Your recode statement, one bold identity line short enough to screenshot and carry with you</li>
+      <li>A clear instruction for what to bring back next time, so each session builds on the last</li>
+      <li>Memory across sessions, so the picture of you gets clearer every time you return</li>
     </ul>
-    <div class="totals">
-      <div class="row">Total value: <strong>$375</strong></div>
+    <div class="inside-foot">
       <div class="today">Today: €27</div>
-      <div class="save">Save $348</div>
-      <p class="price-strike" style="margin-top:0.6rem;">Launch pricing. Price goes up soon.</p>
+      <div class="note">Launch pricing. This price goes up when the launch window closes.</div>
       <a href="https://recode.lunabylena.com/api/checkout" class="btn">Yes, I want The Identity Recode</a>
     </div>
   </div>
@@ -556,7 +609,11 @@ footer { text-align: center; padding: 2.5rem 1.5rem; font-size: 0.78rem; letter-
     <h2 class="section-title">FAQs</h2>
     <div class="acc">
       <button class="acc-head">How long does it actually take?<span class="plus">+</span></button>
-      <div class="acc-body"><p>Under ten minutes from start to first output. You fill in three fields, the decision in front of you, your dream reality, and the pattern you keep seeing repeat, and The Identity Recode produces a full 7-section breakdown named and written for your specific situation.</p></div>
+      <div class="acc-body"><p>Under ten minutes from start to first output. You fill in the fields describing your situation, your dream reality, and the pattern you keep seeing repeat, and The Identity Recode produces a full personalised breakdown covering the belief, your future self&rsquo;s identity, her specific actions, and your recode statement. The output is detailed, so you may want to sit with certain sections, but the recode itself lands fast.</p></div>
+    </div>
+    <div class="acc">
+      <button class="acc-head">Does it remember what I&rsquo;ve shared before?<span class="plus">+</span></button>
+      <div class="acc-body"><p>Yes. The Identity Recode builds a picture of you across sessions. By your fifth or sixth session it can see the thread connecting what came up in your relationship to what&rsquo;s stalling in your business to the moment you go quiet before visibility, because it has been paying attention across all of them. The more honest and specific you are each time, the more precisely it sees what&rsquo;s actually running underneath.</p></div>
     </div>
     <div class="acc">
       <button class="acc-head">Do I need to have done inner work before to use this?<span class="plus">+</span></button>
@@ -564,23 +621,28 @@ footer { text-align: center; padding: 2.5rem 1.5rem; font-size: 0.78rem; letter-
     </div>
     <div class="acc">
       <button class="acc-head">Is this a course, a PDF, or a program?<span class="plus">+</span></button>
-      <div class="acc-body"><p>None of the above. The Identity Recode is a live AI-powered tool. You type in your real situation, you get a full personalized output, the belief named, your future self described, and your next actions laid out, in minutes. No modules to work through, no schedule to keep.</p></div>
+      <div class="acc-body"><p>None of the above. The Identity Recode is a live AI-powered tool. You type in your real situation, you get a full personalised output in minutes. No modules to work through, no schedule to keep, no homework.</p></div>
     </div>
     <div class="acc">
       <button class="acc-head">Can I use it more than once?<span class="plus">+</span></button>
-      <div class="acc-body"><p>Yes, and you should. Every time a new decision shows up, every time the pattern repeats in a different shape, or every time you want to check in on a new chapter of what you&rsquo;re building, you run it again. Section 7 of every output tells you exactly what to bring back next time.</p></div>
+      <div class="acc-body"><p>Yes, and you should. Every time a new decision shows up, every time the same pattern shows up in a different shape, or every time you want to check in on what&rsquo;s running a new chapter of what you&rsquo;re building, you run it again. Section 7 of every output tells you exactly what to bring back next time.</p></div>
     </div>
     <div class="acc">
       <button class="acc-head">What if the belief it names doesn&rsquo;t feel right?<span class="plus">+</span></button>
-      <div class="acc-body"><p>The more specific and honest you are in the description fields, the more accurate the output. If something doesn&rsquo;t land immediately, sit with it, the beliefs that run us hardest are often the ones that feel least obvious at first glance. If you want a more precise output, go back and make the situation description more specific.</p></div>
+      <div class="acc-body"><p>The more specific and honest you are in the description fields, the more accurate the output. If something doesn&rsquo;t land immediately, sit with it. The beliefs that run us hardest are often the ones that feel least obvious at first. If you want a more precise output, go back and make the situation description more specific and concrete.</p></div>
+    </div>
+    <div class="acc">
+      <button class="acc-head">Is this a substitute for therapy or coaching?<span class="plus">+</span></button>
+      <div class="acc-body"><p>No, and it doesn&rsquo;t try to be. The Identity Recode is built to name the belief running one specific decision and show you what your future self would do instead. It is a clarity tool for the moment in front of you, not a replacement for ongoing therapeutic or coaching support.</p></div>
     </div>
   </div>
 </section>
 
-<!-- FINAL CTA -->
+<!-- CLOSING HERO -->
 <section class="final">
   <div class="wrap">
-    <h2>Know exactly which belief is running your <em>next decision</em>, in under ten minutes.</h2>
+    <h2>The belief running your next decision is <em>nameable</em>.</h2>
+    <p>In under ten minutes, you&rsquo;ll know exactly which one it is, what your future self does instead, and you&rsquo;ll have somewhere to bring the next one when it comes.</p>
     <a href="https://recode.lunabylena.com/api/checkout" class="btn">Yes, I want The Identity Recode</a>
   </div>
 </section>
