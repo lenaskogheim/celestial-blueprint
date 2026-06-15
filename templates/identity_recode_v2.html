@@ -74,6 +74,21 @@ section { padding: 4.5rem 1.5rem; position: relative; }
 .section-title { font-size: clamp(1.8rem, 4.2vw, 2.6rem); font-weight: 700; color: #fff; margin-bottom: 1.2rem; }
 .lead { font-size: 1.08rem; color: var(--light-muted); margin-bottom: 1rem; }
 .center { text-align: center; }
+.measure { max-width: 760px; }
+
+/* ── MID HEADER ── */
+.mid-head { font-family: 'Playfair Display', serif; font-size: clamp(1.4rem, 3vw, 2rem); color: #fff; line-height: 1.25; margin: 2.5rem 0 0; max-width: 860px; }
+
+/* ── GRADIENT CALLOUT ── */
+.callout { background: var(--grad-warm); border-radius: 20px; padding: 2.6rem 2rem; text-align: center; margin-top: 2.5rem; box-shadow: 0 20px 50px rgba(226,56,87,0.3); }
+.callout h3 { font-size: clamp(1.4rem, 3.4vw, 2.1rem); color: #fff; margin-bottom: 0.9rem; max-width: 700px; margin-left: auto; margin-right: auto; }
+.callout p { color: rgba(255,255,255,0.93); max-width: 640px; margin: 0 auto; font-size: 1.05rem; }
+
+/* ── FEATURE LIST (✦) ── */
+.feat-list { list-style: none; margin: 1.4rem 0; }
+.feat-list li { display: flex; gap: 0.7rem; padding: 0.55rem 0; font-size: 1rem; color: var(--light); line-height: 1.5; text-align: left; }
+.feat-list li::before { content: '✦'; color: var(--pink-glow); flex-shrink: 0; }
+.price-sub { font-size: 0.88rem; color: var(--light-muted); margin-top: 1.2rem; text-align: center; }
 
 /* ── HERO ── */
 .hero { padding-top: 3rem; }
@@ -161,7 +176,7 @@ section { padding: 4.5rem 1.5rem; position: relative; }
 
 /* ── MOMENT (three months) ── */
 .moment { text-align: center; }
-.moment::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 60% 70% at 50% 35%, rgba(226,56,87,0.35), transparent 65%); pointer-events: none; }
+.moment::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 75% 70% at 50% 50%, rgba(226,56,87,0.30), transparent 62%); pointer-events: none; }
 .moment h2 { position: relative; font-size: clamp(1.8rem, 4.5vw, 2.8rem); color: #fff; margin-bottom: 1.6rem; }
 .moment p { position: relative; color: var(--light-muted); max-width: 680px; margin: 0 auto 1.1rem; font-size: 1.08rem; }
 .moment .em-line { color: var(--light); font-weight: 600; }
@@ -197,7 +212,7 @@ section { padding: 4.5rem 1.5rem; position: relative; }
 
 /* ── FINAL / CLOSING HERO ── */
 .final { text-align: center; }
-.final::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 60% 70% at 50% 40%, rgba(226,56,87,0.4), transparent 65%); pointer-events: none; }
+.final::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 75% 70% at 50% 50%, rgba(226,56,87,0.32), transparent 62%); pointer-events: none; }
 .final h2 { position: relative; font-size: clamp(2rem, 5vw, 3.2rem); font-weight: 800; color: #fff; margin-bottom: 1.2rem; }
 .final p { position: relative; color: var(--light-muted); max-width: 620px; margin: 0 auto 1.8rem; font-size: 1.08rem; }
 
@@ -255,9 +270,12 @@ footer { text-align: center; padding: 2.5rem 1.5rem; font-size: 0.78rem; letter-
       <div class="photo tall"></div>
     </div>
 
-    <p class="lead" style="margin-top:2.5rem;">The problem is not that you&rsquo;re not trying. The problem is that you&rsquo;re working on the surface while the real block sits underneath, unnamed, invisible, choosing for you.</p>
-    <p class="lead">You don&rsquo;t need years of excavation. You don&rsquo;t need to be fully healed before you can move. You need to see the specific belief running this one decision so you can finally choose from the woman you&rsquo;re becoming instead.</p>
-    <p class="lead">If you&rsquo;re a woman doing the inner work but still finding yourself back at the same crossroads, the same hesitation, the same spot you swore you&rsquo;d left behind, this is probably your reality right now:</p>
+    <div class="measure" style="margin-top:2.5rem;">
+      <p class="lead">The problem is not that you&rsquo;re not trying. The problem is that you&rsquo;re working on the surface while the real block sits underneath, unnamed, invisible, choosing for you.</p>
+      <p class="lead">You don&rsquo;t need years of excavation. You don&rsquo;t need to be fully healed before you can move. You need to see the specific belief running this one decision so you can finally choose from the woman you&rsquo;re becoming instead.</p>
+    </div>
+
+    <h3 class="mid-head">If you&rsquo;re a woman doing the inner work but still finding yourself back at the same crossroads, the same hesitation, the same spot you swore you&rsquo;d left behind, this is probably your reality right now:</h3>
 
     <div class="grid cols-2">
       <div class="card">
@@ -282,8 +300,10 @@ footer { text-align: center; padding: 2.5rem 1.5rem; font-size: 0.78rem; letter-
       </div>
     </div>
 
-    <p class="lead" style="margin-top:2rem;">You were never the problem. You just needed a way to see what you couldn&rsquo;t see alone.</p>
-    <p class="lead">That&rsquo;s exactly what The Identity Recode gives you. The specific belief running this decision, named in plain language, made workable, right now.</p>
+    <div class="callout">
+      <h3>You were never the problem. You just needed a way to see what you couldn&rsquo;t see alone.</h3>
+      <p>That&rsquo;s exactly what The Identity Recode gives you. The specific belief running this decision, named in plain language, made workable, right now.</p>
+    </div>
   </div>
 </section>
 
@@ -537,18 +557,16 @@ footer { text-align: center; padding: 2.5rem 1.5rem; font-size: 0.78rem; letter-
         <div class="note">Launch pricing · Price goes up when the launch window closes</div>
       </div>
       <div class="price-body">
-        <p class="lead">A single session with an identity coach to unpack one belief costs €150 or more, and that&rsquo;s if you can get an appointment this week. The Identity Recode gives you the named belief, the future self portrait, and the specific next actions for your current decision, in ten minutes, on demand, every time a new decision shows up. And unlike a single session, it remembers everything you&rsquo;ve brought to it before.</p>
-        <a href="https://recode.lunabylena.com/api/checkout" class="btn">Yes, I want The Identity Recode</a>
+        <p class="lead">A single session with an identity coach to unpack one belief costs €150 or more, and that&rsquo;s if you can get an appointment this week.</p>
+        <ul class="feat-list">
+          <li>The named belief, the future self portrait, and the specific next actions for your current decision</li>
+          <li>In ten minutes, on demand, every time a new decision shows up</li>
+          <li>And unlike a single session, it remembers everything you&rsquo;ve brought to it before</li>
+        </ul>
+        <div class="center"><a href="https://recode.lunabylena.com/api/checkout" class="btn">Yes, I want The Identity Recode</a></div>
+        <p class="price-sub">Instant access. No prior healing experience required. Know exactly which belief is running your next decision, and what your future self does instead, in under ten minutes.</p>
       </div>
     </div>
-  </div>
-</section>
-
-<!-- CTA -->
-<section class="center">
-  <div class="wrap">
-    <a href="https://recode.lunabylena.com/api/checkout" class="btn">Yes, I want The Identity Recode</a>
-    <p class="lead" style="margin-top:1.1rem;">Instant access. No prior healing experience required. Know exactly which belief is running your next decision, and what your future self does instead, in under ten minutes.</p>
   </div>
 </section>
 
