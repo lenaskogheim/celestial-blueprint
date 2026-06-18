@@ -1,6 +1,6 @@
 import os, json, warnings, threading, io, base64, functools
 warnings.filterwarnings("ignore")
-from flask import Flask, request, jsonify, Response, render_template
+from flask import Flask, request, jsonify, Response, render_template, redirect
 from kerykeion.astrological_subject_factory import AstrologicalSubjectFactory
 from kerykeion.aspects import AspectsFactory
 import anthropic
@@ -2014,12 +2014,12 @@ def background_generate_and_send_love(email, chart, birth_info):
 
 @app.route("/identity-recode")
 def identity_recode():
-    return render_template("identity_recode.html")
+    return render_template("identity_recode_v2.html")
 
 
 @app.route("/identity-recode-v2")
 def identity_recode_v2():
-    return render_template("identity_recode_v2.html")
+    return redirect("/identity-recode")
 
 
 @app.route("/love")
