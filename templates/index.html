@@ -2079,7 +2079,7 @@ function startTypewriter() {
       if (_twDone) { clearInterval(_twInterval); _twInterval = null; }
       return;
     }
-    // Advance ~2 chars per tick at 28ms ≈ 70 chars/sec — feels like a fast typist
+    // Advance ~2 chars per tick at 28ms ≈ 70 chars/sec, feels like a fast typist
     var step = 2 + Math.floor(Math.random() * 2); // 2–3 chars, slight variation
     _twDisplayed = Math.min(_twDisplayed + step, rawText.length);
     renderReport(rawText.slice(0, _twDisplayed));
@@ -2136,7 +2136,7 @@ window.onload = function() {
   // Check if we're returning from a successful Stripe payment
   // Flask injects auto_generate, chart_data and meta_data as template variables
   if (typeof AUTO_GENERATE !== 'undefined' && AUTO_GENERATE && PAYMENT_SESSION_ID) {
-    // Returning from Stripe payment — mark as paid so email confirmation shows (not paywall)
+    // Returning from Stripe payment, mark as paid so email confirmation shows (not paywall)
     _isPaidFlow = true;
     var sessionId = PAYMENT_SESSION_ID;
     showLoading();
