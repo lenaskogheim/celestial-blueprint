@@ -2309,19 +2309,28 @@ function triggerPayment() {
     headers: {'Content-Type': 'application/json'},
     body: JSON.stringify(_currentPayload)
   })
-  .then(function(res) { return res.json(); })
+  .then(function(res) { return res.json().catch(function(){ return {error: 'Server error (' + res.status + '). Please try again.'}; }); })
   .then(function(data) {
     if (data.error) {
       if (btn) { btn.textContent = 'Get Your Full Blueprint · €27'; btn.disabled = false; }
-      showError(data.error);
-    } else {
+      showPaywallError(data.error);
+    } else if (data.url) {
       window.location.href = data.url;
+    } else {
+      if (btn) { btn.textContent = 'Get Your Full Blueprint · €27'; btn.disabled = false; }
+      showPaywallError('No checkout URL was returned. Please try again.');
     }
   })
-  .catch(function() {
+  .catch(function(err) {
     if (btn) { btn.textContent = 'Get Your Full Blueprint · €27'; btn.disabled = false; }
-    showError('Something went wrong. Please try again.');
+    showPaywallError('Could not reach the payment server: ' + (err && err.message ? err.message : 'network error'));
   });
+}
+
+function showPaywallError(msg) {
+  var el = document.getElementById('paywallError');
+  if (el) { el.textContent = msg; el.style.display = 'block'; }
+  else { showError(msg); }
 }
 
 function generateReport(payload) {

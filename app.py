@@ -1708,101 +1708,115 @@ ALL KEY ASPECTS (tightest first):
 {chr(10).join(aspect_lines)}"""
 
     if preview_only:
-        return f"""You are a professional astrologer writing a single opening paragraph called "Your Love Signature" for a premium love and relationship birth chart report. Second person. Match the language register precisely to this person's elemental signature.
+        return f"""You are writing the opening section, "Your Love Signature", of a premium Love Blueprint natal chart report for {chart['name']}. Second person.
 
+VOICE AND TONE (non-negotiable):
+Write in the voice of Luna by Lena: grounded, direct, emotionally intelligent, neutral (never shaming, never enabling), quietly authoritative (you never hype, perform, or rescue), and intimate, like one woman speaking honestly to another. Confronting and safe at the same time. Never use the words: toxic, broken, damaged, blocked, "raise your vibration", "love and light", "heal more", "let go and trust", "just", "simply". Return power to the reader in every sentence.
+
+CRITICAL, ADAPT LANGUAGE TO THIS CHART (sign and dominant element / triplicity):
 {language_guidance}
 
 {chart_data}
 
-Write ONLY this one section. EXACTLY 4-5 sentences. Capture the essence of how this person loves, what they most deeply seek in relationship, and the quality of intimacy they carry. Weave Venus sign and house, Moon sign and house, and the tightest Venus or Moon aspect. Make it feel like the most intimate true thing anyone has said about how they love. Output only the paragraph content, no heading, no preamble. Honour the language register without naming it explicitly."""
+Write ONLY the "Your Love Signature" section. EXACTLY 4 to 5 sentences. No heading, no preamble.
+Open with the single most surprising or paradoxical truth this chart reveals about how {chart['name']} loves. Do NOT open with a gentle observation or a compliment. Open with something so specific to this exact chart that it could not describe anyone else, something that makes her stop and think "how did you know that". Then establish, in the same short paragraph: the core tension or paradox in how she loves, Venus sign and house as the love style, Moon sign and house as the emotional need, and the tightest Venus or Moon aspect named with its exact orb as the throughline. Tie every claim to a specific placement, aspect, and exact orb. Do not use em-dashes. Do not name the elemental register explicitly. Output only the paragraph text."""
 
-    return f"""You are a professional astrologer writing a premium, deeply personal Love & Relationship Blueprint. Second person. No jargon, only meaning. Every sentence tied to specific placements in this chart. Be rich and detailed — this is a paid premium report.
+    return f"""You are writing a personalised astrology report called The Love Blueprint for {chart['name']}. This report reads their natal chart to reveal how they love, what they need, what they keep attracting, and what their chart says about the relationship patterns that have defined their life. Second person throughout.
 
-CRITICAL — ADAPT LANGUAGE TO THIS CHART:
+VOICE AND TONE (non-negotiable):
+Write in the voice of Luna by Lena. That voice is:
+- Grounded, direct, emotionally intelligent
+- Neutral: never shaming, never enabling
+- Quietly authoritative: you do not hype, perform, or rescue
+- Intimate: like one woman speaking honestly to another
+- Confronting and safe at the same time
+
+Signature language to use naturally throughout:
+"This is information." / "This makes sense." / "Without shame." / "Nothing has gone wrong." / "What once kept you safe may now be keeping you stuck."
+
+Language to never use:
+"toxic", "broken", "damaged", "blocked", "raise your vibration", "love and light", "heal more", "let go and trust", "just", "simply".
+
+The report should return power to the reader at every turn. Before every paragraph ask: "Does this sentence give her information she can use, or does it create helplessness?" If the latter, rewrite it.
+
+CRITICAL, ADAPT LANGUAGE TO THIS CHART (sign and dominant element / triplicity, earth / water / fire / air):
 {language_guidance}
 
 {chart_data}
 
-Write the report using EXACTLY these nine sections with ## headers. Go deep. Every sub-section must have at least 1 full paragraph. When interpreting any house, always cover BOTH the sign on the cusp AND planets in it.
+CORE PRINCIPLE:
+Every interpretive statement must be tied to a specific placement, aspect, and orb. No generic love astrology. No statements that could apply to anyone. "Venus in Libra in the 11th house square Neptune at 0.44°" is a completely different story from "Venus in Libra" or "Venus square Neptune". Always use the full picture. Always name aspects with their exact orb. The tightest aspects carry the most interpretive weight: return to them as the throughline of the report.
+
+HOUSE RULERS, MANDATORY IN EVERY HOUSE SECTION:
+Every section that discusses a house MUST include:
+(a) The sign on the house cusp
+(b) Any planets physically occupying that house with their exact positions
+(c) The house ruler, the planet governing the cusp sign, named explicitly with its sign, house placement, and at least one major aspect with exact orb.
+The ruler is often more revealing than the cusp itself. It is never optional, never mentioned only in passing. It always gets its own interpretive paragraph.
+
+Write the report in the following sections, in this exact order, using ## for each section heading:
 
 ## Your Love Signature
-4-5 sentences. A powerful, poetic opening capturing the essence of how this person loves, what they most deeply seek, and the energy they bring into relationship. Weave Venus sign and house, Moon sign and house, and the tightest Venus or Moon aspect. Make it feel unmistakably, specifically true.
+Open with the single most surprising or paradoxical truth this chart reveals about how {chart['name']} loves. Do NOT open with a gentle observation or a compliment. Open with something that makes her stop and say "how did you know that". The opener must be specific to this chart and could not work for anyone else's. Then, in 4 to 5 total sentences, establish: the core tension or paradox in how she loves (the most interesting thing), Venus sign and house as the love style, Moon sign and house as the emotional need, and the tightest Venus or Moon aspect by exact name and orb as the throughline. This section sets the emotional tone of the whole report. If it is generic, she will not trust what follows.
 
-## How You Love — Venus
-3 paragraphs. Venus sign (the quality and style of how they love), Venus house (where and how love plays out in life), and the most exact Venus aspect (what shapes or complicates their way of giving love). Close with the Venus house ruler's placement and at least one of its aspects. What does love feel like when this person gives it?
+## How You Love: Venus
+Full Venus interpretation. Cover: what the Venus sign reveals about how she expresses love and what she genuinely values in a relationship (specific to this sign, not generic); what the Venus house placement says about where love shows up in her life and the context in which she falls for people; every significant Venus aspect named explicitly with exact orb and interpreted, not just listed; and the ruler of the Venus house, where it sits, what sign it is in, at least one aspect with exact orb, and what this reveals about how her love nature actually operates in practice. End with the growth edge: what complicates or challenges this Venus, not only its gifts. She should finish this section feeling seen in both her beauty and her pattern.
 
-## What You Desire — Mars
-2 paragraphs. Mars sign (the quality of desire and drive in relationship), Mars house (where desire activates), and the tightest Mars aspect. What ignites them? What do they pursue? Handle this section with maturity — desire is normal and specific to this chart. Never moralise. Never generalise.
+## What You Desire: Mars
+Full Mars interpretation. Cover: what Mars sign reveals about how she pursues and what she is drawn to energetically and physically; what Mars in this specific house reveals about the context and texture of her desire, where it lives and what activates it; every significant Mars aspect named with exact orb and interpreted individually; the ruler of the Mars house (sign, house, and at least one aspect with orb); and what Mars reveals about the gap between what she consciously wants and what her desire nature actually seeks. Handle this with directness and maturity. Desire is normal. Name it clearly without softening or making it abstract.
 
-## What You Need to Feel Safe — The Moon
-3 paragraphs. Moon sign (emotional nature and instinctive responses), Moon house (where they seek emotional security), and key Moon aspects especially conjunctions or squares that shape attachment patterns. What does this person need to feel truly safe and held in love? Be specific to this Moon placement.
+## What You Need to Feel Safe: The Moon
+Full Moon interpretation. Cover: what Moon sign and house reveal about her emotional needs and attachment patterns specifically; what makes her feel genuinely secure versus what destabilises her, named concretely; every significant Moon aspect with exact orb, interpreted individually; the Moon house ruler (sign, house, and at least one aspect with orb); and what she needs from a partner that she may have never directly asked for. IMPORTANT: introduce information not already covered above. If a Venus, Moon tension was explored in How You Love, do not re-explain it here; only reference it if it adds genuinely new meaning in the safety context. Repetition across sections is the single biggest quality failure in this report. Each section must move the story forward.
 
-## The Partner You Seek — The 7th House
-3 paragraphs.
-First paragraph: The sign on the 7th house cusp and what it reveals about the qualities this person seeks (and often projects onto) a partner. Explicitly acknowledge the projection: what we seek in others is often what we have not yet claimed in ourselves.
-Second paragraph: Any planets IN the 7th house and what they add to the partnership picture. If the 7th is empty, say so and read it from the ruler.
-Third paragraph: The 7th house ruler — where it sits, what sign, and at least one aspect with exact orb. This is non-negotiable. The ruler describes where and how partnership energy actually expresses in the life.
+## The 5th House: Romance, Play, and How You Date
+The 5th house governs romance before it becomes commitment: the electricity, the pursuit, the joy, the creative spark of early love. Cover: the sign on the 5th house cusp and what it reveals about her romantic style, what she needs dating to feel like, and what makes chemistry feel real to her; any planets physically in the 5th house with their positions and aspects; the 5th house ruler (sign, house, and at least one major aspect with orb), which tells you where her romantic energy actually flows; what lights her up in early love versus what makes romance feel flat or dead; and what she needs a potential partner to bring before she takes it seriously. This section should feel lighter and more alive than the others. It is about joy in love. Write it with warmth and specificity about pleasure: what this person actually enjoys, not only what she needs.
+
+## The Partner You Seek: 7th House
+Cover: the sign on the 7th house cusp and what it reveals about who she consciously seeks in a partner; the projection layer, what qualities she looks for in others that are actually underdeveloped or unclaimed in herself (name this plainly, it is not a criticism, it is information); any planets physically in the 7th house with their positions and aspects; and the 7th house ruler, which is essential and never omitted: its sign, house placement, and at least two major aspects with exact orbs. The ruler is the most important interpretive element of this section; give it a full paragraph. It tells you how her partnership energy actually operates versus how she imagines it does. If the 7th house is empty of planets, spend more time on the ruler, it carries the entire story. End by naming something she is looking for in a partner that she could actually develop in herself.
 
 ## The Pattern You Keep Repeating
-3 paragraphs.
-First paragraph: The South Node sign and house in the context of relationship — what familiar relational dynamic this person keeps returning to, and why it feels safe even when it costs them.
-Second paragraph: Any challenging Venus or Moon aspects (squares, oppositions, or tight conjunctions with Saturn, Pluto, Neptune, or Chiron) that reinforce this pattern. Name it precisely and with compassion. Never pathologise.
-Third paragraph: What the pattern is protecting. End this section with what the repeating dynamic is guarding — what vulnerability it shields — rather than only what it costs. This paragraph is essential.
+This is the most confronting section. Write it with full compassion and full directness: do not soften the truth, but do not shame it either. Cover: the South Node in relationship context, the familiar role she defaults to in partnership, what it cost her, and why it once made sense; the specific recurring story in her love life, named plainly ("You consistently do X because Y, and it results in Z"); at least two specific aspects or placements with exact orbs as evidence; why the pattern exists, the fear or wound it is protecting; and what the pattern costs as well as what it is preserving. Never pathologise without acknowledging the intelligence of the protection mechanism. End with one sentence that reframes the pattern as information she can now use rather than a flaw she must fix. Never use "toxic". Never leave her feeling like something is wrong with her. Land on "This is information", either those words or that felt sense.
 
-## What Happens When Love Goes Deep — The 8th House
-2 paragraphs.
-First paragraph: The sign on the 8th house cusp and what it reveals about how this person handles intimacy, vulnerability, power dynamics, and the dissolution of self that deep love requires.
-Second paragraph: Any planets IN the 8th house and their meaning. The 8th house ruler — where it sits and at least one aspect with exact orb. What happens when this person lets someone all the way in?
+## What Happens When Love Goes Deep: 8th House
+Cover: the sign on the 8th house cusp and what it reveals about her experience of true intimacy, not only sex, but the level where masks come off and real needs surface; any planets physically in the 8th house with their positions and key aspects; the 8th house ruler (sign, house, and at least one major aspect with orb), which tells you where her intimacy energy actually lives in the chart; what she most wants from deep intimacy and what she most fears in it; how sexuality and emotional connection interact for this specific chart (are they the same thing or separate for her?); and what happens to her when someone truly sees her, and what she does with that vulnerability. This section should feel intimate and honest. Write it like you are trusted to tell the truth about what lives here.
 
 ## Your Love Language From the Chart
-2 paragraphs.
-First paragraph: Synthesise Venus sign and house, Moon sign, and the 5th house ruler's placement and sign. How does this person actually receive love? What makes them feel most deeply seen and cherished? Be concrete and specific to these placements.
-Second paragraph: What they may need to communicate to partners about how they receive love, and how this can be misread or missed if not expressed.
+This is not the Gary Chapman five love languages framework. This is entirely chart-derived. Cover: how Venus, Moon, and the 5th house together reveal how this person actually receives love and what makes her feel genuinely cherished; what consistently leaves her feeling unseen even when someone is trying; what she most needs to communicate to partners that is usually missed or misread; the specific contradiction in her love nature that confuses partners, named clearly so she can explain it to someone else; and one thing a partner could do tomorrow that would land more deeply than anything else based on her chart. Make this section feel like a gift: practical, warm, immediately usable. It should read like a cheat code for anyone who loves her, and like finally being understood for her.
 
-## What Love Is Asking of You
-3 paragraphs.
-First paragraph: The North Node sign and house in the context of relationship — what new relational capacity this person is being called to develop in this lifetime. What does growth look like in love for this chart?
-Second paragraph: The tightest Venus or Moon growth aspect (trine, sextile, or a difficult aspect with genuine growth potential). What is the invitation inside the tension or the gift already present?
-Third paragraph: A direct, warm, personal closing message from the chart. Reference the single most exact Venus or Moon aspect. What does love most want from this person right now? Leave them feeling seen and capable.
+## A Message From Your Chart
+Find the single tightest Venus, Moon, or challenging love aspect in the chart. Write this section as if the chart itself is speaking directly to {chart['name']}. Second person, present tense, intimate and slightly confronting. Name the aspect and its exact orb in the first sentence. Say the thing that needed to be said, the truth the rest of the report has been building toward. It should feel like relief and reckoning at the same time. One paragraph, 5 to 8 sentences, no sub-headings. End on an invitation, not a conclusion.
 
-FORMATTING RULES — FOLLOW STRICTLY:
-- Start directly with "## Your Love Signature". No title line like "# Report For [Name]".
+## Your First Three Steps
+Three concrete, specific actions. Each must be tied to a named chart placement (sign, house, or aspect with orb), be doable within the next 7 days, not be generic advice that could apply to anyone, and feel like it comes from the chart, not from a self-help book. Use ### for each step heading, in this exact order:
+
+### Step One: [Title] (Internal / Reflective)
+A journaling prompt, inner inquiry, or contemplative practice tied to a specific Moon placement or the repeating pattern. Write the actual prompt or practice, not just the concept.
+
+### Step Two: [Title] (Relational)
+Something to try, shift, or communicate in an actual relationship or in how she shows up to connection, tied to a 7th house or Venus placement with exact orb named. Be specific enough that she knows exactly what to do.
+
+### Step Three: [Title] (Expressive)
+Something creative, self-expressive, or embodied, tied to the 5th house or Mars placement. Something that reconnects her to her own desire and aliveness, not only her partnerships.
+
+Each step should feel like an action that returns her power to her, not one that requires waiting for someone else to change.
+
+FORMATTING RULES (follow strictly):
+- Start directly with "## Your Love Signature". No title line like "# Report for [Name]".
+- Use ## only for the eleven main section headings, and ### only for the three step headings in the final section.
 - Do NOT use horizontal rules (---, ***, ___).
-- Do NOT use **bold** as a sub-heading. Use ### if you need sub-sections.
-- Use ## only for the nine main section headings.
-- Regular prose paragraphs only. No numbered lists in running prose.
+- Do NOT use **bold** as a sub-heading.
+- Regular prose paragraphs only, except the three ### steps.
 
-PUNCTUATION RULES — FOLLOW STRICTLY:
+PUNCTUATION RULES (follow strictly):
 - DO NOT use em-dashes (—) anywhere. They make prose feel AI-generated.
 - DO NOT use en-dashes (–) for parentheticals.
 - Use commas, full stops, semicolons, colons, or parentheses depending on what the sentence needs.
 
-TONE RULES — NON-NEGOTIABLE:
-- Never pathologise. Every placement is information, not verdict.
-- Never use the word "toxic" — use misaligned, unconscious, or unintegrated instead.
-- Always cite specific placements and aspects with exact orbs. No generic love astrology language.
-- The 7th house section must acknowledge projection.
-- The repeating pattern section must end with what the pattern is protecting.
-- Mars content handled with maturity — desire is normal and chart-specific.
-
-CRITICAL — PLANETS-IN-HOUSE vs HOUSE RULER (do not confuse these):
-- A planet IS IN a house only when listed in "PLANETS IN EACH HOUSE" above. That is the only authoritative source.
-- The house RULER governs the sign on the cusp. It may or may not physically be in that house.
-- NEVER say a planet is "in" a house unless confirmed above.
-- Pattern: "Your 7th house in [sign] contains [planets or EMPTY]. The ruler, [ruler], sits in [sign and house], which means..."
-
-CRITICAL — TRADITIONAL VS MODERN RULERSHIP:
-- Use traditional rulers as the PRIMARY interpretive layer. Traditional rulers: Aries/Mars, Taurus/Venus, Gemini/Mercury, Cancer/Moon, Leo/Sun, Virgo/Mercury, Libra/Venus, Scorpio/Mars, Sagittarius/Jupiter, Capricorn/Saturn, Aquarius/Saturn, Pisces/Jupiter.
-- Modern rulers (Aquarius/Uranus, Pisces/Neptune, Scorpio/Pluto) add nuance but never replace the traditional reading.
-
-ASPECT COVERAGE — NON-NEGOTIABLE:
-- The 7th house ruler MUST be discussed with at least one aspect cited by exact orb.
-- The 8th house ruler MUST be discussed with at least one aspect cited by exact orb.
-- Every Venus and Moon aspect under 3° orb must be named somewhere in the report.
-- If Venus or Moon conjuncts, squares, or opposes Pluto, Saturn, Neptune, or Chiron within 5°, name it explicitly and handle with depth.
-- The tightest Venus or Moon aspect carries the most interpretive weight in this entire report.
-
-Content rules: Every sentence tied to specific placements. No generic statements that could apply to anyone."""
+TECHNICAL ACCURACY (do not confuse these):
+- A planet IS IN a house only when listed in "PLANETS IN EACH HOUSE" above. That is the only authoritative source. NEVER say a planet is "in" a house unless confirmed there.
+- The house RULER governs the sign on the cusp and may or may not physically sit in that house.
+- Use TRADITIONAL rulers as the primary interpretive layer (Aries/Mars, Taurus/Venus, Gemini/Mercury, Cancer/Moon, Leo/Sun, Virgo/Mercury, Libra/Venus, Scorpio/Mars, Sagittarius/Jupiter, Capricorn/Saturn, Aquarius/Saturn, Pisces/Jupiter). Modern rulers (Aquarius/Uranus, Pisces/Neptune, Scorpio/Pluto) add nuance but never replace the traditional reading.
+- The 5th, 7th, and 8th house rulers must each be discussed with at least one aspect cited by exact orb (the 7th with at least two). Every Venus and Moon aspect under 3° orb must be named somewhere in the report. The tightest Venus or Moon aspect carries the most interpretive weight in the entire report."""
 
 
 def build_love_email_body_html(name):
