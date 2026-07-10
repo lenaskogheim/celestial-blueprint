@@ -1,0 +1,1043 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Shadow Blueprint · Celestial Blueprint by Lunabylena</title>
+<meta name="description" content="Your wound, your patterns, and the power buried underneath them, read from your birth chart. A deeply personal shadow-work report.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400;1,500;1,700&family=Mrs+Saint+Delafield&display=swap" rel="stylesheet">
+<style>
+:root {
+  --cream:#EFEBEA;
+  --pink-soft:#FFE3EC;
+  --pink-deep:#AA3157;
+  --terracotta:#C04C2D;
+  --purple:#7E4A92;
+  --ink:#1E1E1E;
+  --ink-soft:#3A3030;
+  --ink-muted:#8A7575;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Playfair Display', Georgia, serif;
+  background: var(--cream);
+  color: var(--ink);
+  font-weight: 400;
+  overflow-x: hidden;
+}
+
+.impact { font-family: Impact, 'Arial Narrow Bold', sans-serif; }
+.star-accent { color: var(--pink-deep); }
+
+.bg-stars { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+.bg-stars svg { position: absolute; opacity: 0.18; }
+
+/* LANDING PAGE */
+#landingPage { position: relative; }
+
+/* HERO */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 5rem 2rem 4rem;
+  position: relative;
+  overflow: hidden;
+}
+.hero-series {
+  font-family: Impact, 'Arial Narrow Bold', sans-serif;
+  font-size: 0.82rem;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: var(--purple);
+  margin-bottom: 1rem;
+}
+.hero-stars-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.2rem;
+  margin-bottom: 2.2rem;
+}
+.hero-stars-row svg { width: 18px; height: 18px; }
+.hero-stars-row svg.lg { width: 26px; height: 26px; }
+.hero-brand {
+  font-family: Impact, 'Arial Narrow Bold', sans-serif;
+  font-size: clamp(3.8rem, 11vw, 8rem);
+  line-height: 0.9;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  margin-bottom: 1.8rem;
+}
+.hero-brand .l1 { color: var(--pink-deep); display: block; }
+.hero-brand .l2 { color: var(--terracotta); display: block; }
+.hero-tagline {
+  font-size: clamp(1.1rem, 3vw, 1.5rem);
+  font-style: italic;
+  color: var(--ink-soft);
+  max-width: 560px;
+  line-height: 1.7;
+  margin-bottom: 2.8rem;
+}
+.hero-cta {
+  display: inline-block;
+  margin-bottom: 5rem;
+  padding: 1.1rem 2.8rem;
+  background: var(--ink);
+  color: var(--cream);
+  font-family: Impact, 'Arial Narrow Bold', sans-serif;
+  font-size: 1rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  text-decoration: none;
+  border: 1.5px solid var(--ink);
+  border-radius: 8px;
+  transition: all 0.15s;
+  cursor: pointer;
+}
+.hero-cta:hover {
+  background: var(--pink-deep);
+  border-color: var(--pink-deep);
+  transform: translate(-3px,-3px);
+  box-shadow: 5px 5px 0 var(--ink);
+}
+.hero-scroll-hint {
+  position: absolute;
+  bottom: 2.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: Impact, 'Arial Narrow Bold', sans-serif;
+  font-size: 0.7rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+.hero-scroll-hint::after {
+  content: '';
+  display: block;
+  width: 1px;
+  height: 40px;
+  background: linear-gradient(to bottom, var(--pink-deep), transparent);
+}
+
+/* INTRO */
+.intro-section {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 6rem 2rem;
+  text-align: center;
+}
+.intro-eyebrow {
+  font-family: Impact, 'Arial Narrow Bold', sans-serif;
+  font-size: 0.78rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--purple);
+  margin-bottom: 1.6rem;
+  display: block;
+}
+.intro-heading {
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 700;
+  line-height: 1.15;
+  margin-bottom: 2rem;
+  color: var(--ink);
+}
+.intro-heading .italic { font-style: italic; color: var(--pink-deep); }
+.intro-body {
+  font-size: 1.15rem;
+  line-height: 1.9;
+  color: var(--ink-soft);
+  margin-bottom: 1.4rem;
+}
+.intro-body strong { color: var(--ink); font-weight: 700; }
+
+/* WHAT'S INSIDE */
+.inside-section {
+  background: var(--ink);
+  color: var(--cream);
+  padding: 6rem 2rem;
+}
+.inside-inner { max-width: 860px; margin: 0 auto; }
+.inside-eyebrow {
+  font-family: Impact, 'Arial Narrow Bold', sans-serif;
+  font-size: 0.78rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--cream);
+  text-align: center;
+  margin-bottom: 1.2rem;
+  display: block;
+}
+.inside-heading {
+  font-family: Impact, 'Arial Narrow Bold', sans-serif;
+  font-size: clamp(2.5rem, 6vw, 4rem);
+  text-transform: uppercase;
+  color: var(--pink-soft);
+  text-align: center;
+  line-height: 1;
+  margin-bottom: 3.5rem;
+  letter-spacing: 0.02em;
+}
+.inside-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px;
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.12);
+}
+.inside-item {
+  padding: 2rem 2.2rem;
+  background: var(--ink);
+  border: 1px solid rgba(255,255,255,0.08);
+  transition: background 0.2s;
+}
+.inside-item:hover { background: #2a2a2a; }
+.inside-item-num {
+  font-family: Impact, 'Arial Narrow Bold', sans-serif;
+  font-size: 0.7rem;
+  letter-spacing: 0.25em;
+  color: var(--pink-soft);
+  margin-bottom: 0.6rem;
+  display: block;
+}
+.inside-item-title { font-size: 1.1rem; font-weight: 700; color: var(--pink-soft); margin-bottom: 0.5rem; line-height: 1.3; }
+.inside-item-desc { font-size: 0.95rem; color: rgba(239,235,234,0.65); line-height: 1.65; font-style: italic; }
+
+/* FOR YOU */
+.foryou-section { max-width: 720px; margin: 0 auto; padding: 6rem 2rem; }
+.foryou-eyebrow {
+  font-family: Impact, 'Arial Narrow Bold', sans-serif;
+  font-size: 0.78rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--purple);
+  margin-bottom: 1.6rem;
+  display: block;
+  text-align: center;
+}
+.foryou-heading { font-size: clamp(2rem, 5vw, 2.8rem); font-weight: 700; line-height: 1.2; margin-bottom: 2.5rem; text-align: center; }
+.foryou-heading .italic { font-style: italic; color: var(--pink-deep); }
+.foryou-list { list-style: none; display: flex; flex-direction: column; gap: 0; border: 2px solid var(--ink); }
+.foryou-item {
+  padding: 1.4rem 2rem;
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  border-bottom: 1px solid rgba(30,30,30,0.15);
+  font-size: 1.05rem;
+  line-height: 1.6;
+  color: var(--ink-soft);
+}
+.foryou-item:last-child { border-bottom: none; }
+.foryou-item::before { content: '✦'; color: var(--pink-deep); font-size: 0.75rem; flex-shrink: 0; margin-top: 2px; }
+
+/* LENA */
+.lena-section { background: var(--pink-soft); padding: 6rem 2rem; text-align: center; position: relative; overflow: hidden; }
+.lena-inner { max-width: 620px; margin: 0 auto; position: relative; z-index: 1; }
+.lena-stars { font-size: 1.2rem; color: var(--pink-deep); letter-spacing: 0.5em; margin-bottom: 2rem; display: block; }
+.lena-quote { font-size: clamp(1.15rem, 3vw, 1.45rem); font-style: italic; line-height: 1.85; color: var(--ink); margin-bottom: 2.2rem; }
+.lena-sig { font-family: 'Mrs Saint Delafield', cursive; font-size: 2.2rem; color: var(--pink-deep); line-height: 1; }
+.lena-sig-label { font-family: Impact, 'Arial Narrow Bold', sans-serif; font-size: 0.72rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--ink-muted); margin-top: 0.4rem; display: block; }
+
+/* FORM */
+.form-section-wrap { padding: 6rem 2rem 5rem; position: relative; }
+.form-section-wrap .bg-stars svg { opacity: 0.12; }
+.form-top { text-align: center; margin-bottom: 3.5rem; }
+.form-top-eyebrow { font-family: Impact, 'Arial Narrow Bold', sans-serif; font-size: 0.78rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--purple); margin-bottom: 1.2rem; display: block; }
+.form-top h2 { font-size: clamp(2.2rem, 6vw, 3.5rem); font-weight: 700; line-height: 1.1; color: var(--ink); margin-bottom: 1rem; }
+.form-top h2 .italic { font-style: italic; color: var(--pink-deep); }
+.form-top p { font-size: 1.05rem; font-style: italic; color: var(--ink-soft); max-width: 480px; margin: 0 auto; line-height: 1.75; }
+
+.form-inner { max-width: 540px; margin: 0 auto; }
+.form-group { margin-bottom: 1.5rem; }
+label {
+  display: block;
+  font-family: Impact, 'Arial Narrow Bold', sans-serif;
+  font-size: 0.78rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--purple);
+  margin-bottom: 0.55rem;
+}
+input[type=text], input[type=email], input[type=date], input[type=time] {
+  width: 100%;
+  padding: 0.95rem 1.1rem;
+  border: 1.5px solid var(--ink);
+  background: #FFFFFF;
+  font-family: 'Playfair Display', serif;
+  font-size: 1rem;
+  color: var(--ink);
+  border-radius: 0;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  -webkit-appearance: none;
+}
+input[type=text]:focus, input[type=email]:focus, input[type=date]:focus, input[type=time]:focus {
+  border-color: var(--pink-deep);
+  box-shadow: 4px 4px 0 var(--pink-deep);
+}
+input::placeholder { color: var(--ink-muted); font-style: italic; opacity: 0.7; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+
+.city-wrapper { position: relative; }
+.city-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0; right: 0;
+  background: #FFFFFF;
+  border: 1.5px solid var(--ink);
+  z-index: 9999;
+  max-height: 260px;
+  overflow-y: auto;
+  display: none;
+  box-shadow: 4px 4px 0 var(--pink-deep);
+}
+.city-option { padding: 0.8rem 1.1rem; font-size: 0.95rem; color: var(--ink); cursor: pointer; border-bottom: 1px solid rgba(30,30,30,0.08); }
+.city-option:last-child { border-bottom: none; }
+.city-option:hover, .city-option.active { background: var(--pink-soft); }
+.city-main { font-weight: 600; }
+.city-secondary { font-size: 0.82rem; color: var(--ink-muted); margin-left: 0.3rem; font-style: italic; }
+
+.opt-in-group { margin: 1.8rem 0 1.5rem; }
+.opt-in-label { display: flex; align-items: flex-start; gap: 0.8rem; cursor: pointer; margin-bottom: 0; }
+.opt-in-label input[type="checkbox"] { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.checkbox-custom { display: inline-block; flex-shrink: 0; width: 20px; height: 20px; border: 1.5px solid var(--ink); background: #FFFFFF; margin-top: 2px; position: relative; transition: all 0.15s; }
+.opt-in-label input[type="checkbox"]:checked + .checkbox-custom { background: var(--pink-deep); border-color: var(--pink-deep); }
+.opt-in-label input[type="checkbox"]:checked + .checkbox-custom::after { content: ''; position: absolute; left: 6px; top: 1px; width: 5px; height: 11px; border: solid var(--cream); border-width: 0 2.5px 2.5px 0; transform: rotate(45deg); }
+.opt-in-text { font-family: 'Playfair Display', serif; font-size: 1rem; font-style: italic; color: var(--ink-soft); line-height: 1.55; padding-top: 1px; text-transform: none; letter-spacing: normal; }
+
+.submit-btn {
+  width: 100%;
+  padding: 1.2rem;
+  background: var(--ink);
+  color: var(--cream);
+  border: 1.5px solid var(--ink);
+  font-family: Impact, 'Arial Narrow Bold', sans-serif;
+  font-size: 1.1rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  cursor: pointer;
+  border-radius: 8px;
+  margin-top: 0.5rem;
+  transition: all 0.15s;
+}
+.submit-btn:hover { background: var(--pink-deep); border-color: var(--pink-deep); transform: translate(-2px,-2px); box-shadow: 4px 4px 0 var(--ink); }
+.submit-btn:active { transform: translate(0,0); box-shadow: none; }
+
+.form-note { text-align: center; margin-top: 1.4rem; font-size: 0.78rem; color: var(--ink-muted); letter-spacing: 0.15em; text-transform: uppercase; font-family: Impact, 'Arial Narrow Bold', sans-serif; }
+.error-msg { background: #FFE8E8; border: 1.5px solid var(--pink-deep); color: var(--pink-deep); padding: 0.9rem 1.1rem; font-size: 0.95rem; margin-top: 1rem; display: none; font-style: italic; }
+
+/* FOOTER */
+.site-footer { background: var(--ink); color: var(--cream); text-align: center; padding: 3rem 2rem; }
+.footer-brand { font-family: Impact, 'Arial Narrow Bold', sans-serif; font-size: 2rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--pink-soft); margin-bottom: 0.6rem; }
+.footer-sub { font-size: 0.85rem; font-style: italic; color: rgba(255,227,236,0.7); }
+
+/* LOADING */
+.loading-section { display: none; text-align: center; padding: 7rem 2rem; max-width: 540px; margin: 0 auto; }
+.solar-ring { width: 60px; height: 60px; border: 2px solid var(--ink); border-top-color: var(--pink-deep); border-right-color: var(--terracotta); border-radius: 50%; animation: spin 1.4s linear infinite; margin: 0 auto 2.5rem; position: relative; }
+.solar-ring::after { content: '✦'; position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); color: var(--pink-deep); font-size: 0.85rem; animation: spin 1.4s linear infinite reverse; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-section h3 { font-family: Impact, 'Arial Narrow Bold', sans-serif; font-size: 1.7rem; letter-spacing: 0.05em; text-transform: uppercase; color: var(--pink-deep); margin-bottom: 0.7rem; }
+.loading-section p { font-style: italic; font-size: 1rem; color: var(--ink-soft); }
+
+/* REPORT */
+.report-section { display: none; max-width: 820px; margin: 0 auto; padding: 2.5rem 1.5rem 5rem; }
+.report-header { text-align: center; padding: 3rem 0; }
+.eyebrow { display: inline-block; font-family: Impact, 'Arial Narrow Bold', sans-serif; font-size: 0.85rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--cream); background: var(--pink-deep); padding: 0.45rem 1.4rem; margin-bottom: 1.8rem; }
+.report-title { font-family: 'Playfair Display', serif; font-weight: 700; font-size: clamp(2.5rem, 6vw, 4rem); color: var(--ink); line-height: 1.05; margin-bottom: 0.6rem; }
+.report-title .italic { font-style: italic; color: var(--pink-deep); font-weight: 700; }
+.report-meta { font-family: Impact, 'Arial Narrow Bold', sans-serif; font-size: 0.78rem; letter-spacing: 0.22em; text-transform: uppercase; color: var(--purple); margin-top: 1.4rem; }
+
+.chart-strip-heading { font-family: Impact, 'Arial Narrow Bold', sans-serif; font-size: 0.85rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--pink-deep); text-align: center; margin: 2.8rem 0 1.2rem; }
+.chart-strip { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0; border: 2px solid var(--ink); margin: 0 0 3.5rem; background: var(--ink); }
+.chart-cell { background: var(--cream); padding: 0.85rem 0.4rem; text-align: center; border: 1px solid var(--ink); }
+.cell-label { font-family: Impact, 'Arial Narrow Bold', sans-serif; font-size: 0.62rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--purple); display: block; margin-bottom: 0.3rem; }
+.cell-value { font-family: 'Playfair Display', serif; font-weight: 500; font-size: 0.95rem; color: var(--ink); display: block; }
+.cell-house { font-family: Impact, 'Arial Narrow Bold', sans-serif; font-size: 0.6rem; color: var(--ink-muted); display: block; margin-top: 0.2rem; letter-spacing: 0.1em; }
+
+.report-body h2 { font-family: Impact, 'Arial Narrow Bold', sans-serif; font-size: 2.1rem; letter-spacing: 0.02em; text-transform: uppercase; color: var(--pink-deep); margin: 3.5rem 0 1.2rem; padding-bottom: 0.6rem; border-bottom: 2px solid var(--ink); line-height: 1.05; }
+.report-body h3 { font-family: 'Playfair Display', serif; font-weight: 700; font-style: italic; font-size: 1.25rem; color: var(--ink); margin: 1.8rem 0 0.7rem; display: flex; align-items: baseline; gap: 0.6rem; }
+.report-body h3::before { content: '✦'; color: var(--pink-deep); font-style: normal; font-size: 0.8rem; flex-shrink: 0; }
+.report-body p { font-size: 1.12rem; line-height: 1.85; color: var(--ink-soft); margin-bottom: 1.3rem; }
+.report-body p strong { font-weight: 700; color: var(--ink); }
+.cursor { display: inline-block; width: 2px; height: 1em; background: var(--pink-deep); margin-left: 3px; vertical-align: middle; animation: blink 1s step-end infinite; }
+@keyframes blink { 50% { opacity: 0; } }
+
+.message-callout { margin-top: 3.5rem; padding: 2.5rem 3rem; background: var(--pink-soft); border: 2px solid var(--ink); position: relative; }
+.message-callout::before { content: ''; position: absolute; inset: 6px; border: 1px solid var(--pink-deep); pointer-events: none; }
+.message-callout h2 { border: none; padding: 0; margin: 0 0 1.2rem; color: var(--pink-deep); font-size: 1.7rem; }
+.message-callout p { font-style: italic; color: var(--ink); font-size: 1.18rem; line-height: 2; }
+
+.steps-section { margin-top: 3.5rem; padding: 2.5rem 3rem; background: var(--pink-deep); color: var(--cream); border: 2px solid var(--ink); position: relative; }
+.steps-section::before { content: ''; position: absolute; inset: 6px; border: 1px solid var(--cream); pointer-events: none; opacity: 0.4; }
+.steps-section h2 { margin-top: 0; color: var(--cream); border-bottom: 2px solid var(--cream); }
+.steps-section h3 { color: var(--cream); font-style: normal; font-family: Impact, 'Arial Narrow Bold', sans-serif; font-size: 0.85rem; letter-spacing: 0.22em; text-transform: uppercase; margin-top: 1.8rem; }
+.steps-section h3::before { color: var(--cream); }
+.steps-section p { color: var(--cream); font-style: italic; }
+
+.email-confirm { margin-top: 4rem; padding: 3rem 2.5rem; text-align: center; background: var(--cream); border: 2px solid var(--ink); position: relative; }
+.email-confirm::before { content: ''; position: absolute; inset: 6px; border: 1px solid var(--pink-deep); pointer-events: none; }
+.email-confirm .confirm-ornament { font-size: 1.4rem; color: var(--pink-deep); margin-bottom: 1.4rem; letter-spacing: 0.4em; }
+.email-confirm h3 { font-family: Impact, 'Arial Narrow Bold', sans-serif; font-size: 1.7rem; letter-spacing: 0.04em; text-transform: uppercase; color: var(--pink-deep); margin: 0 0 0.9rem; font-style: normal; display: block; }
+.email-confirm h3::before { content: none; }
+.email-confirm .confirm-teaser { font-style: italic; font-size: 1.08rem; color: var(--ink-soft); line-height: 1.75; margin-bottom: 2rem; max-width: 520px; margin-left: auto; margin-right: auto; }
+.email-confirm .confirm-teaser strong { color: var(--pink-deep); font-style: normal; font-weight: 700; }
+.confirm-sections { margin: 2rem auto; max-width: 420px; text-align: left; padding: 1.8rem 2rem; background: var(--pink-soft); border: 1.5px solid var(--ink); }
+.confirm-sections .section-label { font-family: Impact, 'Arial Narrow Bold', sans-serif; font-size: 0.78rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--pink-deep); margin-bottom: 1.1rem; text-align: center; }
+.confirm-sections .section-item { font-size: 1rem; color: var(--ink); padding: 0.4rem 0; display: flex; align-items: baseline; gap: 0.6rem; }
+.confirm-sections .section-item::before { content: '✦'; color: var(--pink-deep); font-size: 0.7rem; flex-shrink: 0; }
+.email-confirm .confirm-note { font-size: 0.85rem; color: var(--ink-muted); margin-top: 1.6rem; font-style: italic; }
+.paywall-btn { display: block; margin: 2rem auto 0; padding: 1rem 2.4rem; background: var(--pink-deep); color: #fff; border: none; border-radius: 8px; font-family: Impact, 'Arial Narrow Bold', sans-serif; font-size: 1rem; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; transition: background 0.2s, transform 0.15s; }
+.paywall-btn:hover:not(:disabled) { background: var(--terracotta); transform: translateY(-1px); }
+.paywall-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+.report-actions { display: flex; gap: 1rem; margin-top: 3rem; justify-content: center; flex-wrap: wrap; }
+.action-btn { padding: 0.9rem 2rem; font-family: Impact, 'Arial Narrow Bold', sans-serif; font-size: 0.85rem; letter-spacing: 0.18em; text-transform: uppercase; cursor: pointer; border-radius: 8px; transition: all 0.15s; }
+.btn-restart { background: var(--cream); color: var(--ink); border: 1.5px solid var(--ink); }
+.btn-restart:hover { background: var(--ink); color: var(--cream); }
+
+@media (max-width: 600px) {
+  .inside-grid { grid-template-columns: 1fr; }
+  .form-row { grid-template-columns: 1fr; }
+  .chart-strip { grid-template-columns: repeat(5, 1fr); }
+  .message-callout, .steps-section { padding: 1.8rem 1.5rem; }
+  .inside-item { padding: 1.5rem 1.4rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- LANDING PAGE -->
+<div id="landingPage">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="bg-stars">
+      <svg style="top:8%;left:6%;width:32px" viewBox="0 0 24 24"><path d="M12 0L14 9L24 12L14 15L12 24L10 15L0 12L10 9Z" fill="#AA3157"/></svg>
+      <svg style="top:15%;right:8%;width:20px" viewBox="0 0 24 24"><path d="M12 0L14 9L24 12L14 15L12 24L10 15L0 12L10 9Z" fill="#7E4A92"/></svg>
+      <svg style="top:72%;left:5%;width:24px" viewBox="0 0 24 24"><path d="M12 0L14 9L24 12L14 15L12 24L10 15L0 12L10 9Z" fill="#C04C2D"/></svg>
+      <svg style="top:80%;right:7%;width:28px" viewBox="0 0 24 24"><path d="M12 0L14 9L24 12L14 15L12 24L10 15L0 12L10 9Z" fill="#AA3157"/></svg>
+      <svg style="top:45%;left:3%;width:16px" viewBox="0 0 24 24"><path d="M12 0L14 9L24 12L14 15L12 24L10 15L0 12L10 9Z" fill="#7E4A92"/></svg>
+      <svg style="top:35%;right:4%;width:14px" viewBox="0 0 24 24"><path d="M12 0L14 9L24 12L14 15L12 24L10 15L0 12L10 9Z" fill="#C04C2D"/></svg>
+    </div>
+    <div class="hero-stars-row">
+      <svg viewBox="0 0 24 24"><path d="M12 0L14 9L24 12L14 15L12 24L10 15L0 12L10 9Z" fill="#AA3157"/></svg>
+      <svg class="lg" viewBox="0 0 24 24"><path d="M12 0L14 9L24 12L14 15L12 24L10 15L0 12L10 9Z" fill="#C04C2D"/></svg>
+      <svg viewBox="0 0 24 24"><path d="M12 0L14 9L24 12L14 15L12 24L10 15L0 12L10 9Z" fill="#7E4A92"/></svg>
+    </div>
+    <p class="hero-series">A Celestial Blueprint Report</p>
+    <h1 class="hero-brand">
+      <span class="l1">The Shadow</span>
+      <span class="l2">Blueprint</span>
+    </h1>
+    <p class="hero-tagline">Your wound, your patterns, and the power buried underneath them, read from your birth chart.</p>
+    <a href="#getYours" class="hero-cta">Discover Your Blueprint</a>
+    <div class="hero-scroll-hint">Scroll to explore</div>
+  </section>
+
+  <!-- INTRO -->
+  <section class="intro-section">
+    <span class="intro-eyebrow">The Celestial Blueprint Series</span>
+    <h2 class="intro-heading">Not your average<br><span class="italic">shadow work</span></h2>
+    <p class="intro-body">Your birth chart holds a precise map of the parts of you that usually stay in the dark: the original wound, the patterns you repeat, and the power waiting underneath them. <strong>The Shadow Blueprint reads that map, in your chart specifically.</strong></p>
+    <p class="intro-body">Using Whole Sign houses and the Swiss Ephemeris, it reads your Pluto, your Saturn, your Chiron, your Moon, and your 12th house, building a portrait of your shadow that goes far beyond Sun sign astrology.</p>
+    <p class="intro-body">This is not doom and gloom. It is a wise, warm conversation with what the chart reveals, handed back to you as information you can actually use. Nothing here is a verdict.</p>
+  </section>
+
+  <!-- WHAT'S INSIDE -->
+  <section class="inside-section">
+    <div class="inside-inner">
+      <span class="inside-eyebrow">What's included</span>
+      <h2 class="inside-heading">Inside The Shadow Blueprint</h2>
+      <div class="inside-grid">
+        <div class="inside-item">
+          <span class="inside-item-num">01</span>
+          <div class="inside-item-title">Your Shadow Signature</div>
+          <div class="inside-item-desc">The essence of your shadow landscape. Pluto, Saturn, Chiron, and the Moon's tightest aspect, in one opening.</div>
+        </div>
+        <div class="inside-item">
+          <span class="inside-item-num">02</span>
+          <div class="inside-item-title">The Wound: Chiron</div>
+          <div class="inside-item-desc">Where the original wound formed, and why the wound and the gift are the same placement seen from a different angle.</div>
+        </div>
+        <div class="inside-item">
+          <span class="inside-item-num">03</span>
+          <div class="inside-item-title">The Pattern: South Node &amp; Saturn</div>
+          <div class="inside-item-desc">The loop you default to, read through your South Node and Saturn together, and why it once made sense.</div>
+        </div>
+        <div class="inside-item">
+          <span class="inside-item-num">04</span>
+          <div class="inside-item-title">The Hidden Room: The 12th House</div>
+          <div class="inside-item-desc">What runs below awareness. Your 12th house, any planets in it, and its ruler read in full.</div>
+        </div>
+        <div class="inside-item">
+          <span class="inside-item-num">05</span>
+          <div class="inside-item-title">The Transformer: Pluto</div>
+          <div class="inside-item-desc">Your Pluto's compulsion and power. The thing you cannot stop returning to, and what it is for.</div>
+        </div>
+        <div class="inside-item">
+          <span class="inside-item-num">06</span>
+          <div class="inside-item-title">How Your Shadow Speaks</div>
+          <div class="inside-item-desc">The practical section. The specific triggers and behaviours your exact chart actually produces.</div>
+        </div>
+        <div class="inside-item">
+          <span class="inside-item-num">07</span>
+          <div class="inside-item-title">The Hidden Gift</div>
+          <div class="inside-item-desc">Every shadow placement inverted. The wound as the gift, named in your specific chart.</div>
+        </div>
+        <div class="inside-item">
+          <span class="inside-item-num">08</span>
+          <div class="inside-item-title">A Message From Your Shadow</div>
+          <div class="inside-item-desc">A direct, personal message written from the single tightest challenging aspect in your chart.</div>
+        </div>
+        <div class="inside-item">
+          <span class="inside-item-num">09</span>
+          <div class="inside-item-title">Your Integration Practices</div>
+          <div class="inside-item-desc">Three practices, internal, somatic, and relational, each tied to a specific placement.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHO IT'S FOR -->
+  <section class="foryou-section">
+    <span class="foryou-eyebrow">Is this for you?</span>
+    <h2 class="foryou-heading">This is for you if you're <span class="italic">ready</span></h2>
+    <ul class="foryou-list">
+      <li class="foryou-item">You keep running into the same pattern, the same trigger, the same self-sabotage, and you want to understand where it actually comes from.</li>
+      <li class="foryou-item">You are doing the inner work and you are ready to meet the parts of yourself you usually look away from, without shame.</li>
+      <li class="foryou-item">You want language for what has always felt unnameable in you, grounded in your actual chart rather than generic shadow-work theory.</li>
+      <li class="foryou-item">You sense there is power inside the very thing you have treated as a flaw, and you want the chart to show you where.</li>
+      <li class="foryou-item">You want a reading that is honest and direct, but never makes you feel like something is wrong with you.</li>
+    </ul>
+  </section>
+
+  <!-- LENA NOTE -->
+  <section class="lena-section">
+    <div class="lena-inner">
+      <span class="lena-stars">✦ ✦ ✦</span>
+      <p class="lena-quote">"I created this because the shadow is not the enemy. It is the part of us that got left in the dark, still carrying something we need. This report meets those parts without shame, names what they are protecting, and hands you back the gift hidden inside the wound."</p>
+      <span class="lena-sig">Lena</span>
+      <span class="lena-sig-label">Creator of Celestial Blueprint</span>
+    </div>
+  </section>
+
+  <!-- FORM -->
+  <section class="form-section-wrap" id="getYours">
+    <div class="form-top">
+      <span class="form-top-eyebrow">Your Blueprint Awaits</span>
+      <h2>Discover Your <span class="italic">Shadow Blueprint</span></h2>
+      <p>Enter your birth details below. You'll see a preview of your Shadow Signature on screen, and your complete report arrives in your inbox as a beautifully designed PDF.</p>
+    </div>
+    <div class="form-inner">
+      <div class="form-group">
+        <label>Your Name</label>
+        <input type="text" id="name" placeholder="First name">
+      </div>
+      <div class="form-group">
+        <label>Email Address</label>
+        <input type="email" id="email" placeholder="where to send your full report">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Date of Birth</label>
+          <input type="date" id="date">
+        </div>
+        <div class="form-group">
+          <label>Time of Birth</label>
+          <input type="time" id="time">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Place of Birth</label>
+        <div class="city-wrapper">
+          <input type="text" id="cityInput" placeholder="Start typing a city…" autocomplete="new-password" name="birth_city_field">
+          <div class="city-dropdown" id="cityDropdown"></div>
+        </div>
+      </div>
+      <div class="opt-in-group">
+        <label class="opt-in-label">
+          <input type="checkbox" id="marketingOptIn">
+          <span class="checkbox-custom"></span>
+          <span class="opt-in-text">✦ I'd love to stay connected. Send me offerings, reflections on shadow work, self-concept, and how we actually create our reality.</span>
+        </label>
+      </div>
+      <div class="error-msg" id="errorMsg"></div>
+      <button class="submit-btn" onclick="handleSubmit()">Generate My Shadow Blueprint</button>
+      <p class="form-note">Free preview · Full PDF report unlocked after payment</p>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <div class="footer-brand">✦ The Shadow Blueprint ✦</div>
+    <p class="footer-sub">lunabylena.com · hello@lunabylena.com</p>
+  </footer>
+
+</div><!-- end landingPage -->
+
+<!-- LOADING -->
+<div class="loading-section" id="loadingSection">
+  <div class="solar-ring"></div>
+  <h3 id="loadingTitle">Calculating Your Chart</h3>
+  <p id="loadingMsg">Mapping planetary positions at the moment of your birth</p>
+</div>
+
+<!-- REPORT -->
+<div class="report-section" id="reportSection">
+  <div class="report-header">
+    <span class="eyebrow">The Shadow Blueprint</span>
+    <h2 class="report-title" id="reportName"></h2>
+    <p class="report-meta" id="reportMeta"></p>
+  </div>
+  <p class="chart-strip-heading" id="chartStripHeading" style="display:none;">Your Chart at a Glance</p>
+  <div class="chart-strip" id="chartStrip"></div>
+  <div class="report-body" id="reportBody"></div>
+  <div class="report-actions">
+    <button class="action-btn btn-restart" onclick="restart()">Generate Another</button>
+  </div>
+</div>
+
+<script>
+var selectedCity = null;
+var currentEmail = '';
+var rawText = '';
+var lastHeader = '';
+var openSpecial = null;
+var _isPaidFlow = false;
+var _currentPayload = null;
+
+var _twInterval = null;
+var _twDisplayed = 0;
+var _twDone = false;
+
+var EM_DASH_RE = /—|–|&mdash;|&ndash;/g;
+
+function _stripDashes(str) {
+  return str.replace(EM_DASH_RE, function(m, offset, s) {
+    var before = s[offset - 1] || '';
+    return /[,;.]/.test(before) ? ' ' : ', ';
+  });
+}
+
+function startTypewriter() {
+  _twDisplayed = 0; _twDone = false;
+  if (_twInterval) clearInterval(_twInterval);
+  _twInterval = setInterval(function() {
+    if (_twDisplayed >= rawText.length) { if (_twDone) { clearInterval(_twInterval); _twInterval = null; } return; }
+    var step = 2 + Math.floor(Math.random() * 2);
+    _twDisplayed = Math.min(_twDisplayed + step, rawText.length);
+    renderReport(rawText.slice(0, _twDisplayed));
+  }, 28);
+}
+
+function flushTypewriter() {
+  if (_twInterval) { clearInterval(_twInterval); _twInterval = null; }
+  _twDone = true; _twDisplayed = rawText.length;
+}
+
+function streamText(content) {
+  rawText += _stripDashes(content);
+  if (!_twInterval && !_twDone) startTypewriter();
+}
+
+var loadingSteps = [
+  ['Calculating Your Chart','Mapping planetary positions at the moment of your birth'],
+  ['Reading Pluto & Saturn','Tracing the shape of your shadow and its patterns'],
+  ['Finding Chiron','Locating the original wound and the gift inside it'],
+  ['Preparing Your Preview','Your full report is being sent to your inbox'],
+];
+var loadingStep = 0, loadingInterval;
+
+function tryRestoreReport() {
+  try {
+    var savedRaw = localStorage.getItem('sb_rawText');
+    var savedChart = localStorage.getItem('sb_chart');
+    var savedPayload = localStorage.getItem('sb_payload');
+    var savedEmail = localStorage.getItem('sb_email');
+    var isComplete = localStorage.getItem('sb_complete');
+    if (savedRaw && savedChart && savedPayload) {
+      var chart = JSON.parse(savedChart);
+      var payload = JSON.parse(savedPayload);
+      currentEmail = savedEmail || payload.email || '';
+      rawText = savedRaw;
+      buildReportHeader(chart, payload);
+      document.getElementById('landingPage').style.display = 'none';
+      document.getElementById('loadingSection').style.display = 'none';
+      document.getElementById('reportSection').style.display = 'block';
+      renderReport(rawText);
+      if (isComplete === '1') {
+        var c = document.querySelector('.cursor'); if (c) c.remove();
+        showEmailConfirmation();
+      }
+      return true;
+    }
+  } catch(e) {}
+  return false;
+}
+
+window.onload = function() {
+  if (typeof AUTO_GENERATE !== 'undefined' && AUTO_GENERATE && PAYMENT_SESSION_ID) {
+    _isPaidFlow = true;
+    var sessionId = PAYMENT_SESSION_ID;
+    showLoading();
+    fetch('/shadow/generate-after-payment', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({session_id: sessionId})
+    }).then(function(res) {
+      if (!res.ok) { return res.json().then(function(e) { throw new Error(e.error || 'Generation failed'); }); }
+      clearInterval(loadingInterval);
+      var reader = res.body.getReader();
+      var decoder = new TextDecoder();
+      var buffer = '', reportStarted = false;
+      function read() {
+        reader.read().then(function(result) {
+          if (result.done) return;
+          buffer += decoder.decode(result.value, {stream: true});
+          var lines = buffer.split('\n'); buffer = lines.pop();
+          for (var i = 0; i < lines.length; i++) {
+            var line = lines[i];
+            if (!line.startsWith('data: ')) continue;
+            var jsonStr = line.slice(6).trim(); if (!jsonStr) continue;
+            var event = JSON.parse(jsonStr);
+            if (event.type === 'chart') { var pld = event.payload || {}; buildReportHeader(event.data, pld); currentEmail = pld.email || ''; }
+            else if (event.type === 'text') {
+              if (!reportStarted) { reportStarted = true; document.getElementById('loadingSection').style.display = 'none'; document.getElementById('reportSection').style.display = 'block'; }
+              streamText(event.content);
+            }
+            else if (event.type === 'done') { currentEmail = event.email; removeCursor(); }
+          }
+          read();
+        });
+      }
+      read();
+    }).catch(function(err) {
+      clearInterval(loadingInterval);
+      document.getElementById('loadingSection').style.display = 'none';
+      document.getElementById('landingPage').style.display = 'block';
+      alert('Something went wrong after payment. Please email hello@lunabylena.com and we will sort it out. Your payment was received.\n\nError: ' + (err && err.message ? err.message : String(err)));
+    });
+    return;
+  }
+
+  tryRestoreReport();
+
+  var cityInput = document.getElementById('cityInput');
+  var cityDropdown = document.getElementById('cityDropdown');
+  var debounceTimer = null;
+
+  function renderCityDropdown(results) {
+    cityDropdown.innerHTML = '';
+    if (!results.length) { cityDropdown.style.display = 'none'; return; }
+    results.forEach(function(r) {
+      var div = document.createElement('div');
+      div.className = 'city-option';
+      div.innerHTML = '<span class="city-main">' + r.main_text + '</span><span class="city-secondary">' + r.secondary_text + '</span>';
+      div.onclick = function() {
+        cityInput.value = r.main_text + (r.secondary_text ? ', ' + r.secondary_text : '');
+        cityDropdown.style.display = 'none';
+        fetch('/city-details?place_id=' + encodeURIComponent(r.place_id))
+          .then(function(res) { return res.json(); })
+          .then(function(d) {
+            return fetch('/timezone', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({lat: d.lat, lng: d.lng}) })
+              .then(function(res) { return res.json(); }).then(function(tz) {
+                selectedCity = { name: d.name, country: d.country, lat: d.lat, lng: d.lng, tz: tz.tz };
+              });
+          }).catch(function() { selectedCity = null; });
+      };
+      cityDropdown.appendChild(div);
+    });
+    cityDropdown.style.display = 'block';
+  }
+
+  cityInput.addEventListener('input', function() {
+    var q = this.value.trim();
+    selectedCity = null;
+    if (q.length < 2) { cityDropdown.style.display = 'none'; return; }
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(function() {
+      fetch('/city-search?q=' + encodeURIComponent(q))
+        .then(function(r) { return r.json(); })
+        .then(function(data) { renderCityDropdown(data.results || []); })
+        .catch(function() { cityDropdown.style.display = 'none'; });
+    }, 300);
+  });
+
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('.city-wrapper')) cityDropdown.style.display = 'none';
+  });
+};
+
+function showError(msg) { var el = document.getElementById('errorMsg'); el.textContent = msg; el.style.display = 'block'; }
+
+function showLoading() {
+  document.getElementById('landingPage').style.display = 'none';
+  document.getElementById('loadingSection').style.display = 'block';
+  loadingStep = 0; updateLoadingMsg();
+  loadingInterval = setInterval(function() { loadingStep = (loadingStep+1)%loadingSteps.length; updateLoadingMsg(); }, 2800);
+}
+
+function updateLoadingMsg() {
+  document.getElementById('loadingTitle').textContent = loadingSteps[loadingStep][0];
+  document.getElementById('loadingMsg').textContent = loadingSteps[loadingStep][1];
+}
+
+function handleSubmit() {
+  var name = document.getElementById('name').value.trim();
+  var email = document.getElementById('email').value.trim();
+  var date = document.getElementById('date').value;
+  var time = document.getElementById('time').value;
+  var marketingOptIn = document.getElementById('marketingOptIn').checked;
+  document.getElementById('errorMsg').style.display = 'none';
+  if (!name || !email || !date || !time) { showError('Please fill in all fields before continuing.'); return; }
+  if (email.indexOf('@') === -1) { showError('Please enter a valid email address.'); return; }
+  var cityText = document.getElementById('cityInput').value.trim();
+  if (!selectedCity && !cityText) { showError('Please enter your place of birth.'); return; }
+
+  function proceed(city) {
+    var payload = { name: name, email: email, date: date, time: time, city: city.name, country: city.country, lat: city.lat, lng: city.lng, tz: city.tz, marketingOptIn: marketingOptIn };
+    _currentPayload = payload; _isPaidFlow = false;
+    showLoading(); generateReport(payload);
+  }
+
+  if (selectedCity) { proceed(selectedCity); return; }
+
+  fetch('/geocode?q=' + encodeURIComponent(cityText))
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
+      if (d.error || !d.lat) { showError('Could not find that place. Please select a city from the dropdown list.'); return; }
+      return fetch('/timezone', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({lat: d.lat, lng: d.lng}) })
+        .then(function(r) { return r.json(); }).then(function(tz) {
+          proceed({ name: d.name, country: d.country, lat: d.lat, lng: d.lng, tz: tz.tz });
+        });
+    }).catch(function() { showError('Could not find that place. Please select a city from the dropdown list.'); });
+}
+
+function triggerPayment() {
+  if (!_currentPayload) return;
+  var btn = document.getElementById('paywallBtn');
+  if (btn) { btn.textContent = 'Preparing checkout...'; btn.disabled = true; }
+  fetch('/shadow/create-checkout-session', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify(_currentPayload)
+  }).then(function(res) { return res.json().catch(function(){ return {error: 'Server error (' + res.status + '). Please try again.'}; }); })
+  .then(function(data) {
+    if (data.error) { if (btn) { btn.textContent = 'Get Your Shadow Blueprint · €27'; btn.disabled = false; } showPaywallError(data.error); }
+    else if (data.url) { window.location.href = data.url; }
+    else { if (btn) { btn.textContent = 'Get Your Shadow Blueprint · €27'; btn.disabled = false; } showPaywallError('No checkout URL was returned. Please try again.'); }
+  }).catch(function(err) {
+    if (btn) { btn.textContent = 'Get Your Shadow Blueprint · €27'; btn.disabled = false; }
+    showPaywallError('Could not reach the payment server: ' + (err && err.message ? err.message : 'network error'));
+  });
+}
+
+function showPaywallError(msg) {
+  var el = document.getElementById('paywallError');
+  if (el) { el.textContent = msg; el.style.display = 'block'; }
+  else { showError(msg); }
+}
+
+function generateReport(payload) {
+  fetch('/shadow/generate', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify(payload)
+  }).then(function(res) {
+    if (!res.ok) { return res.json().then(function(e) { throw new Error(e.error || 'Generation failed'); }); }
+    clearInterval(loadingInterval);
+    var reader = res.body.getReader();
+    var decoder = new TextDecoder();
+    var buffer = '', reportStarted = false;
+    function read() {
+      reader.read().then(function(result) {
+        if (result.done) return;
+        buffer += decoder.decode(result.value, {stream:true});
+        var lines = buffer.split('\n'); buffer = lines.pop();
+        for (var i = 0; i < lines.length; i++) {
+          var line = lines[i];
+          if (!line.startsWith('data: ')) continue;
+          var json = line.slice(6).trim(); if (!json) continue;
+          var event = JSON.parse(json);
+          if (event.type === 'chart') { buildReportHeader(event.data, payload); }
+          else if (event.type === 'text') {
+            if (!reportStarted) { reportStarted = true; document.getElementById('loadingSection').style.display = 'none'; document.getElementById('reportSection').style.display = 'block'; }
+            streamText(event.content);
+          }
+          else if (event.type === 'done') { removeCursor(); }
+        }
+        read();
+      });
+    }
+    read();
+  }).catch(function(err) {
+    clearInterval(loadingInterval);
+    document.getElementById('loadingSection').style.display = 'none';
+    document.getElementById('landingPage').style.display = 'block';
+    showError(err.message || 'Something went wrong. Please try again.');
+  });
+}
+
+function buildReportHeader(chart, payload) {
+  var p = chart.planets, a = chart.angles;
+  currentEmail = payload.email;
+  try {
+    localStorage.setItem('sb_chart', JSON.stringify(chart));
+    localStorage.setItem('sb_payload', JSON.stringify(payload));
+    localStorage.setItem('sb_email', payload.email);
+  } catch(e) {}
+  var possessive = chart.name.endsWith('s') ? "&#39;" : "&#39;s";
+  function ordinal(n) { var s=['th','st','nd','rd'],v=n%100; return n+(s[(v-20)%10]||s[v]||s[0]); }
+  document.getElementById('reportName').innerHTML = chart.name + possessive + ' <span class="italic">Shadow Blueprint</span>';
+  document.getElementById('reportMeta').textContent = payload.date + ' · ' + payload.time + ' · ' + payload.city + ', ' + payload.country + ' · Whole Sign Houses';
+  var cells = [
+    ['Rising',a.ASC.sign,'1st'],['Sun',p.Sun.sign,p.Sun.house],['Moon',p.Moon.sign,p.Moon.house],
+    ['Mars',p.Mars.sign,p.Mars.house],['Saturn',p.Saturn.sign,p.Saturn.house],
+    ['Neptune',p.Neptune.sign,p.Neptune.house],['Pluto',p.Pluto.sign,p.Pluto.house],
+    ['S.Node',p['South Node'].sign,p['South Node'].house],
+    ['N.Node',p['North Node'].sign,p['North Node'].house],['Chiron',p.Chiron.sign,p.Chiron.house],
+  ];
+  document.getElementById('chartStripHeading').style.display = 'block';
+  document.getElementById('chartStrip').innerHTML = cells.map(function(c) {
+    return '<div class="chart-cell"><span class="cell-label">'+c[0]+'</span><span class="cell-value">'+c[1]+'</span><span class="cell-house">'+c[2]+'</span></div>';
+  }).join('');
+}
+
+function esc(t) { return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function renderReport(text) {
+  try { localStorage.setItem('sb_rawText', text); } catch(e) {}
+  var body = document.getElementById('reportBody');
+  var lines = text.split('\n');
+  var html = '', inP = false;
+  openSpecial = null;
+  for (var i = 0; i < lines.length; i++) {
+    var line = lines[i].trim();
+    if (line.startsWith('## ')) {
+      if (inP) { html += '</p>'; inP = false; }
+      if (openSpecial) { html += '</div>'; openSpecial = null; }
+      lastHeader = line.slice(3).trim();
+      var lower = lastHeader.toLowerCase();
+      var isMsg = lower.indexOf('message') >= 0;
+      var isSteps = lower.indexOf('integration') >= 0;
+      if (isMsg) { html += '<div class="message-callout"><h2>'+esc(lastHeader)+'</h2>'; openSpecial = 'msg'; }
+      else if (isSteps) { html += '<div class="steps-section"><h2>'+esc(lastHeader)+'</h2>'; openSpecial = 'steps'; }
+      else { html += '<h2>'+esc(lastHeader)+'</h2>'; }
+    } else if (line.startsWith('### ')) {
+      if (inP) { html += '</p>'; inP = false; }
+      var sub = line.slice(4).trim();
+      sub = sub.replace(/\*\*([^*]+)\*\*/g, '$1');
+      html += '<h3>'+esc(sub)+'</h3>';
+    } else if (line === '') {
+      if (inP) { html += '</p>'; inP = false; }
+    } else {
+      if (!inP) { html += '<p>'; inP = true; } else { html += ' '; }
+      var t = esc(line);
+      t = t.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+      html += t;
+    }
+  }
+  if (inP) html += '<span class="cursor"></span></p>';
+  if (openSpecial) html += '</div>';
+  body.innerHTML = html;
+}
+
+function removeCursor() {
+  _twDone = true; flushTypewriter();
+  var c = document.querySelector('.cursor'); if (c) c.remove();
+  renderReport(rawText);
+  try { localStorage.setItem('sb_complete', '1'); } catch(e) {}
+  if (_isPaidFlow) { showEmailConfirmation(); } else { showPaywall(); }
+}
+
+function showPaywall() {
+  var existing = document.getElementById('paywallBlock'); if (existing) return;
+  var div = document.createElement('div');
+  div.id = 'paywallBlock'; div.className = 'email-confirm';
+  div.innerHTML =
+    '<div class="confirm-ornament">✦</div>' +
+    '<h3>Unlock Your Shadow Blueprint</h3>' +
+    '<p class="confirm-teaser">This is a glimpse of what your chart holds. Unlock your complete Shadow Blueprint as a beautifully designed PDF sent straight to your inbox.</p>' +
+    '<div class="confirm-sections">' +
+      '<div class="section-label">Your Full Report Includes</div>' +
+      '<div class="section-item">Your Shadow Signature</div>' +
+      '<div class="section-item">The Wound: Chiron</div>' +
+      '<div class="section-item">The Pattern: South Node &amp; Saturn</div>' +
+      '<div class="section-item">The Hidden Room: The 12th House</div>' +
+      '<div class="section-item">The Transformer: Pluto</div>' +
+      '<div class="section-item">How Your Shadow Speaks</div>' +
+      '<div class="section-item">The Hidden Gift</div>' +
+      '<div class="section-item">A Message From Your Shadow</div>' +
+      '<div class="section-item">Your Integration Practices</div>' +
+    '</div>' +
+    '<button id="paywallBtn" class="paywall-btn" onclick="triggerPayment()">Get Your Shadow Blueprint &middot; &euro;27</button>' +
+    '<div id="paywallError" style="display:none;color:#C04C2D;margin-top:1rem;font-weight:600;line-height:1.5;"></div>' +
+    '<p class="confirm-note">Secure payment via Stripe &middot; PDF sent to <strong>' + currentEmail + '</strong></p>';
+  document.getElementById('reportBody').appendChild(div);
+}
+
+function showEmailConfirmation() {
+  var existing = document.getElementById('emailConfirm'); if (existing) return;
+  var div = document.createElement('div');
+  div.id = 'emailConfirm'; div.className = 'email-confirm';
+  div.innerHTML = '<div class="confirm-ornament">✦</div>' +
+    '<h3>Your Blueprint Is On Its Way</h3>' +
+    '<p class="confirm-teaser">Check your inbox at <strong>' + currentEmail + '</strong> within the next 5 minutes for your complete Shadow Blueprint.</p>' +
+    '<div class="confirm-sections">' +
+      '<div class="section-label">Your Full Report Includes</div>' +
+      '<div class="section-item">Your Shadow Signature</div>' +
+      '<div class="section-item">The Wound: Chiron</div>' +
+      '<div class="section-item">The Pattern: South Node &amp; Saturn</div>' +
+      '<div class="section-item">The Hidden Room: The 12th House</div>' +
+      '<div class="section-item">The Transformer: Pluto</div>' +
+      '<div class="section-item">How Your Shadow Speaks</div>' +
+      '<div class="section-item">The Hidden Gift</div>' +
+      '<div class="section-item">A Message From Your Shadow</div>' +
+      '<div class="section-item">Your Integration Practices</div>' +
+    '</div>' +
+    '<p class="confirm-note">Your full report will arrive as a beautifully designed PDF.</p>';
+  document.getElementById('reportBody').appendChild(div);
+}
+
+function restart() {
+  try {
+    localStorage.removeItem('sb_chart'); localStorage.removeItem('sb_payload');
+    localStorage.removeItem('sb_email'); localStorage.removeItem('sb_rawText');
+    localStorage.removeItem('sb_complete');
+  } catch(e) {}
+  rawText = ''; lastHeader = ''; selectedCity = null; openSpecial = null;
+  _isPaidFlow = false; _currentPayload = null;
+  flushTypewriter(); _twDisplayed = 0; _twDone = false;
+  document.getElementById('reportSection').style.display = 'none';
+  document.getElementById('reportBody').innerHTML = '';
+  document.getElementById('chartStrip').innerHTML = '';
+  document.getElementById('chartStripHeading').style.display = 'none';
+  document.getElementById('name').value = '';
+  document.getElementById('email').value = '';
+  document.getElementById('marketingOptIn').checked = false;
+  document.getElementById('date').value = '';
+  document.getElementById('time').value = '';
+  document.getElementById('cityInput').value = '';
+  selectedCity = null;
+  document.getElementById('errorMsg').style.display = 'none';
+  document.getElementById('landingPage').style.display = 'block';
+  window.scrollTo(0,0);
+}
+</script>
+<script>
+var AUTO_GENERATE = {% if auto_generate %}true{% else %}false{% endif %};
+var PAYMENT_SESSION_ID = {% if auto_generate and chart_data and chart_data != 'null' %}{{ chart_data | tojson }}{% else %}null{% endif %};
+</script>
+</body>
+</html>

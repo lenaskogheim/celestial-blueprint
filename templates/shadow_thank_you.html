@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Thank You: The Shadow Blueprint</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400;1,500;1,700&family=Caveat:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --cream: #EFEBEA;
+  --pink-soft: #FFE3EC;
+  --pink-deep: #AA3157;
+  --terracotta: #C04C2D;
+  --purple: #7E4A92;
+  --ink: #1E1E1E;
+  --ink-soft: #3A3030;
+  --ink-muted: #8A7575;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Playfair Display', Georgia, serif;
+  background: var(--cream);
+  color: var(--ink);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+header {
+  width: 100%;
+  padding: 2.5rem 2rem 0;
+  text-align: center;
+}
+
+.logo {
+  width: clamp(100px, 18vw, 160px);
+  height: auto;
+}
+
+.hero {
+  width: 100%;
+  max-width: 660px;
+  padding: 4rem 2rem 2rem;
+  text-align: center;
+}
+
+.ornament {
+  font-size: 1.6rem;
+  color: var(--pink-deep);
+  letter-spacing: 0.4em;
+  margin-bottom: 1.8rem;
+}
+
+.hero h1 {
+  font-family: Impact, 'Arial Narrow Bold', sans-serif;
+  font-size: clamp(1.8rem, 5vw, 2.8rem);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--pink-deep);
+  margin-bottom: 1.4rem;
+  line-height: 1.1;
+}
+
+.hero-sub {
+  font-size: clamp(1rem, 2.5vw, 1.2rem);
+  font-style: italic;
+  color: var(--ink-soft);
+  line-height: 1.8;
+}
+
+.hero-sub strong {
+  color: var(--pink-deep);
+  font-style: normal;
+  font-weight: 700;
+}
+
+.confirm-box {
+  width: 100%;
+  max-width: 580px;
+  margin: 3rem 2rem 2rem;
+  background: var(--pink-soft);
+  border: 2px solid var(--ink);
+  padding: 2.4rem 2.8rem;
+}
+
+.confirm-box .section-label {
+  font-family: Impact, 'Arial Narrow Bold', sans-serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: var(--purple);
+  text-align: center;
+  margin-bottom: 1.6rem;
+}
+
+.section-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 1rem;
+  color: var(--ink-soft);
+  padding: 0.55rem 0;
+  border-bottom: 1px solid rgba(30,30,30,0.08);
+  line-height: 1.5;
+}
+.section-item:last-child { border-bottom: none; }
+.section-item::before {
+  content: '✦';
+  color: var(--pink-deep);
+  font-size: 0.7rem;
+  flex-shrink: 0;
+}
+
+.back-link {
+  margin: 2.5rem 0 4rem;
+  font-family: Impact, 'Arial Narrow Bold', sans-serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  text-decoration: none;
+}
+.back-link:hover { color: var(--pink-deep); }
+
+footer {
+  width: 100%;
+  margin-top: auto;
+  padding: 2.5rem 2rem;
+  text-align: center;
+  font-family: Impact, 'Arial Narrow Bold', sans-serif;
+  font-size: 0.7rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--pink-deep);
+}
+</style>
+</head>
+<body>
+
+<header>
+  <img src="/static/luna-logo.png" alt="Luna by Lena" class="logo">
+</header>
+
+<div class="hero">
+  <div class="ornament">✦</div>
+  <h1>Thank You{% if name %}, {{ name.split()[0] }}{% endif %}</h1>
+  <p class="hero-sub">
+    Your Shadow Blueprint is being crafted right now and will arrive in your inbox at
+    <strong>{{ email }}</strong> within the next 5 minutes.
+  </p>
+</div>
+
+<div class="confirm-box">
+  <div class="section-label">Your Full Report Includes</div>
+  <div class="section-item">Your Shadow Signature</div>
+  <div class="section-item">The Wound: Chiron</div>
+  <div class="section-item">The Pattern: South Node &amp; Saturn</div>
+  <div class="section-item">The Hidden Room: The 12th House</div>
+  <div class="section-item">The Transformer: Pluto</div>
+  <div class="section-item">How Your Shadow Speaks</div>
+  <div class="section-item">The Hidden Gift</div>
+  <div class="section-item">A Message From Your Shadow</div>
+  <div class="section-item">Your Integration Practices</div>
+</div>
+
+<a href="/" class="back-link">← Back to Lunabylena.com</a>
+
+<footer>✦ Lunabylena.com ✦</footer>
+
+<script>
+  (function() {
+    var sessionId = {{ session_id | tojson }};
+    if (!sessionId) return;
+    fetch('/shadow/generate-after-payment', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({session_id: sessionId})
+    }).catch(function() {});
+  })();
+</script>
+
+</body>
+</html>

@@ -2220,6 +2220,593 @@ def love_generate_after_payment():
                    headers={"Cache-Control":"no-cache","X-Accel-Buffering":"no"})
 
 
+# ═════════════════════════════════════════════
+#  SHADOW BLUEPRINT
+# ═════════════════════════════════════════════
+
+def build_shadow_prompt(chart, birth_info, preview_only=False):
+    pd = chart["planets"]
+    a = chart["angles"]
+    hr = chart["house_rulers"]
+    aspects = chart["aspects"]
+    language_guidance = build_language_guidance(
+        chart.get("dominant_element", "earth"),
+        chart.get("asc_element", "earth"),
+        chart.get("element_balance", {"fire":25,"earth":25,"air":25,"water":25})
+    )
+
+    planet_lines = [f"  - {n}: {d['sign']}, {d['house']} house, {d['position']}°" for n,d in pd.items()]
+
+    house_occupants = {h: [] for h in range(1, 13)}
+    house_num_map = {"1st":1,"2nd":2,"3rd":3,"4th":4,"5th":5,"6th":6,"7th":7,"8th":8,"9th":9,"10th":10,"11th":11,"12th":12}
+    for pname, pdata in pd.items():
+        h_num = house_num_map.get(pdata["house"])
+        if h_num:
+            house_occupants[h_num].append(f"{pname} ({pdata['sign']} {pdata['position']}°)")
+
+    ws_signs = ["Aries","Taurus","Gemini","Cancer","Leo","Virgo","Libra","Scorpio","Sagittarius","Capricorn","Aquarius","Pisces"]
+    asc_idx_h = ws_signs.index(a["ASC"]["sign"])
+
+    def ordinal(n):
+        return {1:"1st",2:"2nd",3:"3rd",4:"4th",5:"5th",6:"6th",7:"7th",8:"8th",9:"9th",10:"10th",11:"11th",12:"12th"}.get(n, f"{n}th")
+
+    occupants_lines = []
+    for h in range(1, 13):
+        sign_on_cusp = ws_signs[(asc_idx_h + h - 1) % 12]
+        occupants = house_occupants[h]
+        h_ord = ordinal(h)
+        tag = f": {', '.join(occupants)}" if occupants else ": EMPTY (no planets)"
+        occupants_lines.append(f"  - {h_ord} house ({sign_on_cusp} on cusp){tag}")
+
+    def describe_ruler(ruler_name, h_ord_label=None):
+        rd = pd.get(ruler_name, {})
+        rs, rh, rp = rd.get("sign","?"), rd.get("house","?"), rd.get("position","?")
+        if h_ord_label and rh == h_ord_label:
+            return f"{ruler_name} sits in {rs} at {rp}° in the {rh} house (ruler IS in its own house here)"
+        elif h_ord_label:
+            return f"{ruler_name} sits in {rs} at {rp}° in the {rh} house (ruler is NOT in the {h_ord_label} house, it is in the {rh})"
+        return f"{ruler_name} sits in {rs} at {rp}° in the {rh} house"
+
+    shadow_ruler_lines = []
+    for h in [4, 8, 12]:
+        if h not in hr:
+            continue
+        h_ord = ordinal(h)
+        trad = hr[h]["ruler"]
+        mod = hr[h].get("modern_ruler")
+        line = f"  - {h_ord} house ({hr[h]['sign']} on cusp): TRADITIONAL ruler is {trad}. {describe_ruler(trad, h_ord)}"
+        if mod:
+            line += f"\n      Modern co-ruler is {mod}. {describe_ruler(mod, h_ord)}"
+        shadow_ruler_lines.append(line)
+
+    # Key points for shadow work
+    shadow_key = ["Pluto", "Saturn", "Chiron", "Moon", "South Node", "North Node", "Neptune"]
+    for h in [4, 8, 12]:
+        if h in hr:
+            for k in [hr[h]["ruler"], hr[h].get("modern_ruler")]:
+                if k and k not in shadow_key:
+                    shadow_key.append(k)
+
+    shadow_asp_by_planet = {}
+    for asp in aspects:
+        for side in [asp["p1"], asp["p2"]]:
+            if side in shadow_key:
+                other = asp["p2"] if side == asp["p1"] else asp["p1"]
+                shadow_asp_by_planet.setdefault(side, []).append(f"{asp['aspect']} {other} ({asp['orb']}°)")
+
+    shadow_summary_lines = []
+    for kp in shadow_key:
+        if kp in shadow_asp_by_planet:
+            shadow_summary_lines.append(f"  - {kp}: {'; '.join(shadow_asp_by_planet[kp][:5])}")
+
+    aspect_lines = [f"  - {x['p1']} {x['aspect']} {x['p2']} (orb: {x['orb']}°)" for x in aspects[:25]]
+
+    chart_data = f"""BIRTH DETAILS: {chart['name']}, {birth_info['date']}, {birth_info['time']}, {birth_info['city']}, {birth_info['country']}
+House System: Whole Sign
+
+PLANETS BY POSITION:
+{chr(10).join(planet_lines)}
+
+PLANETS IN EACH HOUSE (AUTHORITATIVE — use ONLY this for "planets in X house" statements):
+{chr(10).join(occupants_lines)}
+
+ANGLES:
+  - ASC: {a['ASC']['sign']} {a['ASC']['position']}°
+  - MC: {a['MC']['sign']} {a['MC']['position']}° (Whole Sign house {a['MC']['ws_house']})
+  - IC: {a['IC']['sign']} {a['IC']['position']}° (Whole Sign house {a['IC']['ws_house']})
+
+SHADOW-RELEVANT HOUSE RULERS — 4th (roots/the origin), 8th (depth/transformation), 12th (the unconscious/the hidden):
+(Use TRADITIONAL rulers as primary; modern co-rulers add nuance but never replace the traditional reading)
+{chr(10).join(shadow_ruler_lines)}
+
+KEY ASPECTS BY PLANET (shadow-relevant points — Pluto, Saturn, Chiron, Moon, the Nodes — use these for aspect citations):
+{chr(10).join(shadow_summary_lines)}
+
+ALL KEY ASPECTS (tightest first — the tightest challenging aspect is the throughline):
+{chr(10).join(aspect_lines)}"""
+
+    if preview_only:
+        return f"""You are writing the opening section, "Your Shadow Signature", of a premium shadow-work natal chart report called The Shadow Blueprint, for {chart['name']}. Second person.
+
+VOICE AND TONE (non-negotiable):
+Write as a wise, warm, direct therapist who also happens to read charts, not a doom-and-gloom astrologer. Never pathologise: the shadow is not damage, it is information. Never use the words: toxic, broken, damaged, blocked, negative. Use challenging, unconscious, unintegrated, protective instead. Every sentence carries the implicit message: this is information, not a verdict.
+
+CRITICAL, ADAPT LANGUAGE TO THIS CHART (sign and dominant element / triplicity):
+{language_guidance}
+
+{chart_data}
+
+Write ONLY the "Your Shadow Signature" section. EXACTLY 2 to 3 sentences. No heading, no preamble.
+Capture the essence of the shadow landscape, drawn from Pluto's sign and house, Saturn's sign and house, Chiron's sign and house, and the Moon's most challenging aspect (named with its exact orb). Plant the throughline that the wound and the gift are the same placement seen from a different angle. Make it specific enough to this exact chart that it could not describe anyone else. Tie every claim to a named placement, and name any aspect with its exact orb. Do not use em-dashes. Do not name the elemental register explicitly. Output only the paragraph text."""
+
+    return f"""You are writing a premium, deeply personal shadow-work report called The Shadow Blueprint for {chart['name']}. This report reads the natal chart to reveal the unconscious patterns, the original wound, and the buried power a person carries, and hands each one back as information she can use. Second person throughout.
+
+VOICE AND TONE (non-negotiable):
+Write as a wise, warm, direct therapist who also happens to read charts, not a doom-and-gloom astrologer.
+- Never pathologise. Shadow is not damage. Every sentence should carry the implicit message: this is information, not a verdict.
+- Never use the words: toxic, broken, damaged, blocked, negative. Use challenging, unconscious, unintegrated, protective instead.
+- Signature phrases available, use sparingly and never force them: "This is information." "Nothing has gone wrong." "Without shame."
+
+CRITICAL, ADAPT LANGUAGE TO THIS CHART (sign and dominant element / triplicity, earth / water / fire / air):
+{language_guidance}
+
+{chart_data}
+
+THE THROUGHLINE (weave throughout, do not confine to one section):
+The wound and the gift are the same placement seen from a different angle. Return to this idea across the whole report the way the tightest aspect functions as the throughline. The single tightest challenging aspect in the chart carries the most interpretive weight: name it early and return to it.
+
+Write the report in the following sections, in this exact order, using ## for each section heading:
+
+## Your Shadow Signature
+2 to 3 sentences. The essence of the shadow landscape, drawn from Pluto's sign and house, Saturn's sign and house, Chiron's sign and house, and the Moon's most challenging aspect (named with exact orb). This sets the tone for the entire report. Plant the wound-and-gift throughline here.
+
+## The Wound: Chiron
+Chiron's sign and house. Where the original wound formed and how it shows up as a recurring sensitivity in adult life, specific to this Chiron placement. State explicitly, here and not deferred, that the wound and the gift are the same placement. Name Chiron's tightest aspect with its exact orb.
+
+## The Pattern: South Node & Saturn
+Read the South Node and Saturn together, not separately. South Node is the comfortable over-reliance, the old default. Saturn is the fear and the "not enough" voice. Together they describe the loop. Frame it as "here is the loop, and here is why it made sense", never "you are stuck". Name each placement by sign and house, and cite at least one Saturn aspect with its exact orb.
+
+## The Hidden Room: The 12th House
+The 12th house is the unconscious, the hidden, what operates below awareness. Cover the sign on the 12th cusp, any planets physically in the 12th (with positions and aspects), and the 12th house ruler. The ruler discussion is MANDATORY and must live inside this section itself: name the ruler, the sign and house it sits in, and at least one aspect with exact orb. If the 12th is empty of planets, read the house entirely through the ruler's placement and aspects. This should feel like a door opening, not a verdict.
+
+## The Transformer: Pluto
+Pluto's sign, house, and aspects. The compulsive quality, what she cannot stop returning to even when it costs her, specific to this Pluto placement. The tightest Pluto aspect MUST be named explicitly with its exact orb and interpreted in depth.
+
+## How Your Shadow Speaks
+The most practical section. Using only the placements already named, name specific triggers and relationship behaviours unique to this chart, in the pattern "When you feel [X], you tend to [Y], because [named placement]." Zero generic shadow-work language: every claim ties to a named placement.
+
+## The Hidden Gift
+Invert every shadow placement: Chiron's wound as the healer's gift, Saturn's restriction as the builder's discipline, Pluto's compulsion as the transformer's power, the 12th house exile as the mystic's depth. This reframes the whole report. Genuinely uplifting, grounded in the exact placements, never saccharine.
+
+## A Message From Your Shadow
+Written from the single tightest challenging aspect in the entire chart (tightest square, opposition, or Pluto / Saturn / Chiron contact). Name the aspect and its exact orb in the first sentence. Second person, present tense, the chart speaking directly to her: direct, personal, intimate. One paragraph, 5 to 8 sentences, no sub-headings. End on an invitation, not a conclusion.
+
+## Your Integration Practices
+Three practices, in this exact order, each naming the exact placement it addresses and each specific enough that it could not apply to a different chart. Use ### for each practice heading.
+
+### The Internal Practice
+An internal or reflective practice (a journaling prompt, meditation, or inner-child inquiry) tied to a specific Moon placement or the repeating pattern. Write the actual prompt or practice, not just the concept.
+
+### The Somatic Practice
+A somatic or embodied practice (movement, breath, something in the body) tied to a named placement, for example Pluto, Mars, or Saturn.
+
+### The Relational Practice
+A relational practice, how to bring this awareness into a real relationship, tied to a named placement, for example "Because your Chiron is in the 7th house in Libra, the relational practice that will move the needle most is...".
+
+FORMATTING RULES (follow strictly):
+- Start directly with "## Your Shadow Signature". No title line like "# Report for [Name]".
+- Use ## only for the nine main section headings, and ### only for the three practice headings in the final section.
+- Do NOT use horizontal rules (---, ***, ___).
+- Do NOT use **bold** as a sub-heading.
+- Regular prose paragraphs only, except the three ### practices.
+
+PUNCTUATION RULES (follow strictly):
+- DO NOT use em-dashes (—) anywhere. They make prose feel AI-generated.
+- DO NOT use en-dashes (–) for parentheticals.
+- Use commas, full stops, semicolons, colons, or parentheses depending on what the sentence needs.
+
+TECHNICAL ACCURACY (do not confuse these):
+- A planet IS IN a house only when listed in "PLANETS IN EACH HOUSE" above. That is the only authoritative source. NEVER say a planet is "in" a house unless confirmed there.
+- The house RULER governs the sign on the cusp and may or may not physically sit in that house. The 12th house section must discuss BOTH occupancy AND the ruler, inside that section, never delegating the ruler to wherever it happens to sit elsewhere in the report.
+- Use TRADITIONAL rulers as the primary interpretive layer (Aries/Mars, Taurus/Venus, Gemini/Mercury, Cancer/Moon, Leo/Sun, Virgo/Mercury, Libra/Venus, Scorpio/Mars, Sagittarius/Jupiter, Capricorn/Saturn, Aquarius/Saturn, Pisces/Jupiter). Modern rulers (Aquarius/Uranus, Pisces/Neptune, Scorpio/Pluto) add nuance but never replace the traditional reading.
+
+SPECIFICITY (non-negotiable):
+- Every interpretive claim carries sign, house, and exact orb where an aspect is involved. "Pluto square Moon" is not acceptable on its own: it must read "Pluto in [sign] in the [house] house square Moon at [X]°".
+- Every major aspect is named with its exact orb every time it appears.
+- Beyond the wound-and-gift throughline, each section introduces new information. If a placement is fully explored in one section, do not re-explain it from scratch in another: only reference it when it adds genuinely new meaning in a different context."""
+
+
+def build_shadow_email_body_html(name):
+    return f"""<!DOCTYPE html>
+<html><head>
+<meta charset="UTF-8">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400;1,500;1,700&family=Mrs+Saint+Delafield&display=swap" rel="stylesheet">
+</head>
+<body style="margin:0;padding:0;background:#EFEBEA;font-family:'Playfair Display',Georgia,serif;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#EFEBEA;padding:50px 20px;">
+<tr><td align="center">
+  <table width="580" cellpadding="0" cellspacing="0" style="max-width:580px;">
+
+    <tr><td style="text-align:center;padding-bottom:30px;">
+      <span style="color:#AA3157;font-size:18px;letter-spacing:0.4em;">✦ ✦ ✦</span>
+    </td></tr>
+
+    <tr><td style="text-align:center;padding-bottom:36px;">
+      <div style="font-family:Impact,'Arial Narrow Bold',sans-serif;font-size:42px;letter-spacing:0.02em;line-height:0.95;color:#AA3157;text-transform:uppercase;">
+        THE SHADOW
+      </div>
+      <div style="font-family:Impact,'Arial Narrow Bold',sans-serif;font-size:42px;letter-spacing:0.02em;line-height:0.95;color:#C04C2D;text-transform:uppercase;">
+        BLUEPRINT
+      </div>
+    </td></tr>
+
+    <tr><td style="text-align:center;padding-bottom:36px;">
+      <div style="display:inline-block;width:80px;height:1px;background:#AA3157;"></div>
+    </td></tr>
+
+    <tr><td style="font-family:'Playfair Display',Georgia,serif;font-size:18px;line-height:1.85;color:#1E1E1E;text-align:left;padding:0 20px;">
+      <p style="margin:0 0 22px;font-family:'Playfair Display',Georgia,serif;">Dear {name},</p>
+
+      <p style="margin:0 0 22px;font-family:'Playfair Display',Georgia,serif;">Thank you so much for ordering your Shadow Blueprint. Your complete report is attached as a PDF.</p>
+
+      <p style="margin:0 0 22px;font-family:'Playfair Display',Georgia,serif;">Find a quiet, unhurried moment to read it. This report meets the parts of you that usually stay in the dark, and it does so without shame. Nothing here is a verdict. It is all information you can use.</p>
+
+      <p style="margin:0 0 22px;font-family:'Playfair Display',Georgia,serif;">I am so grateful for your trust. If the reading resonates, I would love to hear from you.</p>
+
+      <p style="margin:0 0 4px;font-family:'Playfair Display',Georgia,serif;">With warmth,</p>
+      <p style="margin:0 0 0;font-family:'Mrs Saint Delafield',cursive;font-size:32px;color:#AA3157;line-height:1;">Lena</p>
+    </td></tr>
+
+    <tr><td style="padding-top:50px;text-align:center;">
+      <div style="display:inline-block;width:60px;height:1px;background:#AA3157;margin-bottom:18px;"></div>
+      <div style="color:#AA3157;font-family:Impact,'Arial Narrow Bold',sans-serif;font-size:13px;letter-spacing:0.3em;text-transform:uppercase;">
+        ✦ Lunabylena.com ✦
+      </div>
+      <div style="font-family:'Playfair Display',Georgia,serif;font-style:italic;font-size:12px;color:#8A7575;margin-top:8px;">
+        Whole Sign houses · Swiss Ephemeris
+      </div>
+    </td></tr>
+
+  </table>
+</td></tr>
+</table>
+</body></html>"""
+
+
+def build_shadow_pdf_html(name, report_text, birth_info, chart):
+    report_body = markdown_to_html(report_text)
+    name_possessive = "&#39;" if name.endswith("s") else "&#39;s"
+    city_upper = birth_info["city"].upper()
+    country_upper = birth_info["country"].upper()
+
+    p = chart["planets"]
+    a = chart["angles"]
+    cells = [
+        ("Rising", a["ASC"]["sign"], "1st"),
+        ("Sun", p["Sun"]["sign"], p["Sun"]["house"]),
+        ("Moon", p["Moon"]["sign"], p["Moon"]["house"]),
+        ("Mars", p["Mars"]["sign"], p["Mars"]["house"]),
+        ("Saturn", p["Saturn"]["sign"], p["Saturn"]["house"]),
+        ("Neptune", p["Neptune"]["sign"], p["Neptune"]["house"]),
+        ("Pluto", p["Pluto"]["sign"], p["Pluto"]["house"]),
+        ("S.Node", p["South Node"]["sign"], p["South Node"]["house"]),
+        ("N.Node", p["North Node"]["sign"], p["North Node"]["house"]),
+        ("Chiron", p["Chiron"]["sign"], p["Chiron"]["house"]),
+    ]
+
+    def make_cell(label, value, house):
+        return f'<td><div class="cell-label">{label}</div><div class="cell-value">{value}</div><div class="cell-house">{house}</div></td>'
+
+    row1 = "".join(make_cell(*c) for c in cells[:5])
+    row2 = "".join(make_cell(*c) for c in cells[5:])
+    cells_html = f"<tr>{row1}</tr><tr>{row2}</tr>"
+
+    return f"""<!DOCTYPE html>
+<html><head><meta charset="UTF-8">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400;1,500;1,700&family=Mrs+Saint+Delafield&display=swap');
+  @page {{ size: A4; margin: 18mm 18mm; background: #EFEBEA; }}
+  * {{ box-sizing: border-box; }}
+  html, body {{ margin:0;padding:0;background:#EFEBEA;font-family:'Playfair Display',Georgia,serif;color:#1E1E1E; }}
+  .page {{ background:#EFEBEA; }}
+  .cover {{ text-align:center;padding:50px 0 30px;page-break-after:always; }}
+  .cover .stars-row {{ margin-bottom:32px;color:#AA3157;font-size:16px;letter-spacing:0.4em; }}
+  .cover .brand {{ font-family:Impact,'Arial Narrow Bold',sans-serif;font-size:76px;line-height:0.92;letter-spacing:0.02em;text-transform:uppercase;margin:0; }}
+  .cover .brand .line1 {{ color:#AA3157;display:block; }}
+  .cover .brand .line2 {{ color:#C04C2D;display:block; }}
+  .cover .tagline {{ font-family:'Playfair Display',serif;font-style:italic;font-size:14px;color:#3A3030;margin:22px 0 0;letter-spacing:0.02em; }}
+  .cover-divider {{ width:80px;height:1px;background:#AA3157;margin:50px auto; }}
+  .cover .eyebrow {{ display:inline-block;font-family:Impact,'Arial Narrow Bold',sans-serif;font-size:11px;letter-spacing:0.3em;text-transform:uppercase;color:#EFEBEA;background:#AA3157;padding:6px 18px;margin-bottom:28px; }}
+  .cover .report-name {{ font-family:'Playfair Display',serif;font-weight:700;font-size:52px;color:#1E1E1E;margin:0 0 16px;line-height:1.05; }}
+  .cover .report-name .italic {{ font-style:italic;color:#AA3157;font-weight:700; }}
+  .cover .meta {{ font-family:Impact,'Arial Narrow Bold',sans-serif;font-size:10px;letter-spacing:0.22em;text-transform:uppercase;color:#7E4A92;margin:18px 0 0; }}
+  .chart-strip-heading {{ font-family:Impact,'Arial Narrow Bold',sans-serif;font-size:11px;letter-spacing:0.3em;text-transform:uppercase;color:#AA3157;text-align:center;margin:0 0 18px; }}
+  .chart-on-cover {{ margin-top:32px; }}
+  .chart-table {{ width:100%;border-collapse:collapse;border:2px solid #1E1E1E;margin:0;table-layout:fixed; }}
+  .chart-table tr {{ height:56px; }}
+  .chart-table td {{ background:#EFEBEA;padding:6px 4px;text-align:center;border:1px solid #1E1E1E;width:20%;vertical-align:middle; }}
+  .cell-label {{ font-family:Impact,'Arial Narrow Bold',sans-serif;font-size:8px;letter-spacing:0.18em;text-transform:uppercase;color:#7E4A92;margin-bottom:3px; }}
+  .cell-value {{ font-family:'Playfair Display',serif;font-weight:500;font-size:13px;color:#1E1E1E; }}
+  .cell-house {{ font-family:Impact,'Arial Narrow Bold',sans-serif;font-size:8px;color:#8A7575;margin-top:2px;letter-spacing:0.1em; }}
+  .report h2 {{ font-family:Impact,'Arial Narrow Bold',sans-serif;font-size:24px;letter-spacing:0.02em;text-transform:uppercase;color:#AA3157;margin:32px 0 14px;padding-bottom:8px;border-bottom:2px solid #1E1E1E;line-height:1.05;page-break-after:avoid; }}
+  .report h3 {{ font-family:'Playfair Display',serif;font-weight:700;font-style:italic;font-size:14px;color:#1E1E1E;margin:20px 0 8px;page-break-after:avoid; }}
+  .report h3::before {{ content:'✦  ';color:#AA3157;font-style:normal;font-weight:400;font-size:11px; }}
+  .report p {{ font-family:'Playfair Display',Georgia,serif;font-size:12px;line-height:1.75;color:#3A3030;margin:0 0 12px;text-align:left;orphans:3;widows:3; }}
+  .message-callout {{ margin:36px 0 14px;padding:22px 26px;background:#FFE3EC;border:2px solid #1E1E1E;page-break-inside:avoid; }}
+  .message-callout h2 {{ margin:0 0 12px;padding:0;border:none;color:#AA3157;font-size:20px; }}
+  .message-callout p {{ font-style:italic;color:#1E1E1E;font-size:12.5px;line-height:1.85; }}
+  .steps-section {{ margin:36px 0 14px;padding:24px 28px;background:#AA3157;color:#EFEBEA;border:2px solid #1E1E1E; }}
+  .steps-section h2 {{ margin-top:0;color:#EFEBEA;border-bottom:2px solid #EFEBEA; }}
+  .steps-section h3 {{ color:#EFEBEA;font-style:normal;font-family:Impact,'Arial Narrow Bold',sans-serif;font-size:11px;letter-spacing:0.2em;text-transform:uppercase;margin-top:18px; }}
+  .steps-section h3::before {{ color:#EFEBEA; }}
+  .steps-section p {{ color:#EFEBEA;font-style:italic; }}
+  .footer {{ margin-top:50px;padding-top:20px;border-top:1px solid #AA3157;text-align:center; }}
+  .footer-label {{ font-family:Impact,'Arial Narrow Bold',sans-serif;font-size:10px;letter-spacing:0.3em;text-transform:uppercase;color:#AA3157; }}
+  .footer-note {{ font-family:'Playfair Display',serif;font-style:italic;font-size:9px;color:#8A7575;margin-top:4px; }}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="cover">
+    <div class="stars-row">✦ ✦ ✦</div>
+    <h1 class="brand">
+      <span class="line1">THE SHADOW</span>
+      <span class="line2">BLUEPRINT</span>
+    </h1>
+    <p class="tagline">The Wound · The Pattern · The Hidden Gift</p>
+    <div class="cover-divider"></div>
+    <span class="eyebrow">The Shadow Blueprint</span>
+    <h2 class="report-name">{name}{name_possessive} <span class="italic">Shadow Blueprint</span></h2>
+    <p class="meta">{birth_info['date']} · {birth_info['time']} · {city_upper}, {country_upper}</p>
+    <div class="chart-on-cover">
+      <p class="chart-strip-heading">Your Chart at a Glance</p>
+      <table class="chart-table">{cells_html}</table>
+    </div>
+  </div>
+  <div class="report">{report_body}</div>
+  <div class="footer">
+    <div class="footer-label">✦ Lunabylena.com ✦</div>
+    <div class="footer-note">Whole Sign houses · Swiss Ephemeris</div>
+  </div>
+</div>
+</body></html>"""
+
+
+def background_generate_and_send_shadow(email, chart, birth_info):
+    try:
+        prompt = build_shadow_prompt(chart, birth_info, preview_only=False)
+        report_text = generate_full_report(prompt)
+        pdf_html = build_shadow_pdf_html(chart["name"], report_text, birth_info, chart)
+        pdf_bytes = generate_pdf(pdf_html)
+        email_body = build_shadow_email_body_html(chart["name"])
+        send_report_email(
+            email, chart["name"], email_body, pdf_bytes,
+            subject=f"Your Shadow Blueprint ✦ {chart['name']}",
+            filename=f"{chart['name']}-shadow-blueprint.pdf"
+        )
+    except Exception as e:
+        print(f"Shadow background generation failed: {e}")
+
+
+# ─────────────────────────────────────────────
+#  SHADOW BLUEPRINT — routes
+# ─────────────────────────────────────────────
+
+@app.route("/shadow")
+def shadow():
+    return render_template("shadow.html",
+        auto_generate=False,
+        chart_data="null",
+        meta_data="null")
+
+
+@app.route("/shadow/generate", methods=["POST"])
+def shadow_generate():
+    data = request.json
+    name = data.get("name","").strip() or "the person"
+    email = data.get("email","").strip()
+    date_str = data.get("date","")
+    time_str = data.get("time","")
+    city = data.get("city","")
+    country = data.get("country","")
+    lat = data.get("lat")
+    lng = data.get("lng")
+    tz_str = data.get("tz")
+    marketing_opt_in = bool(data.get("marketingOptIn", False))
+
+    if not email or "@" not in email:
+        return jsonify({"error": "Please provide a valid email address."}), 400
+
+    log_customer(name=name, email=email, marketing_opt_in=marketing_opt_in,
+                 date=date_str, city=city, country=country, tag_name="shadow-blueprint")
+
+    try:
+        year, month, day = [int(x) for x in date_str.split("-")]
+        hour, minute = [int(x) for x in time_str.split(":")]
+        lat, lng = float(lat), float(lng)
+    except Exception:
+        return jsonify({"error": "Invalid birth details."}), 400
+
+    try:
+        chart = calculate_chart(name, year, month, day, hour, minute, lat, lng, tz_str)
+    except Exception as e:
+        return jsonify({"error": f"Chart calculation failed: {str(e)}"}), 500
+
+    birth_info = {"date": date_str, "time": time_str, "city": city, "country": country}
+    preview_prompt = build_shadow_prompt(chart, birth_info, preview_only=True)
+    client = anthropic.Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY",""))
+
+    def stream():
+        yield f"data: {json.dumps({'type':'chart','data':chart})}\n\n"
+        buffer = ""
+        with client.messages.stream(
+            model="claude-haiku-4-5-20251001",
+            max_tokens=600,
+            messages=[{"role":"user","content":preview_prompt}]
+        ) as st:
+            for text in st.text_stream:
+                buffer += text
+                if len(buffer) > 3:
+                    flush = buffer[:-3]; buffer = buffer[-3:]
+                    yield f"data: {json.dumps({'type':'text','content':clean_dashes(flush)})}\n\n"
+        if buffer:
+            yield f"data: {json.dumps({'type':'text','content':clean_dashes(buffer)})}\n\n"
+        yield f"data: {json.dumps({'type':'done','email':email})}\n\n"
+
+    return Response(stream(), mimetype="text/event-stream",
+                   headers={"Cache-Control":"no-cache","X-Accel-Buffering":"no"})
+
+
+@app.route("/shadow/create-checkout-session", methods=["POST"])
+def shadow_create_checkout_session():
+    import stripe as stripe_lib
+    stripe_lib.api_key = os.environ.get("STRIPE_SECRET_KEY", "")
+    data = request.json
+
+    name = data.get("name", "").strip()
+    email = data.get("email", "").strip()
+    if not name or not email or "@" not in email:
+        return jsonify({"error": "Please provide your name and a valid email address."}), 400
+    if not data.get("date") or not data.get("time"):
+        return jsonify({"error": "Please provide your birth date and time."}), 400
+    if not data.get("lat") or not data.get("lng"):
+        return jsonify({"error": "Please select a city from the dropdown."}), 400
+
+    try:
+        session = stripe_lib.checkout.Session.create(
+            payment_method_types=["card"],
+            line_items=[{
+                "price_data": {
+                    "currency": "eur",
+                    "unit_amount": PRICE_EUR,
+                    "product_data": {
+                        "name": "The Shadow Blueprint",
+                        "description": "Your personalised shadow-work astrology report, the wound, the pattern, and the hidden gift in your birth chart",
+                    },
+                },
+                "quantity": 1,
+            }],
+            mode="payment",
+            customer_email=email,
+            success_url=f"{request.host_url}shadow/payment-success?session_id={{CHECKOUT_SESSION_ID}}",
+            cancel_url=f"{request.host_url}shadow?cancelled=true",
+            metadata={
+                "name": name,
+                "email": email,
+                "date": data.get("date", ""),
+                "time": data.get("time", ""),
+                "city": data.get("city", ""),
+                "country": data.get("country", ""),
+                "lat": str(data.get("lat", "")),
+                "lng": str(data.get("lng", "")),
+                "tz": data.get("tz", "UTC"),
+                "marketingOptIn": "true" if data.get("marketingOptIn") else "false",
+                "report": "shadow-blueprint",
+            }
+        )
+        return jsonify({"url": session.url})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/shadow/payment-success")
+def shadow_payment_success():
+    session_id = request.args.get("session_id")
+    if not session_id:
+        return render_template("shadow.html",
+            auto_generate=False, chart_data="null", meta_data="null")
+    try:
+        import stripe as stripe_lib
+        stripe_lib.api_key = os.environ.get("STRIPE_SECRET_KEY", "")
+        session = stripe_lib.checkout.Session.retrieve(session_id)
+        if session.payment_status != "paid":
+            return render_template("shadow.html",
+                auto_generate=False, chart_data="null", meta_data="null")
+        meta = session.metadata.to_dict()
+        return render_template("shadow_thank_you.html",
+            session_id=session_id,
+            name=meta.get("name", ""),
+            email=meta.get("email", ""))
+    except Exception as e:
+        print(f"Shadow payment success error: {e}")
+        return render_template("shadow.html",
+            auto_generate=False, chart_data="null", meta_data="null")
+
+
+@app.route("/shadow/generate-after-payment", methods=["POST"])
+def shadow_generate_after_payment():
+    import stripe as stripe_lib
+    stripe_lib.api_key = os.environ.get("STRIPE_SECRET_KEY", "")
+    data = request.json
+    session_id = data.get("session_id", "")
+
+    try:
+        session = stripe_lib.checkout.Session.retrieve(session_id)
+    except Exception as e:
+        return jsonify({"error": f"Could not verify payment: {type(e).__name__}: {e}"}), 400
+
+    if session.payment_status != "paid":
+        return jsonify({"error": "Payment not complete."}), 400
+
+    meta = session.metadata.to_dict()
+    name = meta.get("name", "") or "the person"
+    email = meta.get("email", "")
+    date_str = meta.get("date", "")
+    time_str = meta.get("time", "")
+    city = meta.get("city", "")
+    country = meta.get("country", "")
+    tz_str = meta.get("tz", "UTC")
+    marketing_opt_in = meta.get("marketingOptIn") == "true"
+
+    try:
+        lat = float(meta.get("lat", "0"))
+        lng = float(meta.get("lng", "0"))
+        year, month, day = [int(x) for x in date_str.split("-")]
+        hour, minute = [int(x) for x in time_str.split(":")]
+    except Exception as e:
+        return jsonify({"error": f"Invalid birth data: {e}"}), 400
+
+    try:
+        chart = calculate_chart(name, year, month, day, hour, minute, lat, lng, tz_str)
+    except Exception as e:
+        return jsonify({"error": f"Chart calculation failed: {e}"}), 500
+
+    birth_info = {"date": date_str, "time": time_str, "city": city, "country": country}
+    log_customer(name=name, email=email, marketing_opt_in=marketing_opt_in,
+                date=date_str, city=city, country=country, tag_name="shadow-blueprint")
+
+    thread = threading.Thread(
+        target=background_generate_and_send_shadow,
+        args=(email, chart, birth_info),
+        daemon=True
+    )
+    thread.start()
+
+    preview_prompt = build_shadow_prompt(chart, birth_info, preview_only=True)
+    client = anthropic.Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY", ""))
+
+    def stream():
+        chart_event = dict(chart)
+        yield f"data: {json.dumps({'type':'chart','data':chart_event,'payload':{'name':name,'email':email,'date':date_str,'time':time_str,'city':city,'country':country,'lat':lat,'lng':lng,'tz':tz_str}})}\n\n"
+        buffer = ""
+        with client.messages.stream(
+            model="claude-haiku-4-5-20251001",
+            max_tokens=600,
+            messages=[{"role":"user","content":preview_prompt}]
+        ) as st:
+            for text in st.text_stream:
+                buffer += text
+                if len(buffer) > 3:
+                    flush = buffer[:-3]; buffer = buffer[-3:]
+                    yield f"data: {json.dumps({'type':'text','content':clean_dashes(flush)})}\n\n"
+        if buffer:
+            yield f"data: {json.dumps({'type':'text','content':clean_dashes(buffer)})}\n\n"
+        yield f"data: {json.dumps({'type':'done','email':email})}\n\n"
+
+    return Response(stream(), mimetype="text/event-stream",
+                   headers={"Cache-Control":"no-cache","X-Accel-Buffering":"no"})
+
+
 if __name__ == "__main__":
     import os as _os
     app.run(debug=False, port=int(_os.environ.get("PORT", 5001)))
