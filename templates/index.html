@@ -913,6 +913,37 @@ input::placeholder { color: var(--ink-muted); font-style: italic; opacity: 0.7; 
   .message-callout, .business-section, .steps-section { padding: 1.8rem 1.5rem; }
   .inside-item { padding: 1.5rem 1.4rem; }
 }
+
+/* ===== /purpose restructure additions ===== */
+.hero-headline { font-family:'Playfair Display',serif; font-weight:700; font-size:clamp(1.35rem,3.6vw,2rem); line-height:1.32; color:var(--ink); max-width:640px; margin:0 auto 1.4rem; }
+.hero-without { max-width:560px; margin:0.4rem auto 2.2rem; padding:1.2rem 1.6rem; background:var(--pink-soft); border:1.5px solid var(--ink); font-style:italic; font-size:1rem; line-height:1.75; color:var(--ink-soft); text-align:center; }
+.hero-microproof { margin-top:1.2rem; font-family:Impact,'Arial Narrow Bold',sans-serif; font-size:0.78rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--ink-muted); }
+
+.value-section { max-width:680px; margin:0 auto; padding:4rem 2rem 5rem; text-align:center; }
+.value-body { font-size:1.1rem; line-height:1.9; color:var(--ink-soft); margin-bottom:1.4rem; }
+.value-objection { font-style:italic; font-size:1.05rem; color:var(--ink); line-height:1.8; margin-bottom:2rem; }
+.value-price { font-family:Impact,'Arial Narrow Bold',sans-serif; font-size:2.8rem; letter-spacing:0.05em; color:var(--pink-deep); margin-bottom:1.6rem; }
+
+.lena-heading { font-family:Impact,'Arial Narrow Bold',sans-serif; font-size:clamp(1.5rem,4vw,2rem); letter-spacing:0.03em; text-transform:uppercase; color:var(--pink-deep); margin-bottom:1.4rem; }
+
+.cost-list .foryou-item::before { content:'✕'; color:var(--terracotta); font-size:0.85rem; }
+.cost-closing { max-width:560px; margin:2.4rem auto 2rem; text-align:center; font-family:'Playfair Display',serif; font-weight:700; font-style:italic; font-size:1.2rem; line-height:1.7; color:var(--ink); }
+.cost-cta { text-align:center; }
+
+.faq-section { max-width:720px; margin:0 auto; padding:5rem 2rem; }
+.faq-list { border:2px solid var(--ink); margin-top:2rem; background:#fff; }
+.faq-item { border-bottom:1px solid rgba(30,30,30,0.15); }
+.faq-item:last-child { border-bottom:none; }
+.faq-q { width:100%; text-align:left; background:none; border:none; cursor:pointer; padding:1.3rem 1.6rem; font-family:'Playfair Display',serif; font-weight:700; font-size:1.05rem; color:var(--ink); display:flex; justify-content:space-between; align-items:center; gap:1rem; line-height:1.4; }
+.faq-plus { color:var(--pink-deep); font-family:Impact,'Arial Narrow Bold',sans-serif; font-size:1.5rem; flex-shrink:0; transition:transform 0.2s; }
+.faq-item.open .faq-plus { transform:rotate(45deg); }
+.faq-a { display:none; padding:0 1.6rem 1.4rem; }
+.faq-item.open .faq-a { display:block; }
+.faq-a p { font-size:1.02rem; line-height:1.8; color:var(--ink-soft); }
+
+.disclaimer-section { max-width:640px; margin:0 auto; padding:2rem 2rem 4rem; }
+.disclaimer { font-size:0.8rem; line-height:1.7; color:var(--ink-muted); text-align:center; font-style:italic; }
+
 </style>
 </head>
 <body>
@@ -920,7 +951,8 @@ input::placeholder { color: var(--ink-muted); font-style: italic; opacity: 0.7; 
 <!-- ====== LANDING PAGE ====== -->
 <div id="landingPage">
 
-  <!-- HERO -->
+
+  <!-- 1. ABOVE THE FOLD -->
   <section class="hero">
     <div class="bg-stars">
       <svg style="top:8%;left:6%;width:32px" viewBox="0 0 24 24"><path d="M12 0L14 9L24 12L14 15L12 24L10 15L0 12L10 9Z" fill="#AA3157"/></svg>
@@ -940,65 +972,97 @@ input::placeholder { color: var(--ink-muted); font-style: italic; opacity: 0.7; 
       <span class="l1">The Purpose</span>
       <span class="l2">Blueprint</span>
     </h1>
-    <p class="hero-tagline">A deep-dive into who you actually are, what you're here to do, and how to build a life and business that fits your soul.</p>
+    <p class="hero-headline">Get the map to the life you're actually here to build, before you spend another year chasing someone else's definition of "realistic."</p>
+    <p class="hero-tagline">The Purpose Blueprint reads your actual birth chart, not a personality quiz, and hands you the specific direction, gifts, and next steps you've been trying to find on everyone else's timeline.</p>
+    <div class="hero-without">Without quitting anything overnight. Without waiting until it finally feels "realistic" enough to be safe. You get to know exactly what you're building toward, and start moving on your own timeline today.</div>
     <a href="#getYours" class="hero-cta">Get Your Blueprint</a>
-    <div class="hero-scroll-hint">Scroll to explore</div>
+    <p class="hero-microproof">Free preview on screen · Full PDF report · €27</p>
   </section>
 
-  <!-- INTRO -->
+  <!-- 2. THE TRANSFORMATION PT. 1 -->
   <section class="intro-section">
-    <span class="intro-eyebrow">The Celestial Blueprint Series</span>
-    <h2 class="intro-heading">Not your average<br><span class="italic">horoscope</span></h2>
-    <p class="intro-body">Your birth chart is a map of the sky at the exact moment you arrived in the world. Most astrology stops at your Sun sign. <strong>Your Celestial Blueprint goes much deeper.</strong></p>
-    <p class="intro-body">Using Whole Sign houses and the Swiss Ephemeris, it reads the full architecture of your chart. your purpose, your gifts, your blind spots, the career path that actually fits your nature, and how to build a brand that feels unmistakably like you.</p>
-    <p class="intro-body">The result is a report so specific it might feel like someone finally put into words what you have always quietly known about yourself.</p>
+    <p class="intro-body">I built The Purpose Blueprint because I lived the "behind" feeling for years. On paper, my life looked fine. Underneath it, I kept sensing there was a specific direction that was actually mine, and I didn't have language for it, so I kept borrowing everyone else's timeline instead of building my own. Once I finally read my own chart properly, not a sun-sign horoscope, the actual architecture of it, I stopped guessing. I could see the shape of what I was actually here to build, and I started moving toward it instead of comparing myself out of it. That's the shift I built this report to hand you.</p>
   </section>
 
-  <!-- WHAT'S INSIDE -->
+  <!-- 3. REASON WHY -->
+  <section class="intro-section">
+    <h2 class="intro-heading">The thing you keep doing at 1am that <span class="italic">isn't actually working</span></h2>
+    <p class="intro-body">You've probably taken the personality test. Maybe three of them. You've read the "how to find your purpose" posts, journaled the prompts, downloaded the workbook. None of it was wrong to try. But none of it was ever going to work, because it was built for everyone, and your purpose isn't a category shared by thousands of people, it's specific to the exact chart that only exists once. You're not behind because you haven't found the right quiz yet. You've just been looking for a hyper-specific answer inside a generic tool.</p>
+  </section>
+
+  <!-- 4. THE TRANSFORMATION PT. 2 -->
+  <section class="intro-section">
+    <p class="intro-body">Before I read my own chart properly, every "what's my purpose" search ended the same way: another list of options, none of them specific enough to actually act on. I'd close the tab still not knowing what to do Monday morning. After, I had language for the exact thing I was built for, not a category, a direction. I stopped waiting to feel "ready" or "realistic" enough, and started building the thing that was already mine to build. That's not a metaphor. That's the actual shift The Purpose Blueprint is built to hand you in one read.</p>
+  </section>
+
+  <!-- 5. IS THIS FOR ME? -->
+  <section class="foryou-section">
+    <h2 class="foryou-heading">This is for you if</h2>
+    <ul class="foryou-list">
+      <li class="foryou-item">You watch people around you hit their milestones, careers, weddings, houses, and quietly wonder when your version of "arriving" is supposed to happen.</li>
+      <li class="foryou-item">You've taken the quizzes, read the books, done the journaling, and you still don't have real language for what you're actually here to do.</li>
+      <li class="foryou-item">You keep choosing the safe next step because it's "realistic," and quietly resent it a little more each time.</li>
+      <li class="foryou-item">You sense there's a specific direction that's actually yours, you just haven't been shown it yet.</li>
+      <li class="foryou-item">You're ready to stop comparing your timeline to everyone else's and start building the one that's actually yours.</li>
+    </ul>
+  </section>
+
+  <!-- 6. THIS WILL HELP YOU -->
+  <section class="foryou-section">
+    <h2 class="foryou-heading">What changes when you have your <span class="italic">Blueprint</span></h2>
+    <ul class="foryou-list">
+      <li class="foryou-item">Finally see the specific career path and roles that fit your actual nature, without another personality quiz that puts you in a box that doesn't quite fit.</li>
+      <li class="foryou-item">Know the three gifts that are meant to be leading your life, without having to guess what you're "good enough" at.</li>
+      <li class="foryou-item">Understand the pattern that's been slowing you down, without the shame, so you get to use it instead of fighting it.</li>
+      <li class="foryou-item">Walk away with three concrete steps you can take today, so you get to stop waiting for permission and start moving on your own timeline.</li>
+    </ul>
+  </section>
+
+  <!-- 7. WHAT YOU GET -->
   <section class="inside-section">
     <div class="inside-inner">
       <span class="inside-eyebrow">What's included</span>
-      <h2 class="inside-heading">Inside The Purpose Blueprint</h2>
+      <h2 class="inside-heading">Everything inside your Purpose Blueprint</h2>
       <div class="inside-grid">
         <div class="inside-item">
           <span class="inside-item-num">01</span>
           <div class="inside-item-title">Your Soul's Signature</div>
-          <div class="inside-item-desc">The essence of who you are, Sun, Moon, Rising, and the tightest aspects that define your energy.</div>
+          <div class="inside-item-desc">Sun, Moon, Rising and your tightest aspects, so you finally see the actual shape of your energy instead of a sun-sign summary.</div>
         </div>
         <div class="inside-item">
           <span class="inside-item-num">02</span>
-          <div class="inside-item-title">Your IC. Where You Come From</div>
-          <div class="inside-item-desc">The root of your chart. What shaped you, what you're building from, what home means to your soul.</div>
+          <div class="inside-item-title">Your IC, Where You Come From</div>
+          <div class="inside-item-desc">The root of your chart. What shaped you, and what home actually means to your soul.</div>
         </div>
         <div class="inside-item">
           <span class="inside-item-num">03</span>
           <div class="inside-item-title">Your Life Purpose</div>
-          <div class="inside-item-desc">Your North Node path. what you're growing toward and the South Node patterns to release.</div>
+          <div class="inside-item-desc">Your North Node path, what you're growing toward, and the South Node pattern you get to finally release.</div>
         </div>
         <div class="inside-item">
           <span class="inside-item-num">04</span>
-          <div class="inside-item-title">Your Career Path & Calling</div>
-          <div class="inside-item-desc">A deep read of your 10th, 6th, and 2nd houses. how you're meant to work, earn, and be seen.</div>
+          <div class="inside-item-title">Your Career Path &amp; Calling</div>
+          <div class="inside-item-desc">A real read of your 10th, 6th and 2nd houses, how you're actually meant to work, earn and be seen.</div>
         </div>
         <div class="inside-item">
           <span class="inside-item-num">05</span>
           <div class="inside-item-title">Careers That Fit Your Chart</div>
-          <div class="inside-item-desc">Specific roles and paths aligned to your planetary signature. not generic, genuinely yours.</div>
+          <div class="inside-item-desc">Specific roles and paths mapped to your placements. Not generic, genuinely yours.</div>
         </div>
         <div class="inside-item">
           <span class="inside-item-num">06</span>
           <div class="inside-item-title">Your Unique Gifts</div>
-          <div class="inside-item-desc">Three gifts woven into your chart. the things that come naturally and make you irreplaceable.</div>
+          <div class="inside-item-desc">Three gifts already woven into your chart, the ones that come naturally and make you irreplaceable.</div>
         </div>
         <div class="inside-item">
           <span class="inside-item-num">07</span>
           <div class="inside-item-title">Your Greatest Challenges</div>
-          <div class="inside-item-desc">The patterns that slow you down, reframed with compassion. and the hidden gifts inside each one.</div>
+          <div class="inside-item-desc">The patterns that slow you down, reframed with compassion, so you get to use them instead of fighting them.</div>
         </div>
         <div class="inside-item">
           <span class="inside-item-num">08</span>
-          <div class="inside-item-title">Your Business & Brand Blueprint</div>
-          <div class="inside-item-desc">Brand identity, content style, audience, monetisation, and which platforms suit your chart.</div>
+          <div class="inside-item-title">Your Business &amp; Brand Blueprint</div>
+          <div class="inside-item-desc">Brand identity, content style, audience, and which platforms actually fit your chart.</div>
         </div>
         <div class="inside-item">
           <span class="inside-item-num">09</span>
@@ -1008,36 +1072,84 @@ input::placeholder { color: var(--ink-muted); font-style: italic; opacity: 0.7; 
         <div class="inside-item">
           <span class="inside-item-num">10</span>
           <div class="inside-item-title">Your First Three Steps</div>
-          <div class="inside-item-desc">One inward action. One creative action. One relational action. To begin right now.</div>
+          <div class="inside-item-desc">One inward action, one creative action, one relational action, so you know exactly what to do starting today.</div>
         </div>
       </div>
     </div>
   </section>
-
-  <!-- WHO IT'S FOR -->
-  <section class="foryou-section">
-    <span class="foryou-eyebrow">Is this for you?</span>
-    <h2 class="foryou-heading">This is for you if you're <span class="italic">ready</span></h2>
-    <ul class="foryou-list">
-      <li class="foryou-item">You're in your 20s or 30s and something feels like it's about to shift. a new chapter, a new direction, a pull you can't quite name yet.</li>
-      <li class="foryou-item">You're tired of advice that doesn't fit. You want clarity that's actually specific to you, not a generic framework.</li>
-      <li class="foryou-item">You're building something. a business, a brand, a creative life. and you want to do it in a way that feels aligned, not forced.</li>
-      <li class="foryou-item">You've always sensed there's a deeper logic to who you are and what you're drawn to. You want someone to name it.</li>
-      <li class="foryou-item">You're at a crossroads and you want more than logic to guide you. You trust that the universe has something to say.</li>
-    </ul>
+  <section class="value-section">
+    <div class="value-inner">
+      <p class="value-body">A single session with an astrologer to unpack even one of these areas, your career path, your purpose, your blind spots, runs €80 to €150, for someone else's read on a chart they just met. The Purpose Blueprint gives you all ten, calculated with the Swiss Ephemeris using Whole Sign houses, the same method a professional astrologer uses, written specifically for your exact chart, delivered as a PDF you keep and reread whenever you need to remember what you're building toward.</p>
+      <p class="value-objection">This isn't a templated PDF with your name swapped in. Every section is calculated from your exact birth data, then written specifically for what your chart actually shows.</p>
+      <div class="value-price">€27</div>
+      <a href="#getYours" class="hero-cta">Get Your Blueprint</a>
+    </div>
   </section>
 
-  <!-- LENA NOTE -->
+  <!-- 8. EXPERT ANGLE -->
+  <section class="intro-section">
+    <h2 class="intro-heading">Here's what nobody tells you about <span class="italic">"finding your purpose"</span></h2>
+    <p class="intro-body">Personality quizzes sort you into a type shared by millions of people. "Follow your passion" assumes you already know what that is. "Just be realistic" was never really advice, it was permission to stay comfortable in a way that's easy for everyone else to watch. None of that was ever going to give you a specific answer, because none of it was built from anything specific to you. Your birth chart is the one document that was never generic to begin with, the exact map of the sky at the exact moment you arrived. Read properly, it doesn't give you a category. It gives you a direction.</p>
+  </section>
+
+  <!-- 9. WHO'S YOUR COACH -->
   <section class="lena-section">
     <div class="lena-inner">
       <span class="lena-stars">✦ ✦ ✦</span>
-      <p class="lena-quote">"I created this because I wanted to give people something that felt like a real conversation with their chart, not a list of traits. Something that sees you, and then tells you what to do with what it sees."</p>
+      <h2 class="lena-heading">A note from Lena</h2>
+      <p class="lena-quote">Hey, I'm Lena. I'm the creator of the Celestial Blueprint series, and I built this because I lived the "behind" feeling for years, watching everyone else's milestones and wondering when mine was supposed to happen. I wanted something that felt like an actual conversation with my chart, not a list of traits I already half-knew, something that could see the specific shape of what I was here to build and then tell me what to do with it. That's what I built The Purpose Blueprint to be for you. Not another framework to fit yourself into. Your own map, read properly, handed back to you.</p>
       <span class="lena-sig">Lena</span>
       <span class="lena-sig-label">Creator of Celestial Blueprint</span>
     </div>
   </section>
 
-  <!-- FORM -->
+  <!-- 10. CONSEQUENCE & COST -->
+  <section class="foryou-section">
+    <h2 class="foryou-heading">What staying <span class="italic">"realistic"</span> actually costs you</h2>
+    <ul class="foryou-list cost-list">
+      <li class="foryou-item">Another year spent comparing your timeline to everyone else's instead of building your own.</li>
+      <li class="foryou-item">More energy spent taking quizzes and reading lists that were never specific enough to act on.</li>
+      <li class="foryou-item">The same "is this it" feeling, still there, still unanswered, a year from now.</li>
+      <li class="foryou-item">The direction that was always yours, still waiting, while you keep choosing the safe next step.</li>
+    </ul>
+    <p class="cost-closing">Getting clear costs you ten minutes and €27. Staying unclear costs you another year.</p>
+    <div class="cost-cta"><a href="#getYours" class="hero-cta">Get Your Blueprint</a></div>
+  </section>
+
+  <!-- 11. FAQ -->
+  <section class="faq-section">
+    <span class="foryou-eyebrow">Questions</span>
+    <h2 class="foryou-heading">Frequently asked <span class="italic">questions</span></h2>
+    <div class="faq-list">
+      <div class="faq-item">
+        <button class="faq-q" onclick="this.parentElement.classList.toggle('open')">Is this just another horoscope?<span class="faq-plus">+</span></button>
+        <div class="faq-a"><p>No. Most astrology content stops at your Sun sign. The Purpose Blueprint uses Whole Sign houses and the Swiss Ephemeris to read the full architecture of your chart, your purpose, your gifts, your blind spots, and the career path that actually fits your nature. It's specific to you, not a monthly forecast written for everyone born in your sign.</p></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="this.parentElement.classList.toggle('open')">What if I don't know my exact birth time?<span class="faq-plus">+</span></button>
+        <div class="faq-a"><p>An exact time gives you the most precise read, especially for your Rising sign and house placements. If you don't have it, use your best estimate, most birth certificates or hospital records have it, and the report will still give you an accurate picture of your Sun, Moon, and the broader themes in your chart.</p></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="this.parentElement.classList.toggle('open')">How is this different from a personality quiz or career test?<span class="faq-plus">+</span></button>
+        <div class="faq-a"><p>Those sort you into a category shared by thousands of people. Your birth chart is the exact map of the sky at the moment you were born, it only ever applies to you. The Purpose Blueprint reads that specific chart and writes your report from it, not from a list of pre-set types.</p></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="this.parentElement.classList.toggle('open')">How long does it take to get my report?<span class="faq-plus">+</span></button>
+        <div class="faq-a"><p>You'll see a free preview of your Soul's Signature on screen right after you enter your birth details. Your full report is generated and delivered as a PDF to your inbox right after payment.</p></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="this.parentElement.classList.toggle('open')">I'm skeptical of astrology. Will this actually be useful?<span class="faq-plus">+</span></button>
+        <div class="faq-a"><p>You don't have to take it on faith. Read the report and see if it names things about your patterns, your gifts, your career direction that feel more specific and more accurate than anything a generic quiz has given you.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 12. DISCLAIMER -->
+  <section class="disclaimer-section">
+    <p class="disclaimer">The Purpose Blueprint is intended for self-reflection and personal insight. It is not a substitute for professional career, financial, medical, or psychological advice. Your results are based on the birth details you provide, please double check them for accuracy before generating your report.</p>
+  </section>
+
+  <!-- FORM (generator) -->
   <section class="form-section-wrap" id="getYours">
     <div class="form-top">
       <span class="form-top-eyebrow">Your Blueprint Awaits</span>
@@ -1088,6 +1200,7 @@ input::placeholder { color: var(--ink-muted); font-style: italic; opacity: 0.7; 
     <div class="footer-brand">✦ Celestial Blueprint ✦</div>
     <p class="footer-sub">lunabylena.com · hello@lunabylena.com</p>
   </footer>
+
 
 </div><!-- end landingPage -->
 
