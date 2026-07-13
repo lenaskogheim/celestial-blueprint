@@ -105,14 +105,14 @@ body {
   display: inline-block;
   margin-bottom: 5rem;
   padding: 1.1rem 2.8rem;
-  background: var(--ink);
+  background: var(--terracotta);
   color: var(--cream);
   font-family: Impact, 'Arial Narrow Bold', sans-serif;
   font-size: 1rem;
   letter-spacing: 0.18em;
   text-transform: uppercase;
   text-decoration: none;
-  border: 1.5px solid var(--ink);
+  border: 1.5px solid var(--terracotta);
   border-radius: 8px;
   transition: all 0.15s;
   cursor: pointer;
@@ -531,9 +531,9 @@ input::placeholder { color: var(--ink-muted); font-style: italic; opacity: 0.7; 
 .submit-btn {
   width: 100%;
   padding: 1.2rem;
-  background: var(--ink);
+  background: var(--terracotta);
   color: var(--cream);
-  border: 1.5px solid var(--ink);
+  border: 1.5px solid var(--terracotta);
   font-family: Impact, 'Arial Narrow Bold', sans-serif;
   font-size: 1.1rem;
   letter-spacing: 0.15em;
@@ -925,6 +925,8 @@ input::placeholder { color: var(--ink-muted); font-style: italic; opacity: 0.7; 
 .value-price { font-family:Impact,'Arial Narrow Bold',sans-serif; font-size:2.8rem; letter-spacing:0.05em; color:var(--pink-deep); margin-bottom:1.6rem; }
 
 .lena-heading { font-family:Impact,'Arial Narrow Bold',sans-serif; font-size:clamp(1.5rem,4vw,2rem); letter-spacing:0.03em; text-transform:uppercase; color:var(--pink-deep); margin-bottom:1.4rem; }
+.lena-photo { display:inline-block; margin:0.4rem auto 2.2rem; padding:10px; background:#fff; border:2px solid var(--ink); box-shadow:7px 7px 0 var(--pink-deep); }
+.lena-photo img { display:block; width:280px; max-width:70vw; height:auto; }
 
 .cost-list .foryou-item::before { content:'✕'; color:var(--terracotta); font-size:0.85rem; }
 .cost-closing { max-width:560px; margin:2.4rem auto 2rem; text-align:center; font-family:'Playfair Display',serif; font-weight:700; font-style:italic; font-size:1.2rem; line-height:1.7; color:var(--ink); }
@@ -1141,6 +1143,7 @@ input::placeholder { color: var(--ink-muted); font-style: italic; opacity: 0.7; 
     <div class="lena-inner">
       <span class="lena-stars">✦ ✦ ✦</span>
       <h2 class="lena-heading">A note from Lena</h2>
+      <div class="lena-photo"><img src="/static/lena.jpg" alt="Lena, creator of Celestial Blueprint"></div>
       <p class="lena-quote">Hey, I'm Lena. I'm the creator of the Celestial Blueprint series, and I built this because I lived the "behind" feeling for years, watching everyone else's milestones and wondering when mine was supposed to happen. I wanted something that felt like an actual conversation with my chart, not a list of traits I already half-knew, something that could see the specific shape of what I was here to build and then tell me what to do with it. That's what I built The Purpose Blueprint to be for you. Not another framework to fit yourself into. Your own map, read properly, handed back to you.</p>
       <span class="lena-sig">Lena</span>
       <span class="lena-sig-label">Creator of Celestial Blueprint</span>
