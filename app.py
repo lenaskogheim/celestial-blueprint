@@ -1997,7 +1997,7 @@ def background_generate_and_send_love(email, chart, birth_info):
 
 @app.route("/identity-recode")
 def identity_recode():
-    return render_template("identity_recode_v2.html")
+    return render_template("identity_recode_new.html")
 
 
 @app.route("/identity-recode-v2")
@@ -2007,7 +2007,12 @@ def identity_recode_v2():
 
 @app.route("/identity-recode-new")
 def identity_recode_new():
-    return render_template("identity_recode_new.html")
+    return redirect("/identity-recode")
+
+
+@app.route("/identity-recode-old")
+def identity_recode_old():
+    return render_template("identity_recode_v2.html")
 
 
 @app.route("/love")
