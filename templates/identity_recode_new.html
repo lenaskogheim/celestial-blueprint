@@ -240,20 +240,13 @@ footer a:hover { color: #fff; }
 .num-chip { width: 44px; height: 44px; border-radius: 12px; background: var(--chip); display: flex; align-items: center; justify-content: center; margin-bottom: 1.1rem; font-family: 'Playfair Display', serif; font-weight: 700; font-size: 1.15rem; color: var(--pink-glow); flex-shrink: 0; }
 .card .note-it { display: block; margin-top: 0.6rem; font-style: italic; color: var(--pink-glow); font-size: 0.88rem; }
 
-/* ── STYLIZED PROBLEM-MIRROR ── */
-.tried-row { display: flex; flex-wrap: wrap; gap: 0.6rem; justify-content: center; max-width: 640px; margin: 0 auto 2.6rem; }
-.tried { display: inline-flex; align-items: center; gap: 0.45rem; padding: 0.5rem 1rem; border: 1px solid var(--border-dark); border-radius: 100px; background: var(--dark-card); color: var(--light-muted); font-size: 0.9rem; }
-.tried::before { content: '✓'; color: var(--pink-glow); font-weight: 700; font-size: 0.8rem; }
+/* ── PROBLEM-MIRROR ── */
+.hl { color: var(--pink-glow); font-weight: 600; }
 .mirror-pull { max-width: 640px; margin: 0 auto 2.4rem; font-family: 'Playfair Display', serif; font-size: clamp(1.35rem, 3vw, 1.9rem); line-height: 1.4; color: var(--light); }
 .mirror-pull .accent { background: var(--grad-warm); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; font-style: italic; }
-.beat-list { list-style: none; max-width: 560px; margin: 0 auto 2.4rem; text-align: left; }
-.beat-list li { display: flex; align-items: baseline; gap: 0.8rem; padding: 0.85rem 0; border-bottom: 1px solid var(--border-dark); color: var(--light-muted); font-size: 1.02rem; line-height: 1.5; }
-.beat-list li:last-child { border-bottom: none; }
-.beat-list .doit { color: var(--light); font-weight: 600; flex-shrink: 0; min-width: 8.5rem; }
-.beat-list .undo { font-style: italic; }
-.mirror-close { max-width: 620px; margin: 0 auto; font-size: 1.12rem; line-height: 1.7; color: var(--light-muted); }
+.mirror-close { max-width: 620px; margin: 2.4rem auto 0; font-size: 1.12rem; line-height: 1.7; color: var(--light-muted); }
+.mirror-close strong { color: var(--light); font-weight: 700; }
 .mirror-close em { color: var(--pink-glow); font-style: italic; }
-@media (max-width: 560px) { .beat-list li { flex-direction: column; gap: 0.2rem; } .beat-list .doit { min-width: 0; } }
 </style>
 </head>
 <body>
@@ -312,23 +305,18 @@ footer a:hover { color: #fff; }
   <div class="wrap-wide">
     <p class="eyebrow">You&rsquo;ve done so much inner work.</p>
     <h2 class="section-title">And still, by noon, you&rsquo;re making choices from the same old fear.</h2>
-    <div class="tried-row">
-      <span class="tried">The books</span>
-      <span class="tried">The concepts</span>
-      <span class="tried">The meditations</span>
-      <span class="tried">The affirmations</span>
-      <span class="tried">&ldquo;Embody your future self&rdquo;</span>
-    </div>
+    <p class="lead">You&rsquo;ve read the <span class="hl">books</span>. You know the <span class="hl">concepts</span>. You&rsquo;ve tried the <span class="hl">meditations</span>, the <span class="hl">affirmations</span>, the <span class="hl">&ldquo;embody your future self&rdquo;</span> exercises.</p>
 
     <p class="mirror-pull">It&rsquo;s not because you&rsquo;re not trying. It&rsquo;s not because manifestation <span class="accent">doesn&rsquo;t work for you.</span> It&rsquo;s because you keep working on <span class="accent">the wrong block.</span></p>
 
-    <ul class="beat-list">
-      <li><span class="doit">You journal</span><span class="undo">on the surface belief.</span></li>
-      <li><span class="doit">You reframe</span><span class="undo">the thought.</span></li>
-      <li><span class="doit">You set the boundary</span><span class="undo">and then break it by Thursday.</span></li>
+    <ul class="checklist" style="max-width:520px;">
+      <li>You journal on the surface belief.</li>
+      <li>You reframe the thought.</li>
+      <li>You set the boundary, and then break it by Thursday.</li>
     </ul>
 
-    <p class="mirror-close">Because the real belief is sitting underneath, <em>untouched</em>. And until you see it, until something finally names it, you&rsquo;ll keep repeating the same pattern, wondering why the inner work isn&rsquo;t working.</p>
+    <p class="mirror-close">Because <strong>the real belief is sitting underneath, untouched.</strong></p>
+    <p class="mirror-close">And until you see it, until someone or something <em>names it</em>, you&rsquo;ll keep repeating the same pattern and wondering why the inner work isn&rsquo;t working.</p>
   </div>
 </section>
 
