@@ -2005,6 +2005,11 @@ def identity_recode_v2():
     return redirect("/identity-recode")
 
 
+@app.route("/identity-recode-new")
+def identity_recode_new():
+    return render_template("identity_recode_new.html")
+
+
 @app.route("/love")
 def love():
     return render_template("love.html",
